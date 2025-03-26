@@ -2,6 +2,8 @@
 
 A modular system for orchestrating AI agents with persistent memory, dynamic behavior, and structured output parsing. Extremely simple and inbuilt support for CyberSecurity.
 
+We have designed it on lines of langchain. So you can quickly get the hang of agentic work and test withn days and upgrade to LangChain step by step.
+
 Features: Memory, Dynamic Agents, Strcutured Output parsing
 
 To Add:Tool integration, streaming, chain types & reasoning patterns, streaming, vectorization and embeddings.
