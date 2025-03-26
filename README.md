@@ -183,7 +183,7 @@ For routine use cases, this modular multi-agent system achieves approximately 70
 
 5. **Command Line Interface (90%)** - The CLI provides comparable usability to LangChain's basic interfaces.
 
-**What it's missing (Delibearte for simplicity):**
+**What it's missing (Deliberate for simplicity):**
 
 1. **Tool Integration (40% parity)** - No built-in integration with external tools, APIs, or services. LangChain provides dozens of pre-built tool connections.
 
