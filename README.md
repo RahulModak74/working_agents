@@ -8,7 +8,7 @@ Features: Memory, Dynamic Agents, Strcutured Output parsing
 
 To Add(Deliberately Ommited for simplicity):Tool integration, streaming, chain types & reasoning patterns, streaming, vectorization and embeddings.
 
-Sample Marketing Agentic Workflow: (First YOU NEED TO GET free API token  for DeepSeek on operouter and add it in config.py)
+Sample Marketing Agentic Workflow: (First YOU NEED TO GET free API token  for DeepSeek on openrouter and add it in config.py)
 
 Clone the repo and run:
 
