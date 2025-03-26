@@ -6,7 +6,11 @@ We have designed it on lines of langchain. So you can quickly get the hang of ag
 
 Features: Memory, Dynamic Agents, Structured Output parsing
 
-To Add(Deliberately Ommited for simplicity):Tool integration, streaming, chain types & reasoning patterns, streaming, vectorization and embeddings.
+To Add(Deliberately Ommited for simplicity):Tool integration, streaming, chain types & reasoning patterns, streaming, vectorization and embeddings. 
+
+Power of our system can be seen from extremely_advanced_cyber_agentic_workflow.json file.. To design similarly long and complex agentic workflow in LangChain will take hundreds of lines of python code with complex chain compositions, custom callbacks, and error handling.
+
+Here all you need to do is python3 main.py --workflow extremely_advanced_cybersec.json!!
 
 Sample Marketing Agentic Workflow: (First YOU NEED TO GET free API token  for DeepSeek on openrouter and add it in config.py)
 
