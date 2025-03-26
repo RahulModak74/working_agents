@@ -8,6 +8,20 @@ Features: Memory, Dynamic Agents, Strcutured Output parsing
 
 To Add:Tool integration, streaming, chain types & reasoning patterns, streaming, vectorization and embeddings.
 
+Sample Marketing Agentic Workflow: (First YOU NEED TO GET free API token  for DeepSeek on operouter and add it in config.py)
+
+Clone the repo and run:
+
+python3 main.py --workflow cust_jour_workflow.json
+
+
+Sample Cyber Security Agentic Workflow:
+
+Clone the repo and run:
+
+python3 main.py --workflow enhanced_workflow.json
+
+
 ## Features
 
 1. **Memory Management**
