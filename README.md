@@ -1,6 +1,6 @@
 # Enhanced Multi-Agent System
 
-A modular system for orchestrating AI agents with persistent memory, dynamic behavior, and structured output parsing.
+A modular system for orchestrating AI agents with persistent memory, dynamic behavior, and structured output parsing. Extremely simple and inbuilt support for CyberSecurity
 
 ## Features
 
