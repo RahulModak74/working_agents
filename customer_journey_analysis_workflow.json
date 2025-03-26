@@ -1,0 +1,229 @@
+[
+  {
+    "agent": "data_profiler",
+    "content": "Analyze the customer journey data in customer_journey.csv. Identify key metrics, anomalies, and overall data quality issues. Return a comprehensive profile of the dataset.",
+    "file": "customer_journey.csv",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "total_customers": "number",
+        "journey_stages": ["string"],
+        "conversion_rate": "number",
+        "avg_session_duration": "number",
+        "anomalies": ["string"],
+        "data_quality_issues": ["string"],
+        "key_segments": ["object"]
+      }
+    },
+    "memory_id": "journey_analysis"
+  },
+  {
+    "agent": "segmentation_analyst",
+    "content": "Based on the data profile from data_profiler, identify distinct customer segments. For each segment, determine behavioral patterns, conversion blockers, and potential intervention points. Focus on high-value segments that are underperforming.",
+    "readFrom": ["data_profiler"],
+    "memory_id": "journey_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "segments": [
+          {
+            "name": "string",
+            "size": "number",
+            "percentage": "number",
+            "characteristics": ["string"],
+            "behaviors": ["string"],
+            "conversion_barriers": ["string"],
+            "value_potential": "number",
+            "intervention_points": ["string"]
+          }
+        ],
+        "priority_segments": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "path_analyzer",
+    "content": "Analyze the specific paths customers take through their journey. Identify common drop-off points, unusual path sequences, and opportunities for journey optimization. Pay special attention to paths that differ significantly from expected flows.",
+    "readFrom": ["data_profiler"],
+    "memory_id": "journey_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "common_paths": [
+          {
+            "path_sequence": ["string"],
+            "frequency": "number",
+            "conversion_rate": "number"
+          }
+        ],
+        "drop_off_points": [
+          {
+            "stage": "string",
+            "drop_off_rate": "number",
+            "preceding_stages": ["string"]
+          }
+        ],
+        "unusual_paths": [
+          {
+            "path_sequence": ["string"],
+            "frequency": "number",
+            "notable_characteristics": ["string"]
+          }
+        ],
+        "optimization_opportunities": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "time_series_analyst",
+    "content": "Perform a temporal analysis of the customer journey data. Identify seasonal patterns, trend changes, and anomalies in customer behavior over time. Look for correlations between time-based factors and conversion rates.",
+    "readFrom": ["data_profiler"],
+    "memory_id": "journey_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "temporal_patterns": [
+          {
+            "pattern_type": "string",
+            "description": "string",
+            "significance": "number"
+          }
+        ],
+        "trend_analysis": {
+          "overall_trend": "string",
+          "notable_changes": ["string"],
+          "forecasted_direction": "string"
+        },
+        "time_based_anomalies": ["string"],
+        "time_conversion_correlations": [
+          {
+            "factor": "string",
+            "correlation": "number",
+            "description": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on all previous analyses, determine the most critical area to focus optimization efforts. Choose from: 'segment_targeting', 'journey_redesign', 'pricing_strategy', 'content_personalization', or 'technical_improvements'.",
+    "readFrom": ["data_profiler", "segmentation_analyst", "path_analyzer", "time_series_analyst"],
+    "memory_id": "journey_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_focus": "string",
+        "reasoning": "string",
+        "expected_impact": "number",
+        "implementation_complexity": "number"
+      }
+    },
+    "actions": {
+      "segment_targeting": {
+        "agent": "segment_targeting_specialist",
+        "content": "Design a detailed segment targeting strategy for the high-priority segments. Include messaging approaches, channel strategies, and personalization recommendations.",
+        "readFrom": ["segmentation_analyst", "path_analyzer"]
+      },
+      "journey_redesign": {
+        "agent": "journey_architect",
+        "content": "Create a comprehensive journey redesign proposal focusing on the problematic stages and transitions identified in previous analyses. Include specific UX/UI recommendations and expected improvement metrics.",
+        "readFrom": ["path_analyzer", "time_series_analyst"]
+      },
+      "pricing_strategy": {
+        "agent": "pricing_strategist",
+        "content": "Develop a revised pricing strategy that addresses conversion barriers identified in the analysis. Include segmented pricing recommendations, discount strategies, and implementation approach.",
+        "readFrom": ["segmentation_analyst", "path_analyzer"]
+      },
+      "content_personalization": {
+        "agent": "content_strategist",
+        "content": "Create a content personalization framework to address the needs of different segments at various journey stages. Include content themes, formats, and distribution strategies.",
+        "readFrom": ["segmentation_analyst", "path_analyzer"]
+      },
+      "technical_improvements": {
+        "agent": "technical_architect",
+        "content": "Design technical improvements to address performance issues, usability barriers, and integration gaps identified in the customer journey analysis. Include implementation priorities and expected impact.",
+        "readFrom": ["data_profiler", "path_analyzer"]
+      }
+    }
+  },
+  {
+    "agent": "roi_analyzer",
+    "content": "Based on the selected optimization focus and previous analyses, calculate expected ROI for implementing the recommended changes. Include cost estimates, revenue impact projections, and timeline considerations.",
+    "readFrom": ["dynamic_agent", "*"],
+    "memory_id": "journey_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "implementation_costs": {
+          "development": "number",
+          "marketing": "number",
+          "operations": "number",
+          "total": "number"
+        },
+        "expected_benefits": {
+          "increased_conversion": "number",
+          "increased_retention": "number",
+          "increased_aov": "number",
+          "total_revenue_impact": "number"
+        },
+        "roi_metrics": {
+          "payback_period_months": "number",
+          "first_year_roi": "number",
+          "five_year_roi": "number"
+        },
+        "implementation_timeline": {
+          "planning_weeks": "number",
+          "development_weeks": "number",
+          "deployment_weeks": "number",
+          "total_weeks": "number"
+        },
+        "confidence_level": "number"
+      }
+    }
+  },
+  {
+    "agent": "implementation_planner",
+    "content": "Create a detailed implementation plan for the selected optimization focus. Break down the implementation into phases, with specific tasks, dependencies, resource requirements, and success metrics for each phase.",
+    "readFrom": ["dynamic_agent", "roi_analyzer", "*"],
+    "memory_id": "journey_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "implementation_phases": [
+          {
+            "phase_name": "string",
+            "duration_weeks": "number",
+            "key_tasks": ["string"],
+            "dependencies": ["string"],
+            "resources_required": ["string"],
+            "success_metrics": ["string"],
+            "risks": ["string"]
+          }
+        ],
+        "critical_path_elements": ["string"],
+        "key_stakeholders": ["string"],
+        "governance_structure": "string",
+        "monitoring_framework": "string"
+      }
+    }
+  },
+  {
+    "agent": "executive_summarizer",
+    "content": "Synthesize all analyses and recommendations into a comprehensive executive summary. Include key findings, strategic recommendations, expected business impact, and implementation approach.",
+    "readFrom": ["data_profiler", "segmentation_analyst", "path_analyzer", "time_series_analyst", "dynamic_agent", "roi_analyzer", "implementation_planner"],
+    "memory_id": "journey_analysis",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary", 
+        "Key Findings", 
+        "Strategic Recommendations", 
+        "Business Impact", 
+        "Implementation Approach",
+        "Next Steps"
+      ]
+    }
+  }
+]
