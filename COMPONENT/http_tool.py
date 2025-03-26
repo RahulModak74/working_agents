@@ -210,4 +210,51 @@ class HTTPTool:
                 verify=self.verify_ssl
             )
             
-            if response.status
+            if response.status_code >= 200 and response.status_code < 300:
+                os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
+                with open(output_path, 'wb') as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        f.write(chunk)
+                return True, f"File downloaded successfully to {output_path}"
+            else:
+                return False, f"Failed to download file: HTTP {response.status_code}"
+        except Exception as e:
+            return False, f"Error downloading file: {str(e)}"
+    
+    def upload_file(self, endpoint: str, file_path: str, form_field: str = 'file',
+                    extra_data: Dict[str, Any] = None, headers: Dict[str, str] = None) -> Tuple[bool, Any]:
+        """Upload a file to the specified endpoint"""
+        try:
+            if not os.path.exists(file_path):
+                return False, f"File not found: {file_path}"
+            
+            self._respect_rate_limit()
+            url = self._prepare_url(endpoint)
+            
+            files = {form_field: open(file_path, 'rb')}
+            data = extra_data or {}
+            
+            merged_headers = {**self.headers, **(headers or {})}
+            self.last_request_time = time.time()
+            self.last_response = requests.post(
+                url,
+                files=files,
+                data=data,
+                headers=merged_headers or None,
+                auth=self.auth,
+                timeout=self.default_timeout,
+                verify=self.verify_ssl
+            )
+            
+            # Close the file
+            for file_obj in files.values():
+                file_obj.close()
+            
+            return self._process_response(self.last_response)
+        except Exception as e:
+            return False, {"error": str(e)}
+
+
+def get_http_tool(base_url: Optional[str] = None, headers: Optional[Dict[str, str]] = None) -> HTTPTool:
+    """Factory function to get an HTTP tool instance"""
+    return HTTPTool(base_url, headers)
