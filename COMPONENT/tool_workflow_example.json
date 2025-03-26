@@ -1,0 +1,104 @@
+[
+  {
+    "agent": "data_collector",
+    "content": "Collect data from the specified API endpoint and store the results for further analysis. Make sure to document any issues encountered during data collection.",
+    "tools": ["http:get", "http:post"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "data_collected": "number",
+        "collection_success": "boolean",
+        "issues": ["string"],
+        "summary": "string"
+      }
+    },
+    "memory_id": "api_analysis"
+  },
+  {
+    "agent": "data_analyzer",
+    "content": "Analyze the data collected by the data_collector agent. Extract key metrics and insights. Store the results in a SQL database for persistence.",
+    "readFrom": ["data_collector"],
+    "tools": ["sql:query", "sql:tables", "sql:schema"],
+    "memory_id": "api_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "metrics": {
+          "total_records": "number",
+          "success_rate": "number",
+          "average_response_time": "number"
+        },
+        "insights": ["string"],
+        "data_stored": "boolean"
+      }
+    }
+  },
+  {
+    "agent": "knowledge_indexer",
+    "content": "Index the collected data and analysis into the vector database for semantic search. Create embeddings for all important insights and findings.",
+    "readFrom": ["data_collector", "data_analyzer"],
+    "tools": ["vector_db:add", "vector_db:batch_add"],
+    "memory_id": "api_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "documents_indexed": "number",
+        "embedding_model": "string",
+        "indexing_success": "boolean"
+      }
+    }
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on the data collected and analyzed, determine the next step. Choose from: 'generate_report', 'alert_issues', or 'schedule_monitoring'.",
+    "readFrom": ["data_collector", "data_analyzer", "knowledge_indexer"],
+    "tools": ["vector_db:search"],
+    "memory_id": "api_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "action": "string",
+        "reasoning": "string"
+      }
+    },
+    "actions": {
+      "generate_report": {
+        "agent": "report_generator",
+        "content": "Generate a comprehensive report of the API analysis with recommendations for improvements.",
+        "readFrom": ["data_collector", "data_analyzer", "knowledge_indexer"],
+        "tools": ["vector_db:search", "sql:query"]
+      },
+      "alert_issues": {
+        "agent": "issue_alerter",
+        "content": "Create detailed alerts for all critical issues found in the API data.",
+        "readFrom": ["data_collector", "data_analyzer"],
+        "tools": ["http:post"]
+      },
+      "schedule_monitoring": {
+        "agent": "monitoring_scheduler",
+        "content": "Design a monitoring schedule for the API based on the analysis results.",
+        "readFrom": ["data_analyzer"],
+        "tools": ["sql:query"]
+      }
+    }
+  },
+  {
+    "agent": "executive_summarizer",
+    "content": "Create an executive summary of the entire analysis process, findings, and actions taken.",
+    "readFrom": ["data_collector", "data_analyzer", "knowledge_indexer", "dynamic_agent", "*"],
+    "tools": ["vector_db:search"],
+    "memory_id": "api_analysis",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Data Collection Overview",
+        "Key Findings",
+        "Action Taken",
+        "Recommendations",
+        "Next Steps"
+      ]
+    }
+  }
+]
