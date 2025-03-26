@@ -54,6 +54,174 @@ With memory access:
 > run agent1 Continue your previous analysis [memory:analysis_context]
 ```
 
+This workflow:
+1. Analyzes session logs to calculate a risk score
+2. Identifies suspicious patterns based on the risk assessment
+3. Dynamically selects a response strategy (block, monitor, or escalate)
+4. Generates a comprehensive report summarizing the incident and response
+
+## Extending the System
+
+The Enhanced Multi-Agent System is designed to be modular and extensible. Here are the key ways to extend its functionality:
+
+### Creating Custom Agent Types
+
+You can create specialized agents by inheriting from the base `Agent` class:
+
+```python
+class SecurityAgent(Agent):
+    def __init__(self, name, model=CONFIG["default_model"], memory_manager=None):
+        super().__init__(name, model, memory_manager)
+        self.security_context = {}
+    
+    def analyze_threat(self, log_content, threat_type):
+        """Specialized method for threat analysis"""
+        enhanced_prompt = f"Analyze this log for {threat_type} threats:\n{log_content}"
+        result = self.execute(enhanced_prompt, memory_id="threat_analysis")
+        return self._process_threat_data(result)
+    
+    def _process_threat_data(self, data):
+        """Private method to process threat data"""
+        # Custom processing logic
+        return processed_data
+```
+
+### Adding Custom Output Formats
+
+Extend the `OutputParser` class to handle new output formats:
+
+```python
+class EnhancedOutputParser(OutputParser):
+    @staticmethod
+    def extract_custom_format(text, output_format):
+        """Extract a custom format from text"""
+        # Custom extraction logic
+        return structured_data
+    
+    @staticmethod
+    def extract_format(text, output_format):
+        """Override the original method to add new format support"""
+        format_type = output_format.get("type", "text")
+        
+        if format_type == "custom_format":
+            return EnhancedOutputParser.extract_custom_format(text, output_format)
+        
+        # Fall back to the parent class implementation
+        return OutputParser.extract_format(text, output_format)
+```
+
+### Integrating External Services
+
+You can extend the Agent class to incorporate external APIs or services:
+
+```python
+class APIAgent(Agent):
+    def __init__(self, name, model=CONFIG["default_model"], memory_manager=None, api_key=None):
+        super().__init__(name, model, memory_manager)
+        self.api_key = api_key or os.environ.get("EXTERNAL_API_KEY")
+        self.api_endpoint = "https://api.example.com/v1/"
+    
+    def execute_with_api(self, content, endpoint, params=None):
+        """Execute with both LLM and external API"""
+        # Get guidance from LLM
+        llm_response = self.execute(content)
+        
+        # Call external API
+        api_response = self._call_api(endpoint, params)
+        
+        # Combine responses
+        return {
+            "llm_guidance": llm_response,
+            "api_data": api_response
+        }
+    
+    def _call_api(self, endpoint, params):
+        """Make an API call to the external service"""
+        import requests
+        headers = {"Authorization": f"Bearer {self.api_key}"}
+        response = requests.get(f"{self.api_endpoint}{endpoint}", headers=headers, params=params)
+        return response.json()
+```
+
+## Advanced Usage Techniques
+
+### Chaining Multiple Memory Contexts
+
+You can create sophisticated workflows by chaining memory contexts:
+
+```json
+[
+  {
+    "agent": "data_collector",
+    "content": "Collect initial data points",
+    "memory_id": "initial_data"
+  },
+  {
+    "agent": "analyzer",
+    "content": "Analyze the collected data",
+    "readFrom": ["data_collector"],
+    "memory_id": "analysis_results"
+  },
+  {
+    "agent": "synthesizer",
+    "content": "Synthesize results from both contexts",
+    "memory_id": "final_synthesis",
+    "readFrom": ["*"],
+    "custom_prompting": "Refer to both initial_data and analysis_results contexts to create a comprehensive synthesis"
+  }
+]
+```
+
+### Implementing Feedback Loops
+
+You can create iterative workflows with feedback loops:
+
+```json
+[
+  {
+    "agent": "initial_draft",
+    "content": "Create an initial draft",
+    "memory_id": "document_drafting"
+  },
+  {
+    "agent": "reviewer",
+    "content": "Review the draft and suggest improvements",
+    "readFrom": ["initial_draft"],
+    "memory_id": "document_drafting"
+  },
+  {
+    "agent": "reviser",
+    "content": "Implement the reviewer's suggestions",
+    "readFrom": ["initial_draft", "reviewer"],
+    "memory_id": "document_drafting"
+  },
+  {
+    "agent": "final_reviewer",
+    "content": "Perform a final review of the revised document",
+    "readFrom": ["reviser"],
+    "memory_id": "document_drafting"
+  }
+]
+```
+
+## Performance Considerations
+
+When using the Enhanced Multi-Agent System, consider these performance tips:
+
+1. **Memory Usage**: Limit the number of memories retrieved by using specific memory_ids rather than retrieving all memories.
+
+2. **Workflow Design**: Design workflows to minimize redundant API calls by effectively using the readFrom parameter.
+
+3. **Output Parsing**: Use structured output formats to reduce the need for parsing free-form text.
+
+4. **Model Selection**: Choose appropriate models for each task - use more capable models for complex reasoning and simpler models for straightforward tasks.
+
+## Conclusion
+
+The Enhanced Multi-Agent System provides a flexible framework for orchestrating AI agents with persistent memory and dynamic behavior. By leveraging structured workflows, memory persistence, and decision-making capabilities, you can build sophisticated applications that combine the strengths of multiple specialized agents.
+
+Whether you're implementing security analysis, data processing, content creation, or custom workflows, the system's modular architecture allows for extensive customization while maintaining a consistent interface for agent interaction and memory management.
+
 With structured output:
 ```
 > run agent1 Provide a risk score [format:json]
@@ -152,30 +320,3 @@ Workflows are defined in JSON format as an array of steps. Each step represents 
   }
 }
 ```
-
-## Example Security Workflow
-
-The following example demonstrates a security analysis workflow where multiple agents collaborate to assess and respond to potential security risks:
-
-```json
-[
-  {
-    "agent": "risk_analyzer",
-    "content": "Review the session log and provide a risk score from 1-10",
-    "file": "session_log.csv",
-    "output_format": {
-      "type": "json",
-      "schema": {
-        "score": "number",
-        "reasoning": "string"
-      }
-    },
-    "memory_id": "security_incident"
-  },
-  {
-    "agent": "pattern_detector",
-    "content": "Identify suspicious patterns in the session based on the risk assessment",
-    "readFrom": ["risk_analyzer"],
-    "memory_id": "security_incident",
-    "output_format": {
-      "type": "json",
