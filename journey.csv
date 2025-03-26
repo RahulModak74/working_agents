@@ -1,0 +1,11 @@
+timestamp,session_id,ip_address,user_agent,endpoint,http_method,status_code,response_time,bytes_sent,user_id,action
+2025-03-25T08:23:45Z,a3c8d9e7f6b2,192.168.1.254,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",/api/login,POST,200,350,1248,null,login_attempt
+2025-03-25T08:23:59Z,a3c8d9e7f6b2,192.168.1.254,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",/api/auth,POST,200,120,864,user_12345,login_success
+2025-03-25T08:24:10Z,a3c8d9e7f6b2,192.168.1.254,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",/api/users,GET,200,180,4562,user_12345,list_users
+2025-03-25T08:24:35Z,a3c8d9e7f6b2,192.168.1.254,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",/api/admin,GET,403,90,320,user_12345,access_denied
+2025-03-25T08:24:48Z,a3c8d9e7f6b2,192.168.1.254,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",/api/admin,GET,403,85,320,user_12345,access_denied
+2025-03-25T08:25:02Z,a3c8d9e7f6b2,192.168.1.254,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",/api/admin,GET,403,82,320,user_12345,access_denied
+2025-03-25T08:25:15Z,a3c8d9e7f6b2,192.168.1.254,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",/api/users/45678,GET,200,145,2340,user_12345,view_user
+2025-03-25T08:25:30Z,a3c8d9e7f6b2,192.168.1.254,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",/api/users/45678/reset,POST,200,320,980,user_12345,reset_password
+2025-03-25T08:25:45Z,a3c8d9e7f6b2,192.168.1.254,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",/api/users/admin,GET,404,75,240,user_12345,not_found
+2025-03-25T08:26:01Z,a3c8d9e7f6b2,192.168.1.254,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",/api/logout,POST,200,110,420,user_12345,logout
