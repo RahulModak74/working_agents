@@ -1,0 +1,181 @@
+# Enhanced Multi-Agent System Documentation
+## Part 3: Usage, Examples, and Extension
+
+## Basic Usage
+
+### Starting the System
+
+There are two main ways to run the system:
+
+#### Interactive Mode
+
+```bash
+./main.py
+```
+
+This launches the command-line interface where you can enter commands directly.
+
+#### Workflow Mode
+
+```bash
+./main.py --workflow enhanced_workflow.json
+```
+
+This executes a predefined workflow file without entering the interactive shell.
+
+### Interactive Commands
+
+Once in the interactive shell, you can use the following commands:
+
+#### Creating Agents
+
+```
+> create agent1
+Agent agent1 created with model deepseek/deepseek-chat:free and type standard
+
+> create risk_analyzer gpt-4-turbo dynamic
+Agent risk_analyzer created with model gpt-4-turbo and type dynamic
+```
+
+#### Running Agents
+
+Basic agent execution:
+```
+> run agent1 Analyze this data and provide insights.
+```
+
+With a file input:
+```
+> run agent1 Analyze this CSV file [file] data.csv
+```
+
+With memory access:
+```
+> run agent1 Continue your previous analysis [memory:analysis_context]
+```
+
+With structured output:
+```
+> run agent1 Provide a risk score [format:json]
+```
+
+With reference to other agent outputs:
+```
+> run agent2 Improve on agent1's analysis [ref:agent1]
+```
+
+#### Accessing Memory
+
+List all memory IDs:
+```
+> memory list
+```
+
+Get memories for a specific context:
+```
+> memory get analysis_context
+```
+
+Get memories from a specific agent:
+```
+> memory get analysis_context agent1
+```
+
+#### Other Commands
+
+Get an agent's latest output:
+```
+> get agent1
+```
+
+List all agents:
+```
+> list
+```
+
+Exit the system:
+```
+> exit
+```
+
+## Workflow Configuration
+
+Workflows are defined in JSON format as an array of steps. Each step represents an agent execution with various parameters.
+
+### Basic Workflow Structure
+
+```json
+[
+  {
+    "agent": "agent_name",
+    "content": "Prompt content for the agent",
+    "file": "optional_file.csv",
+    "readFrom": ["agent1", "agent2"],
+    "memory_id": "context_identifier",
+    "output_format": {
+      "type": "json|markdown",
+      "schema": {
+        "field1": "type",
+        "field2": "type"
+      }
+    }
+  },
+  // More steps...
+]
+```
+
+### Dynamic Agent Configuration
+
+```json
+{
+  "agent": "dynamic_agent",
+  "type": "dynamic",
+  "initial_prompt": "Make a decision based on the data...",
+  "readFrom": ["agent1"],
+  "memory_id": "analysis",
+  "output_format": {
+    "type": "json",
+    "schema": {
+      "action": "string",
+      "reasoning": "string"
+    }
+  },
+  "actions": {
+    "option1": {
+      "agent": "agent2",
+      "content": "Follow-up for option 1..."
+    },
+    "option2": {
+      "agent": "agent3",
+      "content": "Follow-up for option 2..."
+    }
+  }
+}
+```
+
+## Example Security Workflow
+
+The following example demonstrates a security analysis workflow where multiple agents collaborate to assess and respond to potential security risks:
+
+```json
+[
+  {
+    "agent": "risk_analyzer",
+    "content": "Review the session log and provide a risk score from 1-10",
+    "file": "session_log.csv",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "score": "number",
+        "reasoning": "string"
+      }
+    },
+    "memory_id": "security_incident"
+  },
+  {
+    "agent": "pattern_detector",
+    "content": "Identify suspicious patterns in the session based on the risk assessment",
+    "readFrom": ["risk_analyzer"],
+    "memory_id": "security_incident",
+    "output_format": {
+      "type": "json",
