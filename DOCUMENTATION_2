@@ -1,0 +1,230 @@
+# Enhanced Multi-Agent System Documentation
+## Part 2: Core Components and API Reference
+
+## Agent Class
+
+The `Agent` class serves as the foundation for all agents in the system.
+
+### Constructor
+
+```python
+def __init__(self, name: str, model: str = CONFIG["default_model"], 
+             memory_manager: Optional[MemoryManager] = None):
+```
+
+**Parameters:**
+- `name` (str): Identifier for the agent
+- `model` (str): Language model to use (defaults to configuration)
+- `memory_manager` (Optional[MemoryManager]): Reference to memory system
+
+### Key Methods
+
+#### Create API Call
+
+```python
+def create_api_call(self, content: str, file_param: Optional[str] = None, 
+                    read_from: List[str] = None, memory_id: Optional[str] = None,
+                    conversation_context: bool = False) -> str:
+```
+
+Constructs the API call to the language model with:
+- Content to send to the model
+- Optional file content to include
+- References to other agents' outputs
+- Memory retrieval based on memory_id
+- Conversation history inclusion
+
+#### Execute
+
+```python
+def execute(self, content: str, file_param: Optional[str] = None, 
+            read_from: List[str] = None, memory_id: Optional[str] = None,
+            output_format: Optional[Dict[str, Any]] = None) -> Any:
+```
+
+Executes the agent by:
+1. Creating the API call
+2. Running it via subprocess
+3. Parsing the response
+4. Storing the result in memory if requested
+5. Handling structured output formats
+6. Updating the agent's history
+
+#### Get Output
+
+```python
+def get_output(self) -> Optional[str]:
+```
+
+Retrieves the latest output from the agent's output file.
+
+## DynamicAgent Class
+
+The `DynamicAgent` class extends the base `Agent` with decision-making capabilities.
+
+### Key Methods
+
+#### Execute Dynamic
+
+```python
+def execute_dynamic(self, initial_prompt: str, file_param: Optional[str] = None,
+                    read_from: List[str] = None, memory_id: Optional[str] = None,
+                    output_format: Optional[Dict[str, Any]] = None,
+                    actions: Dict[str, Dict[str, Any]] = None) -> Tuple[str, Any]:
+```
+
+This method:
+1. Runs the initial prompt to get a decision
+2. Extracts an action key from the decision
+3. Selects the next agent based on the action
+4. Executes the next agent with the appropriate parameters
+5. Returns both the action key and the final result
+
+## AgentSystem Class
+
+The `AgentSystem` coordinates multiple agents and executes workflows.
+
+### Constructor
+
+```python
+def __init__(self):
+```
+
+Initializes an empty agent dictionary and creates a MemoryManager instance.
+
+### Key Methods
+
+#### Create Agent
+
+```python
+def create_agent(self, name: str, model: str = CONFIG["default_model"],
+                 agent_type: str = "standard") -> Agent:
+```
+
+Creates a new agent of the specified type and adds it to the system.
+
+#### Get Agent
+
+```python
+def get_agent(self, name: str) -> Optional[Agent]:
+```
+
+Retrieves an agent by name from the system.
+
+#### Execute Sequence
+
+```python
+def execute_sequence(self, sequence: List[Dict[str, Any]]) -> Dict[str, Any]:
+```
+
+Executes a workflow sequence by:
+1. Processing each step in order
+2. Creating agents as needed
+3. Handling dynamic agents differently from standard agents
+4. Collecting and returning results from all agents
+
+## MemoryManager Class
+
+The `MemoryManager` handles persistent storage across agent runs.
+
+### Constructor
+
+```python
+def __init__(self, db_path: str = CONFIG["memory_db"]):
+```
+
+Initializes the SQLite database connection.
+
+### Key Methods
+
+#### Store Memory
+
+```python
+def store_memory(self, agent: str, content: Any, memory_id: str = None, 
+                 metadata: Dict[str, Any] = None) -> str:
+```
+
+Stores a memory entry in the database with:
+- Agent identifier
+- Content (could be text or structured data)
+- Memory ID for categorization
+- Metadata for additional context
+
+#### Get Memories
+
+```python
+def get_memories(self, memory_id: str = None, agent: str = None, 
+                 limit: int = 100) -> List[Dict[str, Any]]:
+```
+
+Retrieves memories based on filters:
+- Memory ID for specific contexts
+- Agent name for agent-specific memories
+- Limit to control the number of results
+
+#### Store Conversation
+
+```python
+def store_conversation(self, messages: List[Dict[str, Any]], memory_id: str = None) -> str:
+```
+
+Stores a conversation context with a list of messages.
+
+#### Get Conversation
+
+```python
+def get_conversation(self, memory_id: str = None) -> List[Dict[str, Any]]:
+```
+
+Retrieves the most recent conversation for a specific memory ID.
+
+## OutputParser Class
+
+The `OutputParser` handles structured output formats and validation.
+
+### Static Methods
+
+#### Parse JSON
+
+```python
+@staticmethod
+def parse_json(text: str) -> Dict[str, Any]:
+```
+
+Extracts JSON from text, handling both embedded JSON and entire JSON responses.
+
+#### Validate Schema
+
+```python
+@staticmethod
+def validate_schema(data: Dict[str, Any], schema: Dict[str, Any]) -> Tuple[bool, str]:
+```
+
+Validates JSON data against a schema, returning success status and message.
+
+#### Extract Format
+
+```python
+@staticmethod
+def extract_format(text: str, output_format: Dict[str, Any]) -> Any:
+```
+
+Extracts and validates output according to the specified format:
+- JSON with schema validation
+- Markdown with section validation
+- Plain text as fallback
+
+## Command-Line Interface
+
+The `AgentShell` class provides an interactive CLI for the agent system.
+
+### Key Commands
+
+- `create agent_name [model] [type]`: Create a new agent
+- `run agent_name prompt [file] file.csv [memory:id] [format:json|markdown]`: Run an agent
+- `workflow workflow_file.json`: Execute a workflow from a JSON file
+- `memory get memory_id [agent]`: Access stored memories
+- `memory list [memory_id]`: List available memories
+- `get agent_name`: Get the output of a specific agent
+- `list`: List all available agents
+- `exit`: Exit the program
