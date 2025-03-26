@@ -1,0 +1,140 @@
+# Enhanced Multi-Agent System Documentation
+## Part 1: Overview and Architecture
+
+## Introduction
+
+The Enhanced Multi-Agent System is a modular framework designed to orchestrate AI language model agents with persistent memory, dynamic behavior, and structured output parsing. This system allows for the creation of complex workflows where multiple agents can collaborate, share information, and make decisions based on each other's outputs.
+
+## Core Concepts
+
+### Agent-Based Architecture
+
+At the heart of the system is an agent-based architecture where each agent:
+- Interacts with language model APIs
+- Maintains its own state and history
+- Can reference outputs from other agents
+- Can store and retrieve memories from a centralized database
+
+### Workflow Orchestration
+
+The system allows for two primary modes of operation:
+1. **Interactive Mode**: Command-line interface for direct interaction
+2. **Workflow Mode**: Predefined JSON workflows executed in sequence
+
+### Memory Persistence
+
+All agents share access to a centralized memory system that:
+- Persists across sessions
+- Stores past agent outputs with metadata
+- Maintains conversation history
+- Automatically retrieves relevant context
+
+### Dynamic Decision Making
+
+The system supports dynamic workflows through specialized agents that:
+- Can choose between multiple potential actions
+- Trigger different follow-up agents based on decisions
+- Allow for branching workflow paths
+
+## System Architecture
+
+### Component Overview
+
+```
+┌─────────────────┐        ┌───────────────┐
+│  Agent System   │◄──────►│ Memory Manager│
+└───────┬─────────┘        └───────────────┘
+        │                     ▲
+        ▼                     │
+┌─────────────────┐        ┌──┴──────────┐
+│ Standard Agents ├───────►│ OutputParser│
+└─────────────────┘        └─────────────┘
+        │
+        ▼
+┌─────────────────┐
+│ Dynamic Agents  │
+└─────────────────┘
+```
+
+The system is composed of the following key components:
+
+1. **AgentSystem**: The central orchestration system that manages agent creation and workflow execution.
+
+2. **MemoryManager**: Handles persistent storage of agent outputs and conversation history using SQLite.
+
+3. **Agent**: The base agent class that handles API calls to language models and maintains state.
+
+4. **DynamicAgent**: Extends the base Agent with decision-making capabilities.
+
+5. **OutputParser**: Processes structured outputs according to specified formats and validates against schemas.
+
+6. **CLI Interface**: Provides interactive command-line access to the agent system.
+
+### File Structure
+
+```
+enhanced_agents/
+├── config.py              # Configuration settings
+├── memory_manager.py      # Memory persistence system
+├── output_parser.py       # Structured output parsing
+├── agent.py               # Base agent implementation
+├── dynamic_agent.py       # Dynamic decision-making agent
+├── agent_system.py        # Agent orchestration system
+├── cli.py                 # Command-line interface
+├── main.py                # Main application entry point
+└── enhanced_workflow.json # Example workflow configuration
+```
+
+## Configuration
+
+The system's configuration is defined in `config.py`:
+
+```python
+CONFIG = {
+    "output_dir": "./agent_outputs",    # Directory for agent output files
+    "memory_dir": "./agent_memory",     # Directory for memory storage
+    "default_model": "deepseek/deepseek-chat:free", # Default LLM
+    "api_key": "sk-or-v1-...",         # API key for OpenRouter
+    "endpoint": "https://openrouter.ai/api/v1/chat/completions", # API endpoint
+    "memory_db": "agent_memory.db"      # SQLite database file
+}
+```
+
+### API Integration
+
+The system currently uses OpenRouter as its API endpoint, which allows access to various language models. The default model is set to "deepseek/deepseek-chat:free" but can be changed for each agent.
+
+### Data Storage
+
+Agent outputs are stored in:
+- Text files in the `output_dir` directory (for immediate access)
+- SQLite database in the `memory_db` file (for persistent memory)
+
+## Installation and Setup
+
+### Prerequisites
+
+- Python 3.7+
+- `jsonschema` package
+
+### Installation Steps
+
+```bash
+# Clone the repository
+git clone https://github.com/RahulModak74/enhanced_agents.git
+cd enhanced_agents
+
+# Install dependencies
+pip install jsonschema
+
+# Make the main script executable
+chmod +x main.py
+```
+
+### Configuration Setup
+
+Before running the system, you should:
+
+1. Update the API key in `config.py` with your own OpenRouter API key
+2. Customize the default model if needed
+3. Ensure the output and memory directories exist (the system will create them if not)
