@@ -6,7 +6,7 @@ We have designed it on lines of langchain. So you can quickly get the hang of ag
 
 Features: Memory, Dynamic Agents, Strcutured Output parsing
 
-To Add:Tool integration, streaming, chain types & reasoning patterns, streaming, vectorization and embeddings.
+To Add(Deliberately Ommited for simplicity):Tool integration, streaming, chain types & reasoning patterns, streaming, vectorization and embeddings.
 
 Sample Marketing Agentic Workflow: (First YOU NEED TO GET free API token  for DeepSeek on operouter and add it in config.py)
 
