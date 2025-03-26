@@ -187,7 +187,7 @@ For routine use cases, this modular multi-agent system achieves approximately 70
 
 1. **Tool Integration (40% parity)** - No built-in integration with external tools, APIs, or services. LangChain provides dozens of pre-built tool connections.
 
-2. **Vector Storage (0% parity)** - No vector embedding or semantic search capabilities, which are essential for RAG workflows in LangChain.
+2. **Vector Storage (0% parity)** - No vector embedding or semantic search capabilities, which are essential for RAG workflows in LangChain. But we have incldued SQLite instead so anyone can understand the underlying working of Agents. Switching to Vector database is easy once the concepts are clear. Yet ready for production use cases in target zone.
 
 3. **Advanced Chain Types (30% parity)** - Missing specialized patterns like MapReduce, summarization chains, or extraction chains.
 
