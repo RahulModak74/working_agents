@@ -4,7 +4,7 @@ A modular system for orchestrating AI agents with persistent memory, dynamic beh
 
 We have designed it on lines of langchain. So you can quickly get the hang of agentic work and test withn days and upgrade to LangChain step by step.
 
-Features: Memory, Dynamic Agents, Strcutured Output parsing
+Features: Memory, Dynamic Agents, Structured Output parsing
 
 To Add(Deliberately Ommited for simplicity):Tool integration, streaming, chain types & reasoning patterns, streaming, vectorization and embeddings.
 
@@ -187,7 +187,7 @@ For routine use cases, this modular multi-agent system achieves approximately 70
 
 1. **Tool Integration (40% parity)** - No built-in integration with external tools, APIs, or services. LangChain provides dozens of pre-built tool connections.
 
-2. **Vector Storage (0% parity)** - No vector embedding or semantic search capabilities, which are essential for RAG workflows in LangChain. But we have incldued SQLite instead so anyone can understand the underlying working of Agents. Switching to Vector database is easy once the concepts are clear. Yet ready for production use cases in target zone.
+2. **Vector Storage (0% parity)** - No vector embedding or semantic search capabilities, which are essential for RAG workflows in LangChain. But we have included SQLite instead so anyone can understand the underlying working of Agents. Switching to Vector database is easy once the concepts are clear. Yet ready for production use cases in target zone.
 
 3. **Advanced Chain Types (30% parity)** - Missing specialized patterns like MapReduce, summarization chains, or extraction chains.
 
