@@ -1,0 +1,338 @@
+[
+  {
+    "agent": "session_analyzer",
+    "content": "Analyze the session data in journey.csv to identify potential security risks or suspicious patterns. Focus on unusual IP addresses, user agents, endpoint access patterns, HTTP methods, status codes, and response times. Identify the top 5 most suspicious sessions.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "file": "journey.csv",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "total_sessions": "number",
+        "analyzed_timeframe": "string",
+        "suspicious_sessions": [
+          {
+            "session_id": "string",
+            "risk_score": "number",
+            "suspicious_indicators": ["string"],
+            "ip_address": "string",
+            "user_agent": "string",
+            "accessed_endpoints": ["string"],
+            "unusual_patterns": ["string"]
+          }
+        ],
+        "unusual_ip_activity": [
+          {
+            "ip_address": "string",
+            "session_count": "number",
+            "unique_user_ids": "number",
+            "endpoints_accessed": ["string"],
+            "suspicion_factors": ["string"]
+          }
+        ],
+        "endpoint_risk_analysis": [
+          {
+            "endpoint": "string",
+            "access_count": "number",
+            "unusual_methods": ["string"],
+            "error_rate": "number",
+            "average_response_time": "number",
+            "risk_level": "string"
+          }
+        ],
+        "temporal_patterns": {
+          "peak_activity_times": ["string"],
+          "unusual_timing_sessions": ["string"]
+        }
+      }
+    },
+    "memory_id": "security_analysis"
+  },
+  {
+    "agent": "user_behavior_analyzer",
+    "content": "Analyze user behavior patterns in the journey.csv data. Identify unusual user actions, session characteristics, and potential account compromise indicators. Look for deviations from normal usage patterns that might indicate security concerns.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "readFrom": ["session_analyzer"],
+    "memory_id": "security_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "user_risk_profiles": [
+          {
+            "user_id": "string",
+            "session_count": "number",
+            "typical_endpoints": ["string"],
+            "unusual_actions": ["string"],
+            "risk_indicators": ["string"],
+            "overall_risk_score": "number"
+          }
+        ],
+        "behavioral_anomalies": [
+          {
+            "anomaly_type": "string",
+            "affected_users": ["string"],
+            "affected_sessions": ["string"],
+            "significance": "string",
+            "potential_explanation": "string"
+          }
+        ],
+        "credential_compromise_indicators": [
+          {
+            "indicator": "string",
+            "affected_user_ids": ["string"],
+            "sessions_involved": ["string"],
+            "confidence": "number"
+          }
+        ],
+        "session_progression_analysis": {
+          "normal_progression_patterns": ["string"],
+          "abnormal_progressions": ["string"],
+          "potential_automated_sessions": ["string"]
+        }
+      }
+    }
+  },
+  {
+    "agent": "technical_pattern_analyzer",
+    "content": "Perform technical analysis on the HTTP characteristics, response codes, timing patterns, and endpoint usage in the journey.csv data. Identify potential security issues such as probing, exploitation attempts, or technical anomalies that might indicate security concerns.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "readFrom": ["session_analyzer"],
+    "memory_id": "security_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "http_method_anomalies": [
+          {
+            "endpoint": "string",
+            "expected_methods": ["string"],
+            "unusual_methods": ["string"],
+            "sessions_involved": ["string"],
+            "potential_concerns": "string"
+          }
+        ],
+        "status_code_patterns": [
+          {
+            "status_code": "number",
+            "frequency": "number",
+            "associated_endpoints": ["string"],
+            "associated_sessions": ["string"],
+            "security_implication": "string"
+          }
+        ],
+        "timing_analysis": {
+          "average_response_times": {
+            "overall": "number",
+            "by_endpoint": [
+              {
+                "endpoint": "string",
+                "avg_time": "number"
+              }
+            ]
+          },
+          "timing_anomalies": [
+            {
+              "session_id": "string",
+              "endpoint": "string",
+              "response_time": "number",
+              "deviation_factor": "number",
+              "potential_cause": "string"
+            }
+          ]
+        },
+        "data_transfer_analysis": [
+          {
+            "endpoint": "string",
+            "avg_bytes": "number",
+            "unusual_transfers": [
+              {
+                "session_id": "string",
+                "bytes_sent": "number",
+                "deviation_factor": "number"
+              }
+            ],
+            "security_concern": "string"
+          }
+        ],
+        "potential_attack_patterns": [
+          {
+            "pattern_type": "string",
+            "matching_sessions": ["string"],
+            "indicators": ["string"],
+            "confidence": "number"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "threat_correlated_analyzer",
+    "content": "Based on the previous analyses, identify potential security threats in the journey.csv data. Correlate findings to detect coordinated activities, potential attack campaigns, or systematic security issues. Consider both technical indicators and user behavior patterns.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "readFrom": ["session_analyzer", "user_behavior_analyzer", "technical_pattern_analyzer"],
+    "memory_id": "security_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "identified_threats": [
+          {
+            "threat_type": "string",
+            "sessions_involved": ["string"],
+            "users_affected": ["string"],
+            "technical_indicators": ["string"],
+            "behavioral_indicators": ["string"],
+            "severity": "number",
+            "confidence": "number"
+          }
+        ],
+        "potential_campaigns": [
+          {
+            "campaign_id": "string",
+            "related_sessions": ["string"],
+            "common_characteristics": ["string"],
+            "timeline": "string",
+            "probable_intent": "string",
+            "sophistication_level": "string"
+          }
+        ],
+        "security_weaknesses_identified": [
+          {
+            "weakness": "string",
+            "evidence": ["string"],
+            "exploitability": "number",
+            "recommended_controls": ["string"]
+          }
+        ],
+        "false_positive_assessment": {
+          "likely_false_positives": ["string"],
+          "confidence": "number",
+          "justification": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on all security analyses of the journey.csv data, determine the most appropriate security response. Choose from: 'block_traffic', 'enhance_monitoring', 'investigate_users', 'system_patching', or 'false_alarm'.\n\nYour decision should consider the severity of threats, confidence in the analysis, affected users/systems, and potential business impact.\n\nYour response must be a valid JSON object with the structure shown in the schema. The 'response_action' field must be exactly one of the five options listed above.",
+    "readFrom": ["session_analyzer", "user_behavior_analyzer", "technical_pattern_analyzer", "threat_correlated_analyzer"],
+    "memory_id": "security_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "response_action": "string",
+        "justification": "string",
+        "confidence": "number",
+        "urgency": "string",
+        "primary_targets": ["string"]
+      }
+    },
+    "actions": {
+      "block_traffic": {
+        "agent": "traffic_blocker",
+        "content": "Develop a specific traffic blocking strategy based on the security analysis. Include IP addresses to block, user agents to restrict, rate limiting recommendations, and endpoint access restrictions. Provide detailed, actionable rules that could be implemented immediately.",
+        "readFrom": ["session_analyzer", "technical_pattern_analyzer", "threat_correlated_analyzer"]
+      },
+      "enhance_monitoring": {
+        "agent": "monitoring_enhancer",
+        "content": "Create a detailed plan to enhance security monitoring based on the identified patterns. Include specific events to monitor, detection rules to implement, alerting thresholds, and data collection requirements. Focus on providing early warning for the specific threats identified.",
+        "readFrom": ["session_analyzer", "user_behavior_analyzer", "technical_pattern_analyzer"]
+      },
+      "investigate_users": {
+        "agent": "user_investigator",
+        "content": "Develop a comprehensive user investigation plan targeting the suspicious user behaviors identified. Include specific users to investigate, evidence to collect, interview questions, and account security measures to implement immediately. Focus on determining if accounts have been compromised.",
+        "readFrom": ["user_behavior_analyzer", "threat_correlated_analyzer"]
+      },
+      "system_patching": {
+        "agent": "patching_advisor",
+        "content": "Create a prioritized system patching and security hardening plan based on the vulnerabilities exploited or attempted in the sessions. Include specific components to patch, configuration changes, security controls to implement, and validation testing procedures.",
+        "readFrom": ["technical_pattern_analyzer", "threat_correlated_analyzer"]
+      },
+      "false_alarm": {
+        "agent": "detection_tuner",
+        "content": "Develop a plan to improve detection accuracy and reduce false positives. Include specific adjustments to detection rules, thresholds to modify, additional context to collect, and validation procedures to ensure legitimate activity isn't flagged in the future.",
+        "readFrom": ["session_analyzer", "user_behavior_analyzer", "threat_correlated_analyzer"]
+      }
+    }
+  },
+  {
+    "agent": "business_impact_analyzer",
+    "content": "Assess the business impact of the security issues identified and the recommended response action. Consider financial, operational, reputational, and compliance impacts. Quantify risks where possible and provide a risk-based justification for the selected course of action.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "readFrom": ["dynamic_agent", "threat_correlated_analyzer"],
+    "memory_id": "security_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "impact_assessment": {
+          "financial_impact": {
+            "estimated_range": "string",
+            "confidence": "number",
+            "contributing_factors": ["string"]
+          },
+          "operational_impact": {
+            "affected_systems": ["string"],
+            "estimated_downtime": "string",
+            "service_degradation": "string"
+          },
+          "reputational_impact": {
+            "severity": "string",
+            "affected_stakeholders": ["string"],
+            "potential_media_exposure": "string"
+          },
+          "compliance_impact": {
+            "regulations_affected": ["string"],
+            "reporting_requirements": ["string"],
+            "potential_penalties": "string"
+          }
+        },
+        "risk_assessment": {
+          "inherent_risk": "number",
+          "residual_risk_with_action": "number",
+          "risk_reduction_percentage": "number"
+        },
+        "cost_benefit_analysis": {
+          "implementation_costs": "string",
+          "risk_reduction_value": "string",
+          "roi_assessment": "string"
+        },
+        "action_justification": {
+          "primary_justification": "string",
+          "alternatives_considered": ["string"],
+          "decision_factors": ["string"]
+        }
+      }
+    }
+  },
+  {
+    "agent": "executive_reporter",
+    "content": "Create a comprehensive executive security report based on all analyses of the journey.csv data. Summarize the security situation, key findings, recommended actions, business impact, and next steps in a format suitable for senior management.\n\nYour report should provide clear, actionable insights while balancing technical details with business considerations.\n\nFormat your response as a structured markdown document with the required sections.",
+    "readFrom": ["session_analyzer", "user_behavior_analyzer", "technical_pattern_analyzer", "threat_correlated_analyzer", "dynamic_agent", "business_impact_analyzer", "*"],
+    "memory_id": "security_analysis",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Security Situation Overview",
+        "Key Findings",
+        "Recommended Response",
+        "Business Impact",
+        "Implementation Plan",
+        "Success Metrics",
+        "Appendix: Technical Details"
+      ]
+    }
+  },
+  {
+    "agent": "remediation_planner",
+    "content": "Develop a detailed security remediation plan based on all previous analyses. Include specific technical actions, responsible roles, timeline, required resources, and validation methods. The plan should address both immediate response needs and longer-term security improvements.\n\nFormat your response as a structured markdown document with the required sections.",
+    "readFrom": ["dynamic_agent", "business_impact_analyzer", "executive_reporter", "*"],
+    "memory_id": "security_analysis",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Remediation Plan Overview",
+        "Immediate Actions (0-48 hours)",
+        "Short-term Improvements (1-2 weeks)",
+        "Long-term Security Enhancements",
+        "Resource Requirements",
+        "Implementation Timeline",
+        "Testing and Validation Procedures",
+        "Success Criteria"
+      ]
+    }
+  }
+]
