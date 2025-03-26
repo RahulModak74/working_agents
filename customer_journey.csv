@@ -1,0 +1,26 @@
+customer_id,timestamp,channel,device,journey_stage,action,time_spent,conversion,cart_value,segment,error_encountered,session_id,return_visitor,previous_purchases,items_viewed,search_terms,page_load_time
+1001,2023-01-01T09:15:23,organic_search,mobile,landing,page_view,45,0,0,new_visitor,none,s1001-1,0,0,1,winter boots,2.3
+1001,2023-01-01T09:16:08,organic_search,mobile,product_browse,product_view,78,0,0,new_visitor,none,s1001-1,0,0,3,winter boots,1.8
+1001,2023-01-01T09:17:26,organic_search,mobile,product_detail,add_to_cart,32,0,79.99,new_visitor,none,s1001-1,0,0,1,winter boots,1.5
+1001,2023-01-01T09:17:58,organic_search,mobile,cart,begin_checkout,41,0,79.99,new_visitor,payment_error,s1001-1,0,0,0,,2.1
+1001,2023-01-01T09:18:39,organic_search,mobile,cart,exit,23,0,79.99,new_visitor,none,s1001-1,0,0,0,,1.9
+1001,2023-01-03T18:42:51,email,mobile,landing,page_view,28,0,0,new_visitor,none,s1001-2,1,0,1,winter boots,2.1
+1001,2023-01-03T18:43:19,email,mobile,product_browse,product_view,62,0,0,new_visitor,none,s1001-2,1,0,2,winter boots,1.7
+1001,2023-01-03T18:44:21,email,mobile,product_detail,add_to_cart,29,0,79.99,new_visitor,none,s1001-2,1,0,1,winter boots,1.6
+1001,2023-01-03T18:44:50,email,mobile,cart,begin_checkout,35,0,79.99,new_visitor,none,s1001-2,1,0,0,,1.8
+1001,2023-01-03T18:45:25,email,mobile,checkout,purchase,47,1,79.99,new_visitor,none,s1001-2,1,0,0,,2.2
+1002,2023-01-01T10:37:42,direct,desktop,landing,page_view,32,0,0,returning,none,s1002-1,1,2,1,,1.2
+1002,2023-01-01T10:38:14,direct,desktop,product_browse,product_view,127,0,0,returning,none,s1002-1,1,2,8,outdoor jacket,1.1
+1002,2023-01-01T10:40:21,direct,desktop,product_detail,product_view,73,0,0,returning,none,s1002-1,1,2,1,outdoor jacket,1.3
+1002,2023-01-01T10:41:34,direct,desktop,product_detail,add_to_cart,18,0,149.99,returning,none,s1002-1,1,2,0,,1.0
+1002,2023-01-01T10:41:52,direct,desktop,cart,exit,45,0,149.99,returning,none,s1002-1,1,2,0,,1.2
+1003,2023-01-01T11:23:09,social_media,mobile,landing,page_view,19,0,0,new_visitor,none,s1003-1,0,0,1,,3.4
+1003,2023-01-01T11:23:28,social_media,mobile,exit,exit,0,0,0,new_visitor,none,s1003-1,0,0,0,,4.2
+1004,2023-01-01T12:05:36,paid_search,tablet,landing,page_view,41,0,0,high_intent,none,s1004-1,1,5,1,hiking shoes,1.6
+1004,2023-01-01T12:06:17,paid_search,tablet,product_browse,product_view,85,0,0,high_intent,none,s1004-1,1,5,4,hiking shoes,1.5
+1004,2023-01-01T12:07:42,paid_search,tablet,product_detail,add_to_cart,23,0,129.99,high_intent,none,s1004-1,1,5,1,hiking shoes,1.4
+1004,2023-01-01T12:08:05,paid_search,tablet,cart,view_cart,37,0,129.99,high_intent,none,s1004-1,1,5,0,,1.7
+1004,2023-01-01T12:08:42,paid_search,tablet,product_browse,product_view,56,0,129.99,high_intent,none,s1004-1,1,5,2,hiking socks,1.5
+1004,2023-01-01T12:09:38,paid_search,tablet,product_detail,add_to_cart,18,0,144.98,high_intent,none,s1004-1,1,5,1,hiking socks,1.3
+1004,2023-01-01T12:09:56,paid_search,tablet,cart,begin_checkout,42,0,144.98,high_intent,none,s1004-1,1,5,0,,1.6
+1004,2023-01-01T12:10:38,paid_search,tablet,checkout,purchase,63,1,144.98,high_intent,none,s1004-1,1,5,0,,1.8
