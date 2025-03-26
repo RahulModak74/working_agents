@@ -1,4 +1,4 @@
-# Enhanced Multi-Agent System
+# Enhanced Multi-Agent System (For Linux Operating System)
 
 A modular system for orchestrating AI agents with persistent memory, dynamic behavior, and structured output parsing. Extremely simple and inbuilt support for CyberSecurity.
 
