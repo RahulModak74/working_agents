@@ -6,7 +6,7 @@ We have designed it on lines of langchain. So you can quickly get the hang of ag
 
 Features: Memory, Dynamic Agents, Structured Output parsing
 
-To Add(Deliberately Ommited for simplicity):Tool integration, streaming, chain types & reasoning patterns, streaming, vectorization and embeddings. 
+To Add(Deliberately Ommited for simplicity, vector_db and sql,http tools are in COMPONENT directory of this project):Tool integration, streaming, chain types & reasoning patterns, streaming, vectorization and embeddings. 
 
 Power of our system can be seen from extremely_advanced_cyber_agentic_workflow.json file.. To design similarly long and complex agentic workflow in LangChain will take hundreds of lines of python code with complex chain compositions, custom callbacks, and error handling.
 
@@ -187,7 +187,7 @@ For routine use cases, this modular multi-agent system achieves approximately 70
 
 5. **Command Line Interface (90%)** - The CLI provides comparable usability to LangChain's basic interfaces.
 
-**What it's missing (Deliberate for simplicity):**
+**What it's missing ((Deliberately Ommited for simplicity, vector_db and sql,http tools are in COMPONENT directory of this project but they make it harder for freshers to understand):**
 
 1. **Tool Integration (40% parity)** - No built-in integration with external tools, APIs, or services. LangChain provides dozens of pre-built tool connections.
 
