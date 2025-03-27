@@ -34,9 +34,15 @@ How to try out: git clone https://github.com/RahulModak74/enhanced_agents.git
 python3 main.py --workflow enhanced_workflow.json (for cybersec)
 python3 main.py --workflow cust_jour_workflow.json (for marketing)
 
-Sometimes the Model doesnt give correct reading and we get json error then we can use special script..
+
+
+
+Sometimes  we get json error then we can use special script..
 
 python3 journey_workflow_runner.py cust_jour_workflow.json customer_journey.csv
+
+python3 cyber_workflow_runner.py extremely_advanced_cyber_agentic_workflow.json journey.csv
+
 
 ## Sophisticated Workflows with Simple Configuration
 
