@@ -21,7 +21,167 @@ os.makedirs(VECTOR_STORAGE, exist_ok=True)
 TOOL_REGISTRY = {}
 
 
-db
+class ToolManager:
+    """Manager class for all agent tools"""
+    
+    def __init__(self):
+        self.sql_tools: Dict[str, SQLTool] = {}
+        self.http_tools: Dict[str, HTTPTool] = {}
+        self.vector_dbs: Dict[str, VectorDB] = {}
+        self.tool_configs: Dict[str, Dict[str, Any]] = self._load_configs()
+    
+    def _load_configs(self) -> Dict[str, Dict[str, Any]]:
+        """Load tool configurations from config file"""
+        config_path = os.path.join(TOOLS_DIR, "tool_configs.json")
+        if os.path.exists(config_path):
+            try:
+                with open(config_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except json.JSONDecodeError:
+                print("Warning: Invalid tool configuration file")
+        return {}
+    
+    def _save_configs(self):
+        """Save tool configurations to file"""
+        config_path = os.path.join(TOOLS_DIR, "tool_configs.json")
+        with open(config_path, 'w', encoding='utf-8') as f:
+            json.dump(self.tool_configs, f, indent=2)
+    
+    def get_sql_tool(self, name: str = "default") -> SQLTool:
+        """Get or create an SQL tool instance"""
+        if name in self.sql_tools:
+            return self.sql_tools[name]
+        
+        # Create a new SQL tool
+        config = self.tool_configs.get("sql", {}).get(name, {})
+        db_path = config.get("db_path")
+        
+        sql_tool = get_sql_tool(db_path)
+        self.sql_tools[name] = sql_tool
+        
+        return sql_tool
+    
+    def create_sql_tool(self, name: str, db_path: str) -> SQLTool:
+        """Create a named SQL tool"""
+        sql_tool = get_sql_tool(db_path)
+        self.sql_tools[name] = sql_tool
+        
+        # Save configuration
+        if "sql" not in self.tool_configs:
+            self.tool_configs["sql"] = {}
+        
+        self.tool_configs["sql"][name] = {
+            "db_path": db_path
+        }
+        self._save_configs()
+        
+        return sql_tool
+    
+    def get_http_tool(self, name: str = "default") -> HTTPTool:
+        """Get or create an HTTP tool instance"""
+        if name in self.http_tools:
+            return self.http_tools[name]
+        
+        # Create a new HTTP tool
+        config = self.tool_configs.get("http", {}).get(name, {})
+        base_url = config.get("base_url")
+        headers = config.get("headers", {})
+        
+        http_tool = get_http_tool(base_url, headers)
+        
+        # Set additional config if available
+        if "auth" in config:
+            http_tool.set_auth(config["auth"]["username"], config["auth"]["password"])
+        
+        if "bearer_token" in config:
+            http_tool.set_bearer_token(config["bearer_token"])
+        
+        if "rate_limit" in config:
+            http_tool.set_rate_limit(config["rate_limit"])
+        
+        self.http_tools[name] = http_tool
+        return http_tool
+    
+    def create_http_tool(self, name: str, base_url: Optional[str] = None, 
+                         headers: Optional[Dict[str, str]] = None) -> HTTPTool:
+        """Create a named HTTP tool"""
+        http_tool = get_http_tool(base_url, headers)
+        self.http_tools[name] = http_tool
+        
+        # Save configuration
+        if "http" not in self.tool_configs:
+            self.tool_configs["http"] = {}
+        
+        self.tool_configs["http"][name] = {
+            "base_url": base_url,
+            "headers": headers or {}
+        }
+        self._save_configs()
+        
+        return http_tool
+    
+    def set_http_auth(self, name: str, username: str, password: str):
+        """Set authentication for an HTTP tool"""
+        http_tool = self.get_http_tool(name)
+        http_tool.set_auth(username, password)
+        
+        # Update configuration
+        if "http" not in self.tool_configs:
+            self.tool_configs["http"] = {}
+        
+        if name not in self.tool_configs["http"]:
+            self.tool_configs["http"][name] = {}
+        
+        self.tool_configs["http"][name]["auth"] = {
+            "username": username,
+            "password": password
+        }
+        self._save_configs()
+    
+    def set_http_token(self, name: str, token: str):
+        """Set bearer token for an HTTP tool"""
+        http_tool = self.get_http_tool(name)
+        http_tool.set_bearer_token(token)
+        
+        # Update configuration
+        if "http" not in self.tool_configs:
+            self.tool_configs["http"] = {}
+        
+        if name not in self.tool_configs["http"]:
+            self.tool_configs["http"][name] = {}
+        
+        self.tool_configs["http"][name]["bearer_token"] = token
+        self._save_configs()
+    
+    def get_vector_db(self, name: str = "default") -> VectorDB:
+        """Get or create a vector database instance"""
+        if name in self.vector_dbs:
+            return self.vector_dbs[name]
+        
+        # Check if this database exists on disk
+        db_path = os.path.join(VECTOR_STORAGE, name)
+        metadata_path = os.path.join(db_path, "metadata.pkl")
+        
+        if os.path.exists(metadata_path):
+            # Load existing database
+            vector_db = VectorDB.load(db_path)
+        else:
+            # Create a new database
+            config = self.tool_configs.get("vector_db", {}).get(name, {})
+            model_name = config.get("model_name", "all-MiniLM-L6-v2")
+            os.makedirs(db_path, exist_ok=True)
+            vector_db = get_vector_db(model_name, db_path)
+        
+        self.vector_dbs[name] = vector_db
+        return vector_db
+    
+    def create_vector_db(self, name: str, model_name: str = "all-MiniLM-L6-v2") -> VectorDB:
+        """Create a named vector database"""
+        db_path = os.path.join(VECTOR_STORAGE, name)
+        os.makedirs(db_path, exist_ok=True)
+        
+        vector_db = get_vector_db(model_name, db_path)
+        self.vector_dbs[name] = vector_db
         
         # Save configuration
         if "vector_db" not in self.tool_configs:
