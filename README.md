@@ -64,7 +64,10 @@ chmod +x main.py
 # Get a free API token for DeepSeek on openrouter and add it
 
 # Run a sample workflow
-python3 main.py --workflow cust_jour_workflow.json
+python3 main.py --workflow cust_jour_workflow.json customer_journey.csv
+
+python3 main.py --workflow extremely_advanced_cyber_agentic_workflow.json journey.csv
+
 
 Sometimes we get json error then we can use special script..
 
