@@ -76,10 +76,11 @@ The CLI has been extended with new commands for using tools:
 
 ## Tool Workflow Example
 
-You can run a workflow that uses tools with: (Pl copy simple_tool_runner.py to main directory and run from there)
+You can run a workflow that uses tools with: (Pl copy simple_tool_runner.py to main directory and run from there).. Also it will require setting up of various tools, the exact compelxity that main folder avoids by using SQLite and csv files and json workflows
 
 ```bash
 cd ..
+<<SETUP FAISS SQL DB etc and then>>
 python3 simple_tool_runner.py COMPONENT/tool_workflow_example.json 
 ```
 
