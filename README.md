@@ -28,23 +28,12 @@ While frameworks like LangChain, LangGraph, and Semantic Kernel require hundreds
 - **Markdown section validation** for document outputs
 - **Automatic extraction** and structuring of agent responses
 
-How to try out: git clone https://github.com/RahulModak74/enhanced_agents.git
- cd enhanced_agents
- pip install jsonschema (U need to get API key from openrouter and paste it in config..(https://openrouter.ai/deepseek/deepseek-r1:free)
-python3 main.py --workflow enhanced_workflow.json (for cybersec)
-python3 main.py --workflow cust_jour_workflow.json (for marketing)
 
 
 
 
-Sometimes  we get json error then we can use special script..
 
-python3 journey_workflow_runner.py cust_jour_workflow.json customer_journey.csv
-
-python3 cyber_workflow_runner.py extremely_advanced_cyber_agentic_workflow.json journey.csv
-
-
-## Sophisticated Workflows with Simple Configuration
+# Sophisticated Workflows with Simple Configuration
 
 The power of this system is best demonstrated by the included `extremely_advanced_cyber_agentic_workflow.json`, which implements a comprehensive security analysis pipeline with:
 
@@ -76,6 +65,12 @@ chmod +x main.py
 
 # Run a sample workflow
 python3 main.py --workflow cust_jour_workflow.json
+
+Sometimes we get json error then we can use special script..
+
+python3 journey_workflow_runner.py cust_jour_workflow.json customer_journey.csv
+
+python3 cyber_workflow_runner.py extremely_advanced_cyber_agentic_workflow.json journey.csv
 ```
 
 ## Usage Options
