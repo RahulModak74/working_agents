@@ -76,10 +76,11 @@ The CLI has been extended with new commands for using tools:
 
 ## Tool Workflow Example
 
-You can run a workflow that uses tools with:
+You can run a workflow that uses tools with: (Pl copy simple_tool_runner.py to main directory and run from there)
 
 ```bash
-python main.py --tool-workflow tool_workflow_example.json
+cd ..
+python3 simple_tool_runner.py COMPONENT/tool_workflow_example.json 
 ```
 
 ## Creating Custom Tool Configurations
