@@ -205,6 +205,56 @@ This system achieves approximately 70-75% feature parity with LangChain's agent 
 
 For routine agent orchestration where you primarily need agents to work together, share context, make decisions, and maintain state, this system handles most use cases with dramatically simpler configuration than alternatives.
 
+## Advanced Component Example: Customer Journey Analysis
+
+Our COMPONENT directory includes advanced tools that perfectly complement the core system when needed. The following example demonstrates how these tools work together in a complete customer journey analysis workflow:
+
+```json
+[
+  {
+    "agent": "journey_planner",
+    "content": "Analyze the customer_journey.csv file and create a detailed plan...",
+    "file": "customer_journey.csv",
+    "tools": ["planning:create_plan", "planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "data_overview": "string",
+        "analysis_plan": {
+          "goal": "string",
+          "subtasks": ["string"]
+        },
+        "key_metrics_to_track": ["string"],
+        "reasoning": "string"
+      }
+    },
+    "memory_id": "journey_analysis"
+  },
+  // Additional agents in the workflow...
+]
+```
+
+This workflow demonstrates how:
+
+Planning tools provide structured reasoning and task planning
+SQL tools analyze structured customer data directly
+Memory management shares insights between specialized agents
+Dynamic routing selects optimization strategies based on analysis
+
+While other frameworks would require:
+
+Complex vector embedding setup for memory
+Custom Python code for each analysis step
+Specialized callbacks and error handling
+Chain composition code for agent interaction
+
+Our system accomplishes all of this with declarative JSON configuration.
+The complete workflow includes specialized agents for journey analysis, segment analysis, friction identification, optimization strategy, dynamic decision-making, ROI calculation, and executive reporting - all connected through a simple, readable JSON configuration file.
+
+You can run this workflow with:
+python3 main.py --tool-workflow customer_journey_planning_workflow.json
+This demonstrates the power of our approach - handling complex multi-agent workflows without sacrificing simplicity.
+
 ## License
 
 SSPL
