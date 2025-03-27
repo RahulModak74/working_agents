@@ -5,6 +5,7 @@ This extension adds powerful tools capabilities to the Enhanced Multi-Agent Syst
 1. **SQL Database Tools**: Query and manipulate SQL databases
 2. **HTTP/REST API Tools**: Make requests to external APIs and web services
 3. **Vector Database Tools**: Create semantic search capabilities using embeddings
+4. **Planning tools** - Chain of Thought, ReAct (Reasoning + Acting)
 
 ## Installation
 
