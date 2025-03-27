@@ -74,6 +74,11 @@ Sometimes we get json error then we can use special script..
 python3 journey_workflow_runner.py cust_jour_workflow.json customer_journey.csv
 
 python3 cyber_workflow_runner.py extremely_advanced_cyber_agentic_workflow.json journey.csv
+
+Above main file is for cybersec and marketing, but there is also a universal_main.py that works with any dataset.
+
+python3 universal_main.py --workflow extremely_advanced_cyber_agentic_workflow.json journey.csv
+
 ```
 
 ## Usage Options
