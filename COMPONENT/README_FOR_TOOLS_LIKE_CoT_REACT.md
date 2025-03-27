@@ -116,15 +116,6 @@ Even when organizations have unstructured data, the first step is often to conve
 
 The `customer_journey_planning_workflow.json` example demonstrates how complex analysis can be performed on structured customer data using SQL-based tools and planning capabilities, without requiring vector databases.
 
-## Usage
-
-```bash
-# Run the customer journey analysis workflow
-python main.py --tool-workflow customer_journey_planning_workflow.json
-
-# Run the general planning example
-python main.py --tool-workflow planning_workflow_example.json
-```
 
 ## Conclusion: Simplicity Without Sacrificing Power
 
