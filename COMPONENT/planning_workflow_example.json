@@ -1,0 +1,167 @@
+[
+  {
+    "agent": "task_planner",
+    "content": "Analyze the given problem and create a detailed plan to solve it. Break down the problem into logical steps, identify key information needed, and determine the sequence of steps to reach the solution.\n\nProblem: A retail company needs to identify the most profitable product categories based on their sales data, understand customer buying patterns, and develop a targeted marketing strategy.",
+    "tools": ["planning:create_plan", "planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "problem_analysis": "string",
+        "plan": {
+          "goal": "string",
+          "subtasks": ["string"]
+        },
+        "reasoning": "string"
+      }
+    },
+    "memory_id": "retail_analysis"
+  },
+  {
+    "agent": "data_analyst",
+    "content": "Based on the plan created by the task_planner, perform the first steps of data analysis. For this example, we'll simulate analyzing sales data to identify profitable product categories.\n\nUse the chain-of-thought approach to walk through your analysis step by step.",
+    "readFrom": ["task_planner"],
+    "tools": ["planning:chain_of_thought", "sql:query", "planning:execute_subtask"],
+    "memory_id": "retail_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "analysis_steps": ["string"],
+        "key_findings": ["string"],
+        "profitable_categories": [
+          {
+            "category": "string",
+            "profit_margin": "number",
+            "total_revenue": "number",
+            "contributing_factors": ["string"]
+          }
+        ],
+        "subtask_completion": {
+          "subtask_index": "number",
+          "status": "string",
+          "result_summary": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "customer_behavior_analyst",
+    "content": "Based on the plan created by the task_planner and the data analysis from the data_analyst, analyze customer buying patterns. Focus on identifying segments, purchase frequency, and correlations between customer attributes and buying behavior.\n\nUse the ReAct approach (Reasoning + Acting) to explore the data and draw insights.",
+    "readFrom": ["task_planner", "data_analyst"],
+    "tools": ["planning:react", "planning:parse_react", "sql:query", "vector_db:search", "planning:execute_subtask"],
+    "memory_id": "retail_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "customer_segments": [
+          {
+            "segment_name": "string",
+            "characteristics": ["string"],
+            "buying_patterns": ["string"],
+            "preferred_categories": ["string"],
+            "size_percentage": "number"
+          }
+        ],
+        "purchase_frequency": {
+          "average_days_between_purchases": "number",
+          "frequency_by_segment": ["string"]
+        },
+        "key_correlations": ["string"],
+        "subtask_completion": {
+          "subtask_index": "number",
+          "status": "string",
+          "result_summary": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "marketing_strategist",
+    "content": "Based on all previous analyses, develop a targeted marketing strategy for the retail company. Consider the profitable product categories and customer buying patterns identified earlier.\n\nUse structured planning to create actionable marketing recommendations.",
+    "readFrom": ["task_planner", "data_analyst", "customer_behavior_analyst"],
+    "tools": ["planning:create_plan", "planning:execute_subtask", "planning:get_summary"],
+    "memory_id": "retail_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "marketing_strategy": {
+          "overall_approach": "string",
+          "target_segments": ["string"],
+          "key_messages": ["string"],
+          "channel_recommendations": ["string"],
+          "timing_recommendations": "string"
+        },
+        "segment_specific_strategies": [
+          {
+            "segment": "string",
+            "recommended_products": ["string"],
+            "messaging_approach": "string",
+            "expected_outcomes": ["string"]
+          }
+        ],
+        "implementation_timeline": ["string"],
+        "success_metrics": ["string"],
+        "subtask_completion": {
+          "subtask_index": "number",
+          "status": "string",
+          "result_summary": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on all previous analyses and recommendations, determine the next step for the retail company. Choose from: 'implement_strategy', 'gather_more_data', or 'refine_strategy'.\n\nYour decision should be based on the comprehensiveness of the analysis, the clarity of the recommendations, and any gaps or uncertainties identified.",
+    "readFrom": ["task_planner", "data_analyst", "customer_behavior_analyst", "marketing_strategist"],
+    "tools": ["planning:get_summary"],
+    "memory_id": "retail_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "action": "string",
+        "reasoning": "string",
+        "confidence": "number",
+        "identified_gaps": ["string"]
+      }
+    },
+    "actions": {
+      "implement_strategy": {
+        "agent": "implementation_planner",
+        "content": "Create a detailed implementation plan for the marketing strategy. Include specific actions, responsibilities, timeline, budget allocation, and success metrics.",
+        "readFrom": ["marketing_strategist"],
+        "tools": ["planning:create_plan"]
+      },
+      "gather_more_data": {
+        "agent": "data_requirements_analyst",
+        "content": "Identify specific data gaps that need to be filled before proceeding with the marketing strategy. Provide detailed requirements for additional data collection.",
+        "readFrom": ["data_analyst", "customer_behavior_analyst", "marketing_strategist"],
+        "tools": ["planning:chain_of_thought"]
+      },
+      "refine_strategy": {
+        "agent": "strategy_refiner",
+        "content": "Refine the marketing strategy to address the identified gaps or uncertainties. Provide a more detailed and actionable plan.",
+        "readFrom": ["marketing_strategist"],
+        "tools": ["planning:create_plan", "planning:parse_plan"]
+      }
+    }
+  },
+  {
+    "agent": "executive_summarizer",
+    "content": "Create a comprehensive executive summary of the entire retail analysis process, including the problem analysis, data insights, customer behavior patterns, marketing strategy, and next steps.",
+    "readFrom": ["task_planner", "data_analyst", "customer_behavior_analyst", "marketing_strategist", "dynamic_agent", "*"],
+    "tools": ["planning:get_summary"],
+    "memory_id": "retail_analysis",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Problem Statement",
+        "Key Findings",
+        "Customer Insights",
+        "Marketing Strategy",
+        "Next Steps",
+        "Implementation Plan"
+      ]
+    }
+  }
+]
