@@ -1,0 +1,26 @@
+```json
+{
+  "success": true,
+  "detection_count": 3,
+  "detections": [
+    {
+      "type": "registry_modification",
+      "path": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+      "key": "MaliciousKey",
+      "value": "C:\\path\\to\\malware.exe"
+    },
+    {
+      "type": "scheduled_task",
+      "name": "MaliciousTask",
+      "path": "C:\\path\\to\\malware.exe",
+      "trigger": "At logon"
+    },
+    {
+      "type": "startup_item",
+      "name": "MaliciousStartup",
+      "path": "C:\\path\\to\\malware.exe",
+      "location": "C:\\Users\\User\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup"
+    }
+  ]
+}
+```

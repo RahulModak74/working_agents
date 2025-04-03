@@ -1,0 +1,7 @@
+```json
+{
+  "action": "use_search_field",
+  "reasoning": "The search field is directly accessible and clearly labeled 'Search Wikipedia', making it the most efficient option for finding information about 'machine learning'.",
+  "selector": "input[name='search']"
+}
+```

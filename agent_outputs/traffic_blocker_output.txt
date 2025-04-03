@@ -1,0 +1,88 @@
+### Traffic Blocking Strategy
+
+Based on the security analysis, the following traffic blocking strategy is recommended to mitigate identified threats and vulnerabilities:
+
+---
+
+#### **1. IP Addresses to Block**
+- **IP Address:** `192.168.1.254`  
+  **Reason:** This IP address exhibited multiple access denied attempts, high request frequency, and access to sensitive endpoints.  
+  **Action:** Block this IP address immediately using a firewall or web application firewall (WAF).
+
+---
+
+#### **2. User Agents to Restrict**
+- **User Agent:** `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36`  
+  **Reason:** This user agent was associated with suspicious activity, including probing and unauthorized access attempts.  
+  **Action:** Add this user agent to a deny list in your WAF or application configuration.
+
+---
+
+#### **3. Rate Limiting Recommendations**
+- **Rate Limit:** 10 requests per minute per IP address.  
+  **Reason:** The analysis revealed a high frequency of requests in a short timeframe, indicating potential brute force or probing attempts.  
+  **Action:** Implement rate limiting using a WAF or API gateway.  
+  **Additional Measures:**  
+  - Use CAPTCHA for login and sensitive endpoint access.  
+  - Implement exponential backoff for repeated failed attempts.
+
+---
+
+#### **4. Endpoint Access Restrictions**
+- **Endpoint:** `/api/admin`  
+  **Restrictions:**  
+  - Allow only `POST` requests.  
+  - Restrict access to users with admin roles.  
+  **Reason:** Unusual `GET` requests were detected, indicating potential probing.  
+
+- **Endpoint:** `/api/users/45678/reset`  
+  **Restrictions:**  
+  - Allow only `POST` requests.  
+  - Require multi-factor authentication (MFA) for access.  
+  **Reason:** This endpoint was accessed without proper authorization.  
+
+- **Endpoint:** `/api/users/admin`  
+  **Restrictions:**  
+  - Allow only `POST` requests.  
+  - Restrict access to users with admin roles.  
+  **Reason:** Unusual `GET` requests were detected, indicating potential probing.  
+
+---
+
+#### **5. Additional Security Measures**
+- **Logging and Monitoring:**  
+  - Log all access attempts to sensitive endpoints (`/api/admin`, `/api/users/45678/reset`, `/api/users/admin`).  
+  - Set up alerts for repeated 403 status codes or unusual HTTP methods.  
+
+- **Access Controls:**  
+  - Implement role-based access control (RBAC) to restrict access to sensitive endpoints.  
+  - Regularly review and update user permissions.  
+
+- **Session Management:**  
+  - Monitor session progression for abnormal patterns (e.g., rapid access to multiple sensitive endpoints).  
+  - Implement session timeouts and re-authentication for sensitive actions.  
+
+---
+
+### Implementation Steps
+1. **Firewall/WAF Configuration:**  
+   - Add `192.168.1.254` to the block list.  
+   - Restrict the suspicious user agent.  
+
+2. **Rate Limiting Setup:**  
+   - Configure rate limiting rules in your WAF or API gateway.  
+
+3. **Endpoint Access Control:**  
+   - Update access control policies for `/api/admin`, `/api/users/45678/reset`, and `/api/users/admin`.  
+
+4. **Logging and Monitoring:**  
+   - Enable detailed logging for sensitive endpoints.  
+   - Set up alerts for suspicious activity.  
+
+5. **Review and Test:**  
+   - Test the implemented rules to ensure they are effective.  
+   - Regularly review logs and update rules as needed.  
+
+---
+
+This strategy provides immediate, actionable steps to mitigate the identified threats and strengthen your security posture.

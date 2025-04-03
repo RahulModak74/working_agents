@@ -1,0 +1,349 @@
+[
+  {
+    "agent": "intelligence_gatherer",
+    "content": "Conduct passive reconnaissance against the target organization. Gather OSINT data from public sources including social media, job listings, DNS records, business filings, and technical forums. Map out digital footprint, potential attack surfaces, employee information, and technology stack without active scanning.",
+    "tools": ["osint:gather", "socmint:analyze", "domain:enumerate"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "org_structure": "object",
+        "digital_assets": ["string"],
+        "employee_info": ["object"],
+        "technology_stack": ["string"],
+        "potential_vulnerabilities": ["string"],
+        "phishing_vectors": ["string"]
+      }
+    },
+    "memory_id": "red_team_exercise"
+  },
+  {
+    "agent": "infrastructure_scanner",
+    "content": "Perform active technical reconnaissance of target infrastructure. Identify network topology, exposed services, subdomains, cloud resources, IP ranges, and potential entry points. Use both automated and manual techniques to map the attack surface while maintaining stealth.",
+    "readFrom": ["intelligence_gatherer"],
+    "tools": ["network:scan", "subdomain:enumerate", "service:identify", "cloud:discover"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "ip_ranges": ["string"],
+        "domain_map": ["string"],
+        "exposed_services": ["object"],
+        "cloud_resources": ["string"],
+        "potential_entry_points": ["string"],
+        "scan_detectability": "string"
+      }
+    }
+  },
+  {
+    "agent": "vulnerability_assessor",
+    "content": "Identify exploitable vulnerabilities in target infrastructure. Analyze exposed services for known CVEs, misconfigurations, weak credentials, and business logic flaws. Prioritize findings based on exploitability and potential impact while avoiding disruption to systems.",
+    "readFrom": ["infrastructure_scanner"],
+    "tools": ["vuln:scan", "config:analyze", "exploit:search", "port:probe"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "critical_vulnerabilities": ["object"],
+        "high_vulnerabilities": ["object"],
+        "medium_vulnerabilities": ["object"],
+        "misconfigurations": ["object"],
+        "weak_credentials": ["string"],
+        "exploitation_paths": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "social_engineer",
+    "content": "Develop and execute social engineering campaigns to gain initial access. Create targeted phishing scenarios, pretexting scenarios, and other social manipulation techniques. Design convincing lures based on gathered intelligence to harvest credentials or deploy initial access payloads.",
+    "readFrom": ["intelligence_gatherer"],
+    "tools": ["phishing:campaign", "template:create", "email:spoof", "tracking:implement"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "campaign_type": "string",
+        "target_groups": ["string"],
+        "lure_themes": ["string"],
+        "technical_mechanisms": ["string"],
+        "success_metrics": "object",
+        "credential_harvest": "boolean",
+        "payload_delivery": "boolean"
+      }
+    }
+  },
+  {
+    "agent": "payload_developer",
+    "content": "Develop custom malicious payloads for initial access and post-exploitation. Create trojan applications, document exploits, macro-enabled files, and web payloads that evade security controls. Include capabilities for persistence, command and control, lateral movement, and privilege escalation.",
+    "readFrom": ["intelligence_gatherer", "vulnerability_assessor"],
+    "tools": ["payload:build", "obfuscation:apply", "evasion:implement", "c2:configure"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "payload_types": ["string"],
+        "evasion_techniques": ["string"],
+        "c2_infrastructure": "object",
+        "capabilities": ["string"],
+        "delivery_methods": ["string"],
+        "target_environments": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "initial_access_operator",
+    "content": "Execute initial access operations to establish footholds in the target environment. Deploy payloads via phishing, external service exploitation, physical access vectors, or supply chain compromise. Establish persistent communication channels for further operation.",
+    "readFrom": ["intelligence_gatherer", "vulnerability_assessor", "social_engineer", "payload_developer"],
+    "tools": ["delivery:execute", "exploit:execute", "c2:establish", "access:verify"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "access_vector": "string",
+        "timestamp": "string",
+        "target_system": "string",
+        "access_level": "string",
+        "persistence_status": "boolean",
+        "c2_channel": "string",
+        "detection_evidence": "string"
+      }
+    }
+  },
+  {
+    "agent": "persistence_establisher",
+    "content": "Implement multiple persistence mechanisms to maintain access to compromised systems. Deploy backdoors, create rogue accounts, modify startup items, implement scheduled tasks, and establish fallback communication channels to ensure long-term access survives reboots and remediation attempts.",
+    "readFrom": ["initial_access_operator", "payload_developer"],
+    "tools": ["backdoor:install", "account:create", "startup:modify", "schedule:task", "service:create"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "persistence_mechanisms": ["object"],
+        "privileged_accounts": ["string"],
+        "startup_modifications": ["string"],
+        "scheduled_tasks": ["string"],
+        "registry_changes": ["string"],
+        "stealth_assessment": "string"
+      }
+    }
+  },
+  {
+    "agent": "privilege_escalator",
+    "content": "Escalate privileges on compromised systems to gain administrative or system-level access. Exploit local vulnerabilities, credential theft, token manipulation, UAC bypasses, and misconfigured permissions to obtain highest possible privileges on target systems.",
+    "readFrom": ["initial_access_operator", "persistence_establisher"],
+    "tools": ["local:exploit", "credential:dump", "token:manipulate", "uac:bypass", "kernel:exploit"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "escalation_vector": "string",
+        "initial_privilege": "string",
+        "final_privilege": "string",
+        "exploited_vulnerabilities": ["string"],
+        "captured_credentials": ["string"],
+        "obtained_tokens": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "credential_harvester",
+    "content": "Extract and harvest credentials from compromised systems and users. Capture passwords, hashes, tokens, certificates, cookies, and other authentication material using memory dumping, keylogging, network sniffing, and database extraction techniques.",
+    "readFrom": ["initial_access_operator", "privilege_escalator"],
+    "tools": ["memory:dump", "hash:extract", "keylog:deploy", "database:query", "traffic:capture"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "credential_types": ["string"],
+        "plaintext_credentials": ["string"],
+        "password_hashes": ["string"],
+        "tokens_cookies": ["string"],
+        "certificates_keys": ["string"],
+        "service_accounts": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "lateral_movement_operator",
+    "content": "Perform lateral movement across the network to compromise additional systems. Utilize harvested credentials, exploited trust relationships, network pivoting, and remote service exploitation to expand access throughout the target environment while evading detection.",
+    "readFrom": ["initial_access_operator", "privilege_escalator", "credential_harvester"],
+    "tools": ["session:pivot", "psexec:execute", "wmi:execute", "rdp:hijack", "ssh:lateral"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "movement_techniques": ["string"],
+        "compromised_systems": ["string"],
+        "network_segments": ["string"],
+        "access_levels": ["object"],
+        "detection_evidence": ["string"],
+        "pivoting_infrastructure": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "implant_deployer",
+    "content": "Deploy specialized implants and backdoors on high-value targets. Install advanced persistent threats (APTs), custom backdoors, hardware implants, firmware modifications, and rootkits designed for long-term stealth operation and data collection.",
+    "readFrom": ["privilege_escalator", "lateral_movement_operator"],
+    "tools": ["implant:deploy", "rootkit:install", "firmware:modify", "bootkit:install", "driver:backdoor"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "implant_types": ["string"],
+        "target_systems": ["string"],
+        "persistence_level": ["string"],
+        "capabilities": ["string"],
+        "communication_methods": ["string"],
+        "stealth_mechanisms": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "network_mapper",
+    "content": "Map internal network infrastructure and data flows from compromised positions. Identify critical assets, sensitive data repositories, authentication servers, backup systems, and network security controls. Document trust relationships and security boundaries for targeting.",
+    "readFrom": ["initial_access_operator", "lateral_movement_operator"],
+    "tools": ["network:discover", "traffic:analyze", "asset:identify", "trust:map", "segment:analyze"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "network_topology": "object",
+        "critical_assets": ["string"],
+        "data_repositories": ["string"],
+        "authentication_infrastructure": ["string"],
+        "security_controls": ["string"],
+        "trust_relationships": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "data_exfiltrator",
+    "content": "Identify, collect, and exfiltrate sensitive data from compromised systems. Locate valuable information based on mission objectives, package data to evade detection, and transmit through covert channels. Demonstrate potential data breach impacts.",
+    "readFrom": ["network_mapper", "lateral_movement_operator", "implant_deployer"],
+    "tools": ["data:search", "data:compress", "steganography:apply", "exfil:execute", "dns:tunnel"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "data_types": ["string"],
+        "data_volume": "string",
+        "exfiltration_methods": ["string"],
+        "exfiltration_timing": "string",
+        "detection_evidence": "string",
+        "business_impact": "string"
+      }
+    }
+  },
+  {
+    "agent": "ransomware_simulator",
+    "content": "Simulate ransomware deployment throughout the target environment. Identify critical business systems, locate backup infrastructure, perform mock encryption of sample data, and demonstrate potential business impact without causing actual damage.",
+    "readFrom": ["network_mapper", "lateral_movement_operator", "privilege_escalator"],
+    "tools": ["backup:locate", "sample:encrypt", "ransom:simulate", "impact:assess"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "target_systems": ["string"],
+        "encryption_methodology": "string",
+        "backup_solutions": ["string"],
+        "recovery_obstacles": ["string"],
+        "business_impact": "string",
+        "potential_ransom": "string"
+      }
+    }
+  },
+  {
+    "agent": "defense_evasion_specialist",
+    "content": "Implement techniques to evade and bypass security controls. Test antivirus evasion, EDR bypass, traffic obfuscation, log manipulation, and detection evasion. Document security control weaknesses and blind spots in the defensive architecture.",
+    "readFrom": ["payload_developer", "initial_access_operator", "lateral_movement_operator", "implant_deployer"],
+    "tools": ["av:evade", "edr:bypass", "logs:manipulate", "traffic:obfuscate", "forensics:confuse"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "evasion_techniques": ["string"],
+        "bypassed_controls": ["string"],
+        "detection_gaps": ["string"],
+        "logging_weaknesses": ["string"],
+        "dwell_time_estimate": "string",
+        "recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "impact_demonstrator",
+    "content": "Demonstrate potential business impact through simulated attacks on availability, integrity, and confidentiality. Perform controlled service disruption tests, data manipulation demonstrations, and critical function interruption to illustrate the severity of identified vulnerabilities.",
+    "readFrom": ["network_mapper", "lateral_movement_operator", "privilege_escalator", "ransomware_simulator"],
+    "tools": ["dos:simulate", "database:manipulate", "service:disrupt", "business:analyze"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "impact_categories": ["string"],
+        "affected_services": ["string"],
+        "business_processes": ["string"],
+        "financial_estimate": "string",
+        "recovery_time": "string",
+        "reputational_impact": "string"
+      }
+    }
+  },
+  {
+    "agent": "cleanup_operator",
+    "content": "Remove artifacts and evidence of red team activities. Clean up implants, backdoors, test files, logs, and other indicators of compromise. Restore systems to original state while documenting artifacts that could not be removed.",
+    "readFrom": ["persistence_establisher", "implant_deployer", "lateral_movement_operator", "ransomware_simulator"],
+    "tools": ["artifact:remove", "logs:clean", "account:delete", "forensics:analyze"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "removed_artifacts": ["string"],
+        "cleaned_systems": ["string"],
+        "remaining_evidence": ["string"],
+        "cleanup_challenges": ["string"],
+        "forensic_detectability": "string"
+      }
+    }
+  },
+  {
+    "agent": "detection_analyzer",
+    "content": "Analyze the target's detection and response capabilities based on observed behavior during the exercise. Document security controls that detected activities, incident response actions observed, and overall defense effectiveness.",
+    "readFrom": ["initial_access_operator", "lateral_movement_operator", "defense_evasion_specialist", "impact_demonstrator"],
+    "tools": ["detection:analyze", "response:evaluate", "timeline:construct"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "detected_activities": ["string"],
+        "missed_activities": ["string"],
+        "response_actions": ["string"],
+        "response_timeline": "object",
+        "defense_effectiveness": "string",
+        "improvement_areas": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "report_generator",
+    "content": "Generate comprehensive red team exercise report. Document methodology, findings, attack paths, evidence, business impacts, and strategic recommendations. Include technical details for remediation and executive summary for leadership.",
+    "readFrom": ["intelligence_gatherer", "vulnerability_assessor", "initial_access_operator", "lateral_movement_operator", "privilege_escalator", "data_exfiltrator", "ransomware_simulator", "impact_demonstrator", "detection_analyzer"],
+    "memory_id": "red_team_exercise",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Engagement Overview",
+        "Methodology",
+        "Attack Path Summary",
+        "Technical Findings",
+        "Business Impact Analysis",
+        "Detection & Response Assessment",
+        "Strategic Recommendations",
+        "Tactical Remediations",
+        "Appendices: Technical Evidence",
+        "Appendices: Tools and Techniques",
+        "Appendices: Timeline of Activities"
+      ]
+    }
+  }
+]

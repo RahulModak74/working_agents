@@ -1,0 +1,7 @@
+```json
+{
+  "status": "success",
+  "browser_id": "chromium_12345",
+  "message": "Chromium browser instance created successfully in non-headless mode."
+}
+```

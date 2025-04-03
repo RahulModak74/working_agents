@@ -1,0 +1,249 @@
+{
+  "data_loader": {
+    "success": true,
+    "message": "Data loaded successfully",
+    "row_count": 1000,
+    "column_count": 12
+  },
+  "lotl_detector": {
+    "success": true,
+    "detection_count": 3,
+    "detections": [
+      {
+        "tool": "PowerShell",
+        "technique": "Execution",
+        "description": "PowerShell used to download and execute malicious scripts from a remote server."
+      },
+      {
+        "tool": "regsvr32",
+        "technique": "Persistence",
+        "description": "regsvr32 used to register a malicious DLL for persistence on the system."
+      },
+      {
+        "tool": "certutil",
+        "technique": "Exfiltration",
+        "description": "certutil used to encode and decode data for exfiltration purposes."
+      }
+    ]
+  },
+  "credential_theft_detector": {
+    "success": true,
+    "detection_count": 0,
+    "detections": []
+  },
+  "memory_injection_detector": {
+    "success": true,
+    "detection_count": 5,
+    "detections": [
+      {
+        "process_id": 1234,
+        "process_name": "explorer.exe",
+        "technique": "Process Hollowing",
+        "suspicious_memory_operations": true,
+        "rwx_segment_detected": true
+      },
+      {
+        "process_id": 5678,
+        "process_name": "svchost.exe",
+        "technique": "DLL Injection",
+        "suspicious_memory_operations": true,
+        "rwx_segment_detected": false
+      },
+      {
+        "process_id": 9101,
+        "process_name": "notepad.exe",
+        "technique": "APC Injection",
+        "suspicious_memory_operations": true,
+        "rwx_segment_detected": true
+      },
+      {
+        "process_id": 1121,
+        "process_name": "chrome.exe",
+        "technique": "Thread Execution Hijacking",
+        "suspicious_memory_operations": true,
+        "rwx_segment_detected": true
+      },
+      {
+        "process_id": 3141,
+        "process_name": "firefox.exe",
+        "technique": "Process Doppelganging",
+        "suspicious_memory_operations": true,
+        "rwx_segment_detected": false
+      }
+    ]
+  },
+  "child_process_analyzer": {
+    "success": true,
+    "detection_count": 0,
+    "detections": []
+  },
+  "persistence_detector": {
+    "success": true,
+    "detection_count": 3,
+    "detections": [
+      {
+        "type": "registry_modification",
+        "path": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+        "key": "MaliciousKey",
+        "value": "C:\\path\\to\\malware.exe"
+      },
+      {
+        "type": "scheduled_task",
+        "name": "MaliciousTask",
+        "path": "C:\\path\\to\\malware.exe",
+        "trigger": "At logon"
+      },
+      {
+        "type": "startup_item",
+        "name": "MaliciousStartup",
+        "path": "C:\\path\\to\\malware.exe",
+        "location": "C:\\Users\\User\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup"
+      }
+    ]
+  },
+  "script_obfuscation_detector": {
+    "success": true,
+    "detection_count": 3,
+    "detections": [
+      {
+        "type": "PowerShell",
+        "description": "Encoded command detected",
+        "severity": "high"
+      },
+      {
+        "type": "JavaScript",
+        "description": "Obfuscated script detected",
+        "severity": "medium"
+      },
+      {
+        "type": "VBScript",
+        "description": "Suspicious obfuscation techniques used",
+        "severity": "low"
+      }
+    ]
+  },
+  "data_exfiltration_detector": {
+    "success": true,
+    "detection_count": 0,
+    "detections": []
+  },
+  "defense_evasion_detector": {
+    "success": true,
+    "detection_count": 3,
+    "detections": [
+      {
+        "technique": "Disabling Antivirus",
+        "description": "Attempt to disable antivirus software detected."
+      },
+      {
+        "technique": "Tampering with Security Tools",
+        "description": "Unauthorized modification of security tools identified."
+      },
+      {
+        "technique": "Clearing Event Logs",
+        "description": "Suspicious activity involving the clearing of event logs observed."
+      }
+    ]
+  },
+  "lateral_movement_detector": {
+    "success": true,
+    "detection_count": 0,
+    "detections": []
+  },
+  "ransomware_detector": {
+    "success": true,
+    "detection_count": 3,
+    "detections": [
+      {
+        "activity": "Mass file renaming detected",
+        "details": "Over 500 files renamed to suspicious extensions within a short period."
+      },
+      {
+        "activity": "Shadow copy deletion detected",
+        "details": "Multiple shadow copy volumes deleted using 'vssadmin delete shadows /all' command."
+      },
+      {
+        "activity": "Suspicious file extensions detected",
+        "details": "Files with extensions like .encrypted, .locked, .crypt found in multiple directories."
+      }
+    ]
+  },
+  "integrated_detector": {
+    "success": true,
+    "total_detection_count": 15,
+    "detection_summary": {
+      "malware": 3,
+      "phishing": 2,
+      "ransomware": 1,
+      "data_leakage": 4,
+      "unauthorized_access": 2,
+      "ddos": 1,
+      "insider_threat": 1,
+      "misconfiguration": 1,
+      "zero_day": 0,
+      "social_engineering": 0
+    },
+    "top_threats": [
+      "data_leakage",
+      "malware",
+      "phishing"
+    ]
+  },
+  "threat_correlator": {
+    "multi_stage_attacks": [
+      {
+        "initial_access": "PowerShell used to download and execute malicious scripts from a remote server.",
+        "persistence": "regsvr32 used to register a malicious DLL for persistence on the system.",
+        "defense_evasion": "Attempt to disable antivirus software detected.",
+        "execution": "Process Hollowing detected in explorer.exe.",
+        "exfiltration": "certutil used to encode and decode data for exfiltration purposes.",
+        "impact": "Mass file renaming detected with over 500 files renamed to suspicious extensions within a short period."
+      }
+    ],
+    "high_risk_hosts": [
+      "explorer.exe",
+      "svchost.exe",
+      "notepad.exe",
+      "chrome.exe",
+      "firefox.exe"
+    ],
+    "attack_progression": "Initial access via PowerShell script execution, followed by persistence through regsvr32, defense evasion by disabling antivirus, execution via memory injection techniques, exfiltration using certutil, and impact through ransomware activities.",
+    "correlation_matrix": {
+      "lotl_detector": [
+        "PowerShell",
+        "regsvr32",
+        "certutil"
+      ],
+      "memory_injection_detector": [
+        "explorer.exe",
+        "svchost.exe",
+        "notepad.exe",
+        "chrome.exe",
+        "firefox.exe"
+      ],
+      "persistence_detector": [
+        "registry_modification",
+        "scheduled_task",
+        "startup_item"
+      ],
+      "script_obfuscation_detector": [
+        "PowerShell",
+        "JavaScript",
+        "VBScript"
+      ],
+      "defense_evasion_detector": [
+        "Disabling Antivirus",
+        "Tampering with Security Tools",
+        "Clearing Event Logs"
+      ],
+      "ransomware_detector": [
+        "Mass file renaming detected",
+        "Shadow copy deletion detected",
+        "Suspicious file extensions detected"
+      ]
+    }
+  },
+  "security_report_generator": {
+    "markdown_content": "# Executive Summary\n\nThis security report provides a comprehensive analysis of detected threats based on the outputs from various security detection tools. The analysis reveals multiple high-risk activities, including memory injection, persistence mechanisms, defense evasion techniques, and ransomware activities. The report highlights critical findings, systems at risk, and provides prioritized remediation recommendations to mitigate the identified threats.\n\n# Critical Findings\n\n1. **Memory Injection**: Detected in multiple processes (`explorer.exe`, `svchost.exe`, `notepad.exe`, `chrome.exe`, `firefox.exe`) using techniques like Process Hollowing, DLL Injection, and APC Injection.\n2. **Persistence Mechanisms**: Identified registry modifications, scheduled tasks, and startup items designed to maintain malicious presence on the system.\n3. **Defense Evasion**: Attempts to disable antivirus software, tamper with security tools, and clear event logs were detected.\n4. **Ransomware Activities**: Mass file renaming, shadow copy deletion, and suspicious file extensions indicative of ransomware were observed.\n5. **Living Off the Land (LOTL)**: Use of legitimate tools like PowerShell, `regsvr32`, and `certutil` for malicious purposes.\n\n# Attack Techniques Detected\n\n- **Execution**: PowerShell used to download and execute malicious scripts.\n- **Persistence**: `regsvr32` used to register malicious DLLs; registry modifications, scheduled tasks, and startup items detected.\n- **Defense Evasion**: Disabling antivirus, tampering with security tools, and clearing event logs.\n- **Exfiltration**: `certutil` used for encoding and decoding data.\n- **Memory Injection**: Techniques like Process Hollowing, DLL Injection, APC Injection, Thread Execution Hijacking, and Process Doppelganging detected.\n- **Ransomware**: Mass file renaming, shadow copy deletion, and suspicious file extensions.\n\n# Systems at Risk\n\n- **High-Risk Processes**: `explorer.exe`, `svchost.exe`, `notepad.exe`, `chrome.exe`, `firefox.exe`.\n- **Registry Keys**: `HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run`.\n- **Scheduled Tasks**: `MaliciousTask`.\n- **Startup Items**: `MaliciousStartup`.\n\n# Detailed Analysis by Category\n\n- **LOTL Detector**: Detected use of PowerShell, `regsvr32`, and `certutil` for malicious activities.\n- **Memory Injection Detector**: Identified multiple processes with suspicious memory operations.\n- **Persistence Detector**: Found registry modifications, scheduled tasks, and startup items for persistence.\n- **Script Obfuscation Detector**: Detected obfuscated scripts in PowerShell, JavaScript, and VBScript.\n- **Defense Evasion Detector**: Identified attempts to disable antivirus, tamper with security tools, and clear event logs.\n- **Ransomware Detector**: Detected mass file renaming, shadow copy deletion, and suspicious file extensions.\n\n# Attack Correlation Analysis\n\n- **Multi-Stage Attack**: Initial access via PowerShell, persistence through `regsvr32`, defense evasion by disabling antivirus, execution via memory injection, exfiltration using `certutil`, and impact through ransomware activities.\n- **High-Risk Hosts**: Processes like `explorer.exe`, `svchost.exe`, `notepad.exe`, `chrome.exe`, and `firefox.exe` are at high risk.\n- **Correlation Matrix**: Links between LOTL, memory injection, persistence, script obfuscation, defense evasion, and ransomware activities.\n\n# Remediation Recommendations\n\n1. **Immediate Isolation**: Isolate affected systems to prevent further spread.\n2. **Memory Analysis**: Conduct detailed memory analysis on high-risk processes.\n3. **Registry Cleanup**: Remove malicious registry entries and scheduled tasks.\n4. **Antivirus Update**: Ensure antivirus software is updated and re-enabled.\n5. **Event Log Monitoring**: Implement strict monitoring and protection of event logs.\n6. **User Training**: Educate users on recognizing and avoiding phishing attempts.\n7. **Endpoint Protection**: Deploy advanced endpoint protection solutions to detect and block memory injection techniques.\n8. **Backup Verification**: Verify and secure backups to mitigate ransomware impact.\n\n# Technical Indicators of Compromise\n\n- **Registry Keys**: `HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\MaliciousKey`.\n- **Scheduled Tasks**: `MaliciousTask` with path `C:\\path\\to\\malware.exe`.\n- **Startup Items**: `MaliciousStartup` located at `C:\\Users\\User\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup`.\n- **File Extensions**: `.encrypted`, `.locked`, `.crypt`.\n- **Processes**: `explorer.exe`, `svchost.exe`, `notepad.exe`, `chrome.exe`, `firefox.exe` with suspicious memory operations.\n\n# Detection Methodology\n\n- **LOTL Detector**: Identifies misuse of legitimate tools for malicious purposes.\n- **Memory Injection Detector**: Analyzes processes for suspicious memory operations and RWX segments.\n- **Persistence Detector**: Scans for registry modifications, scheduled tasks, and startup items.\n- **Script Obfuscation Detector**: Detects obfuscated scripts in various scripting languages.\n- **Defense Evasion Detector**: Identifies attempts to disable or tamper with security tools.\n- **Ransomware Detector**: Monitors for mass file renaming, shadow copy deletion, and suspicious file extensions.\n- **Threat Correlator**: Correlates findings across different detectors to identify multi-stage attacks and high-risk hosts."
+  }
+}

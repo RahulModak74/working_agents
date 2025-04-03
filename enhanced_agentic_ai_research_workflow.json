@@ -1,0 +1,334 @@
+[
+  {
+    "agent": "cognitive_pattern_selector",
+    "content": "Analyze the research topic 'Agentic AI future vision' and determine the most appropriate cognitive planning pattern to structure our research approach. Consider the complexity, multidimensionality, and potential for competing perspectives in this topic.",
+    "tools": ["cognitive:list_patterns"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_pattern": "string",
+        "justification": "string",
+        "research_dimensions": ["string"],
+        "potential_challenges": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "cognitive_session_initializer",
+    "content": "Initialize a cognitive planning session using the selected pattern. The problem to solve is: 'Develop a comprehensive research strategy to explore the future vision of Agentic AI, including current developments, emerging capabilities, potential applications, ethical considerations, and long-term impacts.'",
+    "readFrom": ["cognitive_pattern_selector"],
+    "tools": ["cognitive:create_session"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "session_id": "string",
+        "pattern": "string",
+        "description": "string",
+        "stages": ["string"],
+        "status": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_workflow_navigator",
+    "content": "Navigate through the cognitive planning workflow, executing each step and collecting results. This agent will handle the entire cognitive planning process, including handling dynamic decision points.",
+    "readFrom": ["cognitive_session_initializer"],
+    "tools": ["cognitive:get_next_step", "cognitive:select_action", "cognitive:submit_result"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "session_id": "string",
+        "completed_steps": ["string"],
+        "key_decisions": [
+          {
+            "stage": "string",
+            "decision": "string",
+            "rationale": "string"
+          }
+        ],
+        "final_status": "string"
+      }
+    }
+  },
+  {
+    "agent": "research_plan_transformer",
+    "content": "Transform the completed cognitive planning session into a structured research plan for 'Agentic AI future vision'. Extract key questions, research dimensions, and optimal approaches from the cognitive process.",
+    "readFrom": ["cognitive_workflow_navigator"],
+    "tools": ["cognitive:get_results", "cognitive:transform_for_research"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "research_topic": "string",
+        "research_plan": {
+          "goal": "string",
+          "key_questions": ["string"],
+          "subtopics": ["string"]
+        },
+        "search_queries": ["string"],
+        "reasoning": "string",
+        "cognitive_pattern_used": "string"
+      }
+    }
+  },
+  {
+    "agent": "workflow_optimizer_selector",
+    "content": "Analyze the research plan and determine which optimization pattern would be most beneficial to apply to our research workflow. Consider the complexity, potential biases, and need for performance monitoring in researching 'Agentic AI future vision'.",
+    "readFrom": ["research_plan_transformer"],
+    "tools": ["optimization:list_patterns"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_optimization": "string",
+        "justification": "string",
+        "expected_benefits": ["string"],
+        "implementation_strategy": "string"
+      }
+    }
+  },
+  {
+    "agent": "optimization_session_initializer",
+    "content": "Initialize an optimization session using the selected pattern. The target is to optimize our research workflow for 'Agentic AI future vision' to maximize comprehensiveness, minimize bias, and ensure efficient processing of complex information.",
+    "readFrom": ["workflow_optimizer_selector", "research_plan_transformer"],
+    "tools": ["optimization:create_session"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "session_id": "string",
+        "pattern": "string",
+        "description": "string",
+        "stages": ["string"],
+        "status": "string"
+      }
+    }
+  },
+  {
+    "agent": "optimization_workflow_navigator",
+    "content": "Navigate through the optimization workflow, executing each step and collecting results. This agent will handle the entire optimization process, including handling dynamic decision points.",
+    "readFrom": ["optimization_session_initializer"],
+    "tools": ["optimization:get_next_step", "optimization:select_action", "optimization:submit_result"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "session_id": "string",
+        "completed_steps": ["string"],
+        "key_decisions": [
+          {
+            "stage": "string",
+            "decision": "string",
+            "rationale": "string"
+          }
+        ],
+        "final_status": "string"
+      }
+    }
+  },
+  {
+    "agent": "optimized_research_workflow_creator",
+    "content": "Using the results from both the cognitive planning session and the optimization session, create an optimized research workflow for investigating 'Agentic AI future vision'. This should incorporate the cognitive planning structure and apply the optimization techniques to enhance research quality.",
+    "readFrom": ["research_plan_transformer", "optimization_workflow_navigator"],
+    "tools": ["optimization:get_results", "optimization:apply_to_workflow"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "workflow_summary": "string",
+        "optimization_benefits": ["string"],
+        "cognitive_structure": "string",
+        "workflow_steps": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "preliminary_researcher",
+    "content": "Using our optimized approach, conduct a broad preliminary search on 'Agentic AI future vision'. Focus on understanding what agentic AI is, the current state of development, and key concepts that define the field.",
+    "readFrom": ["optimized_research_workflow_creator"],
+    "tools": ["research:combined_search"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "initial_findings": "string",
+        "key_concepts": ["string"],
+        "main_researchers": ["string"],
+        "leading_organizations": ["string"],
+        "emerging_trends": ["string"],
+        "search_results": ["object"]
+      }
+    }
+  },
+  {
+    "agent": "technical_researcher",
+    "content": "Conduct a deeper technical investigation on Agentic AI architecture, capabilities, and implementation approaches. Focus on technical aspects like reasoning mechanisms, planning capabilities, tool use, autonomous decision-making, and multi-step task execution.",
+    "readFrom": ["preliminary_researcher", "optimized_research_workflow_creator"],
+    "tools": ["research:search", "research:fetch_content", "research:analyze_content"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "technical_foundations": {
+          "architecture_approaches": ["string"],
+          "reasoning_methods": ["string"],
+          "planning_techniques": ["string"],
+          "tool_use_mechanisms": ["string"],
+          "memory_systems": ["string"]
+        },
+        "current_limitations": ["string"],
+        "breakthrough_areas": ["string"],
+        "technical_challenges": ["string"],
+        "sources": ["object"]
+      }
+    }
+  },
+  {
+    "agent": "feedback_collector",
+    "content": "Collect and analyze feedback on our research process so far. Identify strengths, weaknesses, and potential optimizations in our approach to researching Agentic AI future vision.",
+    "readFrom": ["preliminary_researcher", "technical_researcher"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "process_feedback": {
+          "strengths": ["string"],
+          "weaknesses": ["string"],
+          "optimization_opportunities": ["string"]
+        },
+        "content_feedback": {
+          "comprehensive_areas": ["string"],
+          "gap_areas": ["string"],
+          "balancing_needs": ["string"]
+        },
+        "adaptation_recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on our preliminary research, technical investigation, and process feedback, determine which two key dimensions of Agentic AI future vision require the most intensive focus. Choose from: 'technical_architecture', 'application_domains', 'ethical_implications', 'human_ai_collaboration', 'economic_impacts', or 'governance_frameworks'.",
+    "readFrom": ["preliminary_researcher", "technical_researcher", "feedback_collector"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "action": "string",
+        "secondary_action": "string",
+        "reasoning": "string",
+        "key_focus_points": ["string"]
+      }
+    },
+    "actions": {
+      "technical_architecture": {
+        "agent": "technical_architecture_researcher",
+        "content": "Conduct deep research on the technical architecture of future Agentic AI systems. Focus on emerging models, reasoning capabilities, planning mechanisms, tool use frameworks, and architectural approaches that will define next-generation agentic systems.",
+        "readFrom": ["preliminary_researcher", "technical_researcher"],
+        "tools": ["research:combined_search"]
+      },
+      "application_domains": {
+        "agent": "application_domains_researcher",
+        "content": "Research current and future application domains for Agentic AI systems. Identify industries being transformed, novel use cases, emerging applications, and potential new domains where agentic systems could create significant value or disruption.",
+        "readFrom": ["preliminary_researcher", "technical_researcher"],
+        "tools": ["research:combined_search"]
+      },
+      "ethical_implications": {
+        "agent": "ethical_implications_researcher",
+        "content": "Investigate the ethical implications of increasingly capable and autonomous AI agents. Research alignment challenges, safety frameworks, accountability mechanisms, transparency requirements, and potential risks that need to be addressed.",
+        "readFrom": ["preliminary_researcher", "technical_researcher"],
+        "tools": ["research:combined_search"]
+      },
+      "human_ai_collaboration": {
+        "agent": "human_ai_collaboration_researcher",
+        "content": "Explore emerging models of human-AI collaboration involving agentic systems. Research how autonomous agents can effectively work alongside humans, augment human capabilities, and create new collaborative paradigms across work, creativity, and daily life.",
+        "readFrom": ["preliminary_researcher", "technical_researcher"],
+        "tools": ["research:combined_search"]
+      },
+      "economic_impacts": {
+        "agent": "economic_impacts_researcher",
+        "content": "Evaluate the potential economic impact of widespread Agentic AI deployment. Analyze productivity implications, labor market effects, business model transformations, and new economic opportunities created by autonomous AI agents.",
+        "readFrom": ["preliminary_researcher", "technical_researcher"],
+        "tools": ["research:combined_search"]
+      },
+      "governance_frameworks": {
+        "agent": "governance_frameworks_researcher",
+        "content": "Research emerging governance frameworks for Agentic AI systems. Analyze regulatory approaches, policy proposals, industry standards, and institutional structures being developed to ensure responsible development and deployment.",
+        "readFrom": ["preliminary_researcher", "technical_researcher"],
+        "tools": ["research:combined_search"]
+      }
+    }
+  },
+  {
+    "agent": "secondary_focus_researcher",
+    "content": "Based on the secondary dimension identified in the dynamic agent's decision, conduct in-depth research on this aspect of Agentic AI future vision.",
+    "readFrom": ["dynamic_agent"],
+    "tools": ["research:combined_search"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "focus_area": "string",
+        "key_findings": ["string"],
+        "major_trends": ["string"],
+        "expert_perspectives": ["string"],
+        "future_directions": ["string"],
+        "sources": ["object"]
+      }
+    }
+  },
+  {
+    "agent": "integration_analyst",
+    "content": "Integrate all research findings into a comprehensive understanding of the future vision for Agentic AI. Synthesize technical capabilities, application domains, ethical considerations, and other researched dimensions into a cohesive picture.",
+    "readFrom": ["*"],
+    "tools": ["planning:chain_of_thought", "research:generate_summary"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "integrated_vision": {
+          "current_state": "string",
+          "emerging_capabilities": ["string"],
+          "transformative_applications": ["string"],
+          "key_challenges": ["string"],
+          "future_trajectory": "string"
+        },
+        "major_themes": ["string"],
+        "critical_uncertainties": ["string"],
+        "strategic_implications": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "process_evaluator",
+    "content": "Evaluate the effectiveness of our cognitively-optimized research process. Assess how the cognitive planning and optimization techniques enhanced our research quality, comprehensiveness, and efficiency.",
+    "readFrom": ["*"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "process_assessment": {
+          "cognitive_planning_benefits": ["string"],
+          "optimization_benefits": ["string"],
+          "overall_effectiveness": "number",
+          "areas_for_improvement": ["string"]
+        },
+        "methodology_insights": ["string"],
+        "future_process_recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "comprehensive_report_generator",
+    "content": "Generate a comprehensive research report on the future vision of Agentic AI, synthesizing all findings from our research agents. Include insights from across all dimensions researched, with special focus on the primary and secondary dimensions identified as most critical.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Introduction to Agentic AI",
+        "Research Methodology",
+        "Current Technical Landscape",
+        "Future Capabilities and Architectures",
+        "Primary Dimension Analysis",
+        "Secondary Dimension Analysis",
+        "Cross-Dimensional Implications",
+        "Future Scenarios and Predictions",
+        "Strategic Considerations",
+        "Conclusions and Recommendations",
+        "Appendix: Research Process Reflection"
+      ]
+    }
+  }
+]

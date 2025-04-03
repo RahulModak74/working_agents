@@ -1,0 +1,433 @@
+[
+  {
+    "agent": "journey_planner",
+    "content": "Analyze the customer_journey.csv file and create a detailed plan for understanding the customer journey, identifying friction points, and improving conversion rates. The CSV contains customer journey data including customer_id, timestamp, channel, device, journey_stage, action, time_spent, conversion, cart_value, segment, error_encountered, session_id, return_visitor, previous_purchases, items_viewed, search_terms, and page_load_time.",
+    "file": "customer_journey.csv",
+    "tools": [
+      "planning:create_plan",
+      "planning:chain_of_thought"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "data_overview": "string",
+        "analysis_plan": {
+          "goal": "string",
+          "subtasks": [
+            "string"
+          ]
+        },
+        "key_metrics_to_track": [
+          "string"
+        ],
+        "reasoning": "string"
+      }
+    },
+    "memory_id": "journey_analysis"
+  },
+  {
+    "agent": "journey_analyzer",
+    "content": "Based on the plan created by the journey_planner, analyze the customer journey paths in customer_journey.csv. Focus on the sequence of stages, conversion rates at each stage, and common drop-off points. Use chain-of-thought reasoning to walk through your analysis step by step.",
+    "file": "customer_journey.csv",
+    "readFrom": [
+      "journey_planner"
+    ],
+    "tools": [
+      "planning:chain_of_thought",
+      "sql:query",
+      "planning:execute_subtask"
+    ],
+    "memory_id": "journey_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "analysis_steps": [
+          "string"
+        ],
+        "journey_stages": [
+          {
+            "stage": "string",
+            "entry_count": "number",
+            "exit_count": "number",
+            "conversion_rate": "number",
+            "avg_time_spent": "number"
+          }
+        ],
+        "common_paths": [
+          {
+            "path": [
+              "string"
+            ],
+            "frequency": "number",
+            "success_rate": "number"
+          }
+        ],
+        "drop_off_points": [
+          {
+            "stage": "string",
+            "drop_off_rate": "number",
+            "potential_causes": [
+              "string"
+            ]
+          }
+        ],
+        "subtask_completion": {
+          "subtask_index": "number",
+          "status": "string",
+          "result_summary": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "segment_analyzer",
+    "content": "Based on the plan and previous analysis, analyze customer segmentation in the customer_journey.csv file. Examine behavior differences between segments, conversion rates by segment, and channel preferences. Use the ReAct approach to explore the data and derive insights.",
+    "file": "customer_journey.csv",
+    "readFrom": [
+      "journey_planner",
+      "journey_analyzer"
+    ],
+    "tools": [
+      "planning:react",
+      "planning:parse_react",
+      "sql:query",
+      "planning:execute_subtask"
+    ],
+    "memory_id": "journey_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "segments_overview": [
+          "string"
+        ],
+        "segment_performance": [
+          {
+            "segment": "string",
+            "conversion_rate": "number",
+            "avg_cart_value": "number",
+            "preferred_channels": [
+              "string"
+            ],
+            "preferred_devices": [
+              "string"
+            ],
+            "distinctive_behaviors": [
+              "string"
+            ]
+          }
+        ],
+        "high_value_segments": [
+          "string"
+        ],
+        "underperforming_segments": [
+          "string"
+        ],
+        "segment_journey_differences": [
+          "string"
+        ],
+        "subtask_completion": {
+          "subtask_index": "number",
+          "status": "string",
+          "result_summary": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "friction_identifier",
+    "content": "Based on the plan and previous analyses, identify friction points in the customer journey from customer_journey.csv. Look for patterns in errors, long page load times, excessive time spent on stages, and abandonment patterns. Use structured reasoning to identify and prioritize issues.",
+    "file": "customer_journey.csv",
+    "readFrom": [
+      "journey_planner",
+      "journey_analyzer",
+      "segment_analyzer"
+    ],
+    "tools": [
+      "planning:chain_of_thought",
+      "sql:query",
+      "planning:execute_subtask"
+    ],
+    "memory_id": "journey_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "friction_points": [
+          {
+            "description": "string",
+            "journey_stage": "string",
+            "affected_segments": [
+              "string"
+            ],
+            "impact_level": "number",
+            "evidence": [
+              "string"
+            ],
+            "potential_solutions": [
+              "string"
+            ]
+          }
+        ],
+        "error_analysis": [
+          {
+            "error_type": "string",
+            "frequency": "number",
+            "affected_stages": [
+              "string"
+            ],
+            "impact_on_conversion": "number"
+          }
+        ],
+        "performance_issues": [
+          {
+            "issue_type": "string",
+            "average_metrics": "string",
+            "affected_devices": [
+              "string"
+            ],
+            "affected_channels": [
+              "string"
+            ]
+          }
+        ],
+        "prioritized_issues": [
+          "string"
+        ],
+        "subtask_completion": {
+          "subtask_index": "number",
+          "status": "string",
+          "result_summary": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "optimization_strategist",
+    "content": "Based on all previous analyses, develop a comprehensive strategy to optimize the customer journey. Create actionable recommendations for improving conversion rates, reducing friction, and enhancing the overall customer experience. Use structured planning for implementation.",
+    "readFrom": [
+      "journey_planner",
+      "journey_analyzer",
+      "segment_analyzer",
+      "friction_identifier"
+    ],
+    "tools": [
+      "planning:create_plan",
+      "planning:execute_subtask",
+      "planning:get_summary"
+    ],
+    "memory_id": "journey_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "optimization_strategy": {
+          "overall_approach": "string",
+          "key_focus_areas": [
+            "string"
+          ],
+          "expected_improvements": [
+            "string"
+          ]
+        },
+        "stage_specific_recommendations": [
+          {
+            "journey_stage": "string",
+            "current_issues": [
+              "string"
+            ],
+            "recommended_changes": [
+              "string"
+            ],
+            "expected_impact": "string",
+            "implementation_complexity": "string"
+          }
+        ],
+        "segment_specific_recommendations": [
+          {
+            "segment": "string",
+            "tailored_approach": "string",
+            "targeted_improvements": [
+              "string"
+            ]
+          }
+        ],
+        "technical_improvements": [
+          {
+            "area": "string",
+            "recommendation": "string",
+            "priority": "string"
+          }
+        ],
+        "implementation_plan": {
+          "phases": [
+            "string"
+          ],
+          "timeline": "string",
+          "success_metrics": [
+            "string"
+          ]
+        },
+        "subtask_completion": {
+          "subtask_index": "number",
+          "status": "string",
+          "result_summary": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on all previous analyses of the customer journey data, determine the most critical area to focus optimization efforts on. Choose from: 'technical_performance', 'journey_redesign', 'segment_targeting', 'content_optimization', or 'channel_strategy'.\n\nYour decision should be based on the potential impact on conversion rates, implementation feasibility, and alignment with the identified issues.",
+    "readFrom": [
+      "journey_planner",
+      "journey_analyzer",
+      "segment_analyzer",
+      "friction_identifier",
+      "optimization_strategist"
+    ],
+    "tools": [
+      "planning:get_summary"
+    ],
+    "memory_id": "journey_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "action": "string",
+        "reasoning": "string",
+        "expected_impact": "number",
+        "implementation_complexity": "number"
+      }
+    },
+    "actions": {
+      "technical_performance": {
+        "agent": "performance_engineer",
+        "content": "Create a detailed technical improvement plan focusing on page load times, error handling, and system performance issues identified in the customer journey analysis. Provide specific technical recommendations with implementation details.",
+        "readFrom": [
+          "friction_identifier",
+          "optimization_strategist"
+        ],
+        "tools": [
+          "planning:create_plan"
+        ]
+      },
+      "journey_redesign": {
+        "agent": "journey_architect",
+        "content": "Design an improved customer journey flow that addresses the friction points and drop-off issues identified in the analysis. Create a stage-by-stage redesign with specific UX/UI recommendations.",
+        "readFrom": [
+          "journey_analyzer",
+          "friction_identifier"
+        ],
+        "tools": [
+          "planning:create_plan"
+        ]
+      },
+      "segment_targeting": {
+        "agent": "segmentation_specialist",
+        "content": "Develop personalized journey strategies for each customer segment, addressing their specific needs and behaviors. Focus on the high-value segments and those with the greatest improvement potential.",
+        "readFrom": [
+          "segment_analyzer",
+          "optimization_strategist"
+        ],
+        "tools": [
+          "planning:create_plan"
+        ]
+      },
+      "content_optimization": {
+        "agent": "content_strategist",
+        "content": "Create a content optimization strategy to better engage customers throughout their journey. Recommend content types, messaging approaches, and information architecture improvements based on the journey analysis.",
+        "readFrom": [
+          "segment_analyzer",
+          "journey_analyzer"
+        ],
+        "tools": [
+          "planning:create_plan"
+        ]
+      },
+      "channel_strategy": {
+        "agent": "channel_optimizer",
+        "content": "Develop an optimized multi-channel strategy based on the journey analysis. Recommend the ideal channel mix, cross-channel integration points, and channel-specific optimization tactics.",
+        "readFrom": [
+          "segment_analyzer",
+          "journey_analyzer"
+        ],
+        "tools": [
+          "planning:create_plan"
+        ]
+      }
+    }
+  },
+  {
+    "agent": "roi_calculator",
+    "content": "Estimate the potential ROI from implementing the recommended journey optimizations. Calculate potential conversion rate improvements, revenue impact, implementation costs, and payback period.",
+    "readFrom": [
+      "journey_analyzer",
+      "segment_analyzer",
+      "optimization_strategist",
+      "dynamic_agent",
+      "*"
+    ],
+    "tools": [
+      "planning:chain_of_thought"
+    ],
+    "memory_id": "journey_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "current_metrics": {
+          "overall_conversion_rate": "number",
+          "average_cart_value": "number",
+          "estimated_monthly_revenue": "number"
+        },
+        "projected_improvements": {
+          "conversion_rate_increase": "number",
+          "additional_monthly_revenue": "number",
+          "first_year_revenue_impact": "number"
+        },
+        "implementation_costs": {
+          "development_costs": "number",
+          "operational_costs": "number",
+          "total_estimated_cost": "number"
+        },
+        "roi_analysis": {
+          "payback_period_months": "number",
+          "first_year_roi_percentage": "number",
+          "three_year_roi_percentage": "number"
+        },
+        "confidence_level": "number",
+        "sensitivity_analysis": [
+          "string"
+        ]
+      }
+    }
+  },
+  {
+    "agent": "executive_summarizer",
+    "content": "Create a comprehensive executive summary of the entire customer journey analysis, including key findings, optimization recommendations, implementation strategy, and expected business impact. Format this as a clear, actionable report for senior leadership.",
+    "readFrom": [
+      "journey_planner",
+      "journey_analyzer",
+      "segment_analyzer",
+      "friction_identifier",
+      "optimization_strategist",
+      "dynamic_agent",
+      "roi_calculator",
+      "*"
+    ],
+    "tools": [
+      "planning:get_summary"
+    ],
+    "memory_id": "journey_analysis",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Customer Journey Overview",
+        "Key Findings",
+        "Optimization Strategy",
+        "Implementation Approach",
+        "Financial Impact",
+        "Next Steps",
+        "Appendix: Detailed Analysis"
+      ]
+    }
+  }
+]

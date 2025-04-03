@@ -1,0 +1,6 @@
+```json
+{
+  "status": "success",
+  "message": "Browser session closed successfully."
+}
+```

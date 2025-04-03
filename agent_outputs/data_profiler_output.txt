@@ -1,0 +1,40 @@
+```json
+{
+  "total_customers": 4,
+  "journey_stages": [
+    "landing",
+    "product_browse",
+    "product_detail",
+    "cart",
+    "checkout",
+    "exit"
+  ],
+  "conversion_rate": 0.5,
+  "avg_session_duration": 45.25,
+  "anomalies": [
+    "Customer 1003 exited immediately after landing page view",
+    "Customer 1001 encountered a payment error during checkout"
+  ],
+  "data_quality_issues": [
+    "Missing search terms for some product views",
+    "Inconsistent page load times (e.g., 4.2 seconds for an exit)"
+  ],
+  "key_segments": [
+    {
+      "segment": "new_visitor",
+      "conversion_rate": 0.5,
+      "avg_cart_value": 79.99
+    },
+    {
+      "segment": "returning",
+      "conversion_rate": 0,
+      "avg_cart_value": 149.99
+    },
+    {
+      "segment": "high_intent",
+      "conversion_rate": 1,
+      "avg_cart_value": 137.48
+    }
+  ]
+}
+```

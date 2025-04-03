@@ -1,0 +1,66 @@
+[
+  {
+    "agent": "memory_encoder",
+    "content": "Encode the following information into the distributed memory system under the name '{memory_name}': {content}",
+    "tools": [
+      "vector_db:add"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "encoded_information": "string",
+        "encoding_format": "string",
+        "metadata": {},
+        "storage_location": "string"
+      }
+    },
+    "memory_id": "{memory_name}"
+  },
+  {
+    "agent": "memory_organizer",
+    "content": "Organize and store the encoded information in the most appropriate memory hierarchy",
+    "readFrom": [
+      "memory_encoder"
+    ],
+    "tools": [
+      "vector_db:add"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "storage_hierarchy": {
+          "tier": "string",
+          "location": "string",
+          "access_pattern": "string",
+          "retention_policy": "string"
+        },
+        "indexing_strategy": "string",
+        "retrieval_examples": [
+          "string"
+        ]
+      }
+    },
+    "memory_id": "{memory_name}"
+  },
+  {
+    "agent": "memory_validator",
+    "content": "Validate that the information has been properly stored and can be retrieved. Create sample retrieval queries to confirm accessibility.",
+    "readFrom": [
+      "memory_encoder",
+      "memory_organizer"
+    ],
+    "tools": [
+      "vector_db:search"
+    ],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Storage Confirmation",
+        "Sample Queries",
+        "Retrieval Results",
+        "Storage Quality Assessment"
+      ]
+    },
+    "memory_id": "{memory_name}"
+  }
+]

@@ -1,0 +1,93 @@
+```json
+{
+  "total_sessions": 1,
+  "analyzed_timeframe": "2025-03-25T08:23:45Z to 2025-03-25T08:26:01Z",
+  "suspicious_sessions": [
+    {
+      "session_id": "a3c8d9e7f6b2",
+      "risk_score": 85,
+      "suspicious_indicators": [
+        "Multiple access denied responses (403)",
+        "Access to sensitive endpoint (/api/admin)",
+        "High response time for login endpoint"
+      ],
+      "ip_address": "192.168.1.254",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+      "accessed_endpoints": [
+        "/api/login",
+        "/api/auth",
+        "/api/users",
+        "/api/admin",
+        "/api/users/45678",
+        "/api/users/45678/reset",
+        "/api/users/admin",
+        "/api/logout"
+      ],
+      "unusual_patterns": [
+        "Repeated failed attempts to access /api/admin",
+        "Access reset password endpoint",
+        "Attempted access to non-existent admin user endpoint"
+      ]
+    }
+  ],
+  "unusual_ip_activity": [
+    {
+      "ip_address": "192.168.1.254",
+      "session_count": 1,
+      "unique_user_ids": 1,
+      "endpoints_accessed": [
+        "/api/login",
+        "/api/auth",
+        "/api/users",
+        "/api/admin",
+        "/api/users/45678",
+        "/api/users/45678/reset",
+        "/api/users/admin",
+        "/api/logout"
+      ],
+      "suspicion_factors": [
+        "High number of access denied responses",
+        "Access to sensitive endpoints"
+      ]
+    }
+  ],
+  "endpoint_risk_analysis": [
+    {
+      "endpoint": "/api/admin",
+      "access_count": 3,
+      "unusual_methods": [
+        "GET"
+      ],
+      "error_rate": 100.0,
+      "average_response_time": 85.67,
+      "risk_level": "High"
+    },
+    {
+      "endpoint": "/api/users/45678/reset",
+      "access_count": 1,
+      "unusual_methods": [
+        "POST"
+      ],
+      "error_rate": 0.0,
+      "average_response_time": 320.0,
+      "risk_level": "Medium"
+    },
+    {
+      "endpoint": "/api/login",
+      "access_count": 1,
+      "unusual_methods": [
+        "POST"
+      ],
+      "error_rate": 0.0,
+      "average_response_time": 350.0,
+      "risk_level": "Medium"
+    }
+  ],
+  "temporal_patterns": {
+    "peak_activity_times": [
+      "2025-03-25T08:23:45Z to 2025-03-25T08:26:01Z"
+    ],
+    "unusual_timing_sessions": []
+  }
+}
+```

@@ -1,0 +1,28 @@
+```json
+{
+  "time_based_patterns": [
+    {
+      "channel": "email",
+      "optimal_days": [
+        "Monday",
+        "Wednesday",
+        "Friday"
+      ],
+      "optimal_times": [
+        "10:00 AM",
+        "2:00 PM"
+      ],
+      "seasonal_trends": [
+        "Holiday Season",
+        "End of Quarter"
+      ],
+      "event_correlations": [
+        "Email Campaign Launches",
+        "Product Launches"
+      ],
+      "significance_score": 0.8
+    }
+  ],
+  "cross_channel_temporal_strategy": "Focus on email campaigns during optimal days and times, particularly during seasonal peaks and around key events. Reassess data quality and engagement strategies for other channels to identify potential temporal opportunities."
+}
+```

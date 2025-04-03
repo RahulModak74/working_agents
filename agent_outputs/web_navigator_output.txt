@@ -1,0 +1,7 @@
+```json
+{
+  "status": "success",
+  "url": "https://www.wikipedia.org/",
+  "title": "Wikipedia"
+}
+```

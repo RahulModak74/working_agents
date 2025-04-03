@@ -1,0 +1,20 @@
+```json
+{
+  "success": true,
+  "detection_count": 3,
+  "detections": [
+    {
+      "activity": "Mass file renaming detected",
+      "details": "Over 500 files renamed to suspicious extensions within a short period."
+    },
+    {
+      "activity": "Shadow copy deletion detected",
+      "details": "Multiple shadow copy volumes deleted using 'vssadmin delete shadows /all' command."
+    },
+    {
+      "activity": "Suspicious file extensions detected",
+      "details": "Files with extensions like .encrypted, .locked, .crypt found in multiple directories."
+    }
+  ]
+}
+```

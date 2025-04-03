@@ -1,0 +1,148 @@
+```json
+{
+  "journey_stages": [
+    {
+      "stage": "landing",
+      "primary_channels": [
+        "email"
+      ],
+      "secondary_channels": [
+        "other"
+      ],
+      "channel_sequence": [
+        "email",
+        "other"
+      ],
+      "optimal_timing": "immediate",
+      "content_recommendations": [
+        "welcome offers",
+        "brand introduction"
+      ],
+      "effectiveness_metrics": {
+        "engagement_rate": 0.25,
+        "progression_rate": 0.5,
+        "cost_per_progression": 0
+      }
+    },
+    {
+      "stage": "product_browse",
+      "primary_channels": [
+        "email"
+      ],
+      "secondary_channels": [
+        "other"
+      ],
+      "channel_sequence": [
+        "email",
+        "other"
+      ],
+      "optimal_timing": "within 24 hours",
+      "content_recommendations": [
+        "product highlights",
+        "customer reviews"
+      ],
+      "effectiveness_metrics": {
+        "engagement_rate": 0.25,
+        "progression_rate": 0.5,
+        "cost_per_progression": 0
+      }
+    },
+    {
+      "stage": "product_detail",
+      "primary_channels": [
+        "email"
+      ],
+      "secondary_channels": [
+        "other"
+      ],
+      "channel_sequence": [
+        "email",
+        "other"
+      ],
+      "optimal_timing": "within 1 hour",
+      "content_recommendations": [
+        "detailed product descriptions",
+        "comparison charts"
+      ],
+      "effectiveness_metrics": {
+        "engagement_rate": 0.25,
+        "progression_rate": 0.5,
+        "cost_per_progression": 0
+      }
+    },
+    {
+      "stage": "cart",
+      "primary_channels": [
+        "email"
+      ],
+      "secondary_channels": [
+        "other"
+      ],
+      "channel_sequence": [
+        "email",
+        "other"
+      ],
+      "optimal_timing": "immediate",
+      "content_recommendations": [
+        "cart reminders",
+        "discount offers"
+      ],
+      "effectiveness_metrics": {
+        "engagement_rate": 0.25,
+        "progression_rate": 0.5,
+        "cost_per_progression": 0
+      }
+    },
+    {
+      "stage": "checkout",
+      "primary_channels": [
+        "email"
+      ],
+      "secondary_channels": [
+        "other"
+      ],
+      "channel_sequence": [
+        "email",
+        "other"
+      ],
+      "optimal_timing": "immediate",
+      "content_recommendations": [
+        "secure checkout assurances",
+        "last-minute offers"
+      ],
+      "effectiveness_metrics": {
+        "engagement_rate": 0.25,
+        "progression_rate": 1,
+        "cost_per_progression": 0
+      }
+    },
+    {
+      "stage": "exit",
+      "primary_channels": [
+        "email"
+      ],
+      "secondary_channels": [
+        "other"
+      ],
+      "channel_sequence": [
+        "email",
+        "other"
+      ],
+      "optimal_timing": "within 1 hour",
+      "content_recommendations": [
+        "exit surveys",
+        "re-engagement offers"
+      ],
+      "effectiveness_metrics": {
+        "engagement_rate": 0.25,
+        "progression_rate": 0,
+        "cost_per_progression": 0
+      }
+    }
+  ],
+  "cross_stage_insights": [
+    "Email is the only channel with measurable engagement and conversions, primarily driven by high-intent customers during the checkout stage.",
+    "All other channels show zero engagement and conversions, indicating a need for strategy reevaluation or data quality improvements."
+  ]
+}
+```

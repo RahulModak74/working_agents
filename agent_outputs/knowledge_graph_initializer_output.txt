@@ -1,0 +1,81 @@
+```json
+{
+  "knowledge_graph_schema": {
+    "entities": [
+      {
+        "entity_type": "Person",
+        "properties": [
+          "name",
+          "age",
+          "occupation"
+        ],
+        "federation_location": "Node1"
+      },
+      {
+        "entity_type": "Organization",
+        "properties": [
+          "name",
+          "industry",
+          "location"
+        ],
+        "federation_location": "Node2"
+      },
+      {
+        "entity_type": "Project",
+        "properties": [
+          "title",
+          "description",
+          "start_date"
+        ],
+        "federation_location": "Node3"
+      }
+    ],
+    "relations": [
+      {
+        "relation_type": "works_for",
+        "source_entity": "Person",
+        "target_entity": "Organization",
+        "properties": [
+          "start_date",
+          "role"
+        ]
+      },
+      {
+        "relation_type": "manages",
+        "source_entity": "Person",
+        "target_entity": "Project",
+        "properties": [
+          "start_date",
+          "responsibility"
+        ]
+      },
+      {
+        "relation_type": "funds",
+        "source_entity": "Organization",
+        "target_entity": "Project",
+        "properties": [
+          "amount",
+          "start_date"
+        ]
+      }
+    ],
+    "federation_nodes": [
+      {
+        "node_id": "Node1",
+        "specialization": "Personal Data",
+        "sync_protocol": "HTTP"
+      },
+      {
+        "node_id": "Node2",
+        "specialization": "Organizational Data",
+        "sync_protocol": "HTTP"
+      },
+      {
+        "node_id": "Node3",
+        "specialization": "Project Data",
+        "sync_protocol": "HTTP"
+      }
+    ]
+  }
+}
+```

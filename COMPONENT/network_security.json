@@ -1,0 +1,289 @@
+[
+  {
+    "agent": "connection_manager",
+    "content": "Establish secure connection to the target network security system (Juniper, Aruba, Safenet, F5, Cisco, Source Fire, HP Arcsight, BlueCoat, etc.). Handle authentication using appropriate protocols (SSH, HTTPS, API tokens) based on device type. Capture and store connection session details for subsequent workflow steps.",
+    "tools": ["connect:secure", "auth:multi_vendor"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "connection_id": "string",
+        "device_type": "string",
+        "firmware_version": "string",
+        "connection_protocol": "string"
+      }
+    },
+    "memory_id": "network_assessment"
+  },
+  {
+    "agent": "system_enumerator",
+    "content": "Gather basic system information from the target device. Identify device model, operating system/firmware version, running services, network interfaces, and configuration basics. Use vendor-specific commands and techniques to extract essential information about the device's current state.",
+    "readFrom": ["connection_manager"],
+    "tools": ["device:execute", "config:backup"],
+    "memory_id": "network_assessment",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "device_model": "string",
+        "os_version": "string",
+        "uptime": "string",
+        "services_running": ["string"],
+        "interfaces": ["string"],
+        "modules_installed": ["string"],
+        "last_update": "string"
+      }
+    }
+  },
+  {
+    "agent": "authentication_analyzer",
+    "content": "Analyze authentication and access control mechanisms on the target system. Check for 2FA implementation, authentication methods (local, RADIUS, TACACS+, LDAP), account policies, password complexity, and certificate management. Identify strengths and weaknesses in authentication processes.",
+    "readFrom": ["connection_manager", "system_enumerator"],
+    "tools": ["device:execute", "auth:analyze"],
+    "memory_id": "network_assessment",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "auth_methods": ["string"],
+        "2fa_status": "string",
+        "password_policy": "string",
+        "certificate_status": "string",
+        "account_lockout": "string",
+        "privileged_accounts": ["string"],
+        "auth_vulnerabilities": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "config_analyzer",
+    "content": "Perform comprehensive analysis of the device configuration. Review security policies, ACLs, routing protocols, VPN configurations, logging settings, and other security controls. Identify misconfigurations, insecure defaults, and compliance violations.",
+    "readFrom": ["connection_manager", "system_enumerator"],
+    "tools": ["device:execute", "config:analyze"],
+    "memory_id": "network_assessment",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "security_policies": ["string"],
+        "acl_status": "string",
+        "routing_security": "string",
+        "vpn_config": "string",
+        "logging_settings": "string",
+        "ntp_config": "string",
+        "dns_config": "string",
+        "misconfigurations": ["string"],
+        "compliance_issues": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "update_analyzer",
+    "content": "Evaluate the patch and update status of the device. Check for known vulnerabilities in the current firmware/software version, identify missing security patches, and determine if end-of-life/support issues exist. Compare against vendor security advisories.",
+    "readFrom": ["system_enumerator"],
+    "tools": ["device:execute", "vuln:check"],
+    "memory_id": "network_assessment",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "current_version": "string",
+        "latest_version": "string",
+        "missing_patches": ["string"],
+        "known_vulnerabilities": ["string"],
+        "eol_status": "string",
+        "update_recommendation": "string"
+      }
+    }
+  },
+  {
+    "agent": "protocol_analyzer",
+    "content": "Analyze protocol implementations and security settings. Examine encryption standards, key management, TLS/SSL configurations, cipher suites, and protocol-specific security features. Identify outdated or insecure protocol implementations.",
+    "readFrom": ["system_enumerator", "config_analyzer"],
+    "tools": ["device:execute", "protocol:scan"],
+    "memory_id": "network_assessment",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "encryption_standards": ["string"],
+        "key_management": "string",
+        "tls_configuration": "string",
+        "cipher_suites": ["string"],
+        "insecure_protocols": ["string"],
+        "protocol_vulnerabilities": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "logging_analyzer",
+    "content": "Evaluate logging and monitoring capabilities. Check syslog configuration, SNMP settings, log retention policies, alert mechanisms, and integration with security monitoring systems. Assess the completeness and usefulness of audit logs for security events.",
+    "readFrom": ["connection_manager", "system_enumerator", "config_analyzer"],
+    "tools": ["device:execute", "logs:analyze"],
+    "memory_id": "network_assessment",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "syslog_config": "string",
+        "snmp_settings": "string",
+        "log_retention": "string",
+        "alert_mechanisms": ["string"],
+        "siem_integration": "string",
+        "log_completeness": "string",
+        "monitoring_gaps": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "hardening_evaluator",
+    "content": "Assess overall system hardening based on vendor and industry best practices. Compare current configuration against hardening guidelines, evaluate unnecessary services/features, default credentials, and administrative access controls.",
+    "readFrom": ["system_enumerator", "config_analyzer", "authentication_analyzer"],
+    "tools": ["device:execute", "hardening:check"],
+    "memory_id": "network_assessment",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "compliance_status": "string",
+        "unnecessary_services": ["string"],
+        "default_settings_changed": "boolean",
+        "admin_controls": "string",
+        "hardening_score": "number",
+        "critical_issues": ["string"],
+        "hardening_recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "backup_manager",
+    "content": "Create secure backups of device configurations and essential data. Ensure backups are properly stored, encrypted if appropriate, and documented. This creates a restore point and provides configuration documentation for analysis.",
+    "readFrom": ["connection_manager", "system_enumerator"],
+    "tools": ["device:execute", "backup:create"],
+    "memory_id": "network_assessment",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "backup_created": "boolean",
+        "backup_location": "string",
+        "backup_encrypted": "boolean",
+        "backup_timestamp": "string",
+        "backup_size": "string",
+        "backup_verified": "boolean"
+      }
+    }
+  },
+  {
+    "agent": "report_generator",
+    "content": "Generate a comprehensive assessment report. Include device details, security findings, configuration issues, compliance status, and prioritized recommendations for improving the security posture of the device.",
+    "readFrom": ["system_enumerator", "authentication_analyzer", "config_analyzer", "update_analyzer", "protocol_analyzer", "logging_analyzer", "hardening_evaluator", "backup_manager"],
+    "memory_id": "network_assessment",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Device Information",
+        "Authentication and Access Control Assessment",
+        "Configuration Analysis",
+        "Patch and Update Status",
+        "Protocol Security Analysis",
+        "Logging and Monitoring Capabilities",
+        "System Hardening Evaluation",
+        "Backup Status",
+        "Prioritized Recommendations",
+        "Remediation Roadmap",
+        "Appendices"
+      ]
+    }
+  },
+  {
+    "agent": "dynamic_analyzer",
+    "type": "dynamic",
+    "initial_prompt": "Based on the device type and preliminary findings, determine the most appropriate specialized assessment to perform. Choose from: 'firewall_assessment', 'switch_router_assessment', 'authentication_system_assessment', 'proxy_assessment', 'wireless_assessment', 'hsm_assessment', or 'siem_assessment'.",
+    "readFrom": ["system_enumerator", "config_analyzer"],
+    "tools": ["device:execute"],
+    "memory_id": "network_assessment",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "device_category": "string",
+        "specialized_assessment": "string",
+        "reasoning": "string",
+        "priority_areas": ["string"]
+      }
+    },
+    "actions": {
+      "firewall_assessment": {
+        "agent": "firewall_analyzer",
+        "content": "Perform specialized assessment of firewall configurations. Analyze rule sets, NAT configurations, zone security, application controls, threat protection features, and policy consistency. Evaluate rule optimization and security effectiveness.",
+        "readFrom": ["system_enumerator", "config_analyzer"],
+        "tools": ["device:execute", "firewall:analyze"]
+      },
+      "switch_router_assessment": {
+        "agent": "network_device_analyzer",
+        "content": "Perform specialized assessment of switch or router configurations. Analyze VLAN security, spanning tree, routing protocol security, port security, management plane protection, and control plane security.",
+        "readFrom": ["system_enumerator", "config_analyzer"],
+        "tools": ["device:execute", "network:analyze"]
+      },
+      "authentication_system_assessment": {
+        "agent": "auth_system_analyzer",
+        "content": "Perform specialized assessment of authentication systems (2FA, RADIUS, TACACS+). Analyze token security, directory integration, MFA implementation, authentication workflows, and identity lifecycle management.",
+        "readFrom": ["system_enumerator", "authentication_analyzer"],
+        "tools": ["device:execute", "auth:deep_analyze"]
+      },
+      "proxy_assessment": {
+        "agent": "proxy_analyzer",
+        "content": "Perform specialized assessment of proxy systems. Analyze SSL inspection, content filtering, authentication integration, caching security, and malware scanning capabilities.",
+        "readFrom": ["system_enumerator", "config_analyzer"],
+        "tools": ["device:execute", "proxy:analyze"]
+      },
+      "wireless_assessment": {
+        "agent": "wireless_analyzer",
+        "content": "Perform specialized assessment of wireless systems. Analyze encryption protocols, authentication methods, rogue AP detection, guest network isolation, and wireless IDS/IPS capabilities.",
+        "readFrom": ["system_enumerator", "config_analyzer", "authentication_analyzer"],
+        "tools": ["device:execute", "wireless:analyze"]
+      },
+      "hsm_assessment": {
+        "agent": "hsm_analyzer",
+        "content": "Perform specialized assessment of Hardware Security Modules. Analyze key management, access controls, audit logging, cryptographic algorithm configuration, and FIPS compliance.",
+        "readFrom": ["system_enumerator", "config_analyzer", "authentication_analyzer"],
+        "tools": ["device:execute", "hsm:analyze"]
+      },
+      "siem_assessment": {
+        "agent": "siem_analyzer",
+        "content": "Perform specialized assessment of SIEM systems. Analyze log sources, correlation rules, alerting configuration, retention policies, and incident response workflows.",
+        "readFrom": ["system_enumerator", "config_analyzer", "logging_analyzer"],
+        "tools": ["device:execute", "siem:analyze"]
+      }
+    }
+  },
+  {
+    "agent": "compliance_checker",
+    "content": "Evaluate the system against relevant compliance frameworks and regulatory requirements. Map configurations and security controls to specific compliance standards (PCI DSS, NIST, ISO 27001, etc.) and identify compliance gaps.",
+    "readFrom": ["system_enumerator", "authentication_analyzer", "config_analyzer", "update_analyzer", "protocol_analyzer", "logging_analyzer", "hardening_evaluator", "dynamic_analyzer"],
+    "tools": ["compliance:check"],
+    "memory_id": "network_assessment",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "applicable_standards": ["string"],
+        "compliance_status": "string",
+        "control_gaps": ["string"],
+        "technical_controls": ["string"],
+        "administrative_controls": ["string"],
+        "remediation_priorities": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "remediation_planner",
+    "content": "Create a prioritized remediation plan based on all findings. Develop a roadmap for addressing security issues, with consideration for risk levels, implementation complexity, and operational impact.",
+    "readFrom": ["authentication_analyzer", "config_analyzer", "update_analyzer", "protocol_analyzer", "logging_analyzer", "hardening_evaluator", "dynamic_analyzer", "compliance_checker"],
+    "memory_id": "network_assessment",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "critical_items": ["string"],
+        "high_priority_items": ["string"],
+        "medium_priority_items": ["string"],
+        "low_priority_items": ["string"],
+        "quick_wins": ["string"],
+        "long_term_projects": ["string"],
+        "resource_requirements": ["string"]
+      }
+    }
+  }
+]

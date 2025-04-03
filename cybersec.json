@@ -1,0 +1,1056 @@
+[
+  {
+    "agent": "threat_landscape_modeler",
+    "content": "Construct a comprehensive threat landscape model based on the cybersecurity_metrics.csv data. Analyze threat actor capabilities, TTP prevalence, vulnerability exploitation trends, and attack surface evolution. Create a mathematical representation of the threat environment that can be used for optimization simulations.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "file": "cybersecurity_metrics.csv",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "threat_landscape_model": {
+          "model_version": "string",
+          "temporal_scope": "string",
+          "threat_actor_profiles": [
+            {
+              "actor_type": "string",
+              "capability_level": "number",
+              "resource_constraints": {"financial": "number", "technical": "number", "human": "number"},
+              "motivation_factors": ["string"],
+              "target_preferences": {"industry_sectors": ["string"], "asset_types": ["string"]},
+              "observed_adaptability": "number",
+              "primary_ttps": ["string"]
+            }
+          ],
+          "attack_vector_analysis": [
+            {
+              "vector_id": "string",
+              "vector_category": "string",
+              "exploitation_difficulty": "number",
+              "current_prevalence": "number",
+              "trend_trajectory": "string",
+              "defense_bypass_potential": "number",
+              "typical_impact_severity": "number"
+            }
+          ],
+          "vulnerability_landscape": {
+            "temporal_vulnerability_density": {"current": "number", "trend": "string"},
+            "zero_day_exploitation_rate": "number",
+            "vulnerability_classes": [
+              {
+                "class_name": "string",
+                "prevalence": "number",
+                "average_time_to_patch": "number",
+                "exploitation_likelihood": "number",
+                "typical_impact": "number"
+              }
+            ],
+            "vulnerability_chaining_models": [
+              {
+                "chain_pattern": "string",
+                "average_chain_length": "number",
+                "exploitability_preconditions": ["string"],
+                "typical_privilege_progression": ["string"]
+              }
+            ]
+          },
+          "mathematical_model_parameters": {
+            "base_attack_probability_function": "string",
+            "vulnerability_exploitation_coefficients": {},
+            "defense_effectiveness_multipliers": {},
+            "temporal_evolution_functions": {},
+            "stochastic_parameters": {}
+          }
+        }
+      }
+    },
+    "memory_id": "cyber_resilience_optimization"
+  },
+  {
+    "agent": "defense_capability_analyzer",
+    "content": "Analyze the organization's existing security capabilities, control coverage, detection efficacy, and incident response metrics from the cybersecurity_metrics.csv data. Create a mathematical model of defensive capabilities that quantifies protection levels, coverage gaps, and resilience factors.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "file": "cybersecurity_metrics.csv",
+    "readFrom": ["threat_landscape_modeler"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "defense_capability_model": {
+          "model_version": "string",
+          "capability_assessment_date": "string",
+          "capability_maturity_levels": [
+            {
+              "capability_domain": "string",
+              "current_maturity": "number",
+              "target_maturity": "number",
+              "maturity_gaps": ["string"],
+              "improvement_velocity": "number"
+            }
+          ],
+          "security_control_effectiveness": [
+            {
+              "control_id": "string",
+              "control_category": "string",
+              "implementation_coverage": "number",
+              "effectiveness_score": "number",
+              "drift_tendency": "number",
+              "relevant_threat_vectors": ["string"],
+              "resource_requirements": {"financial": "number", "human": "number", "technical": "number"}
+            }
+          ],
+          "detection_capability_metrics": {
+            "overall_detection_coverage": "number",
+            "mean_time_to_detect": "number",
+            "false_positive_rate": "number",
+            "false_negative_rate": "number",
+            "detection_confidence_distribution": {},
+            "detection_gaps": [
+              {
+                "gap_area": "string",
+                "affected_threat_vectors": ["string"],
+                "visibility_limitations": ["string"],
+                "detection_improvement_potential": "number"
+              }
+            ]
+          },
+          "response_capability_metrics": {
+            "mean_time_to_respond": "number",
+            "containment_effectiveness": "number",
+            "eradication_completeness": "number",
+            "recovery_efficiency": "number",
+            "response_gaps": [
+              {
+                "gap_area": "string",
+                "affected_incident_types": ["string"],
+                "response_limitations": ["string"],
+                "improvement_potential": "number"
+              }
+            ]
+          },
+          "resilience_factors": {
+            "architectural_resilience": "number",
+            "operational_resilience": "number",
+            "process_resilience": "number",
+            "human_resilience": "number",
+            "resilience_gaps": ["string"]
+          },
+          "mathematical_model_parameters": {
+            "security_effectiveness_functions": {},
+            "detection_probability_distributions": {},
+            "response_time_distributions": {},
+            "control_degradation_models": {},
+            "resilience_quantification_formulas": {}
+          }
+        }
+      }
+    },
+    "memory_id": "cyber_resilience_optimization"
+  },
+  {
+    "agent": "risk_quantification_modeler",
+    "content": "Develop a quantitative risk model that integrates threat landscape and defense capability models. Create mathematical representations of risk exposure, impact projections, and security ROI calculations. Formulate optimization targets and constraints based on risk tolerance levels.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "readFrom": ["threat_landscape_modeler", "defense_capability_analyzer"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "cyber_resilience_optimization",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "risk_quantification_model": {
+          "model_framework": "string",
+          "base_currency": "string",
+          "modeling_approach": "string",
+          "threat_scenario_quantification": [
+            {
+              "scenario_id": "string",
+              "threat_vectors": ["string"],
+              "targeted_assets": ["string"],
+              "likelihood_factors": {},
+              "annual_occurrence_probability": "number",
+              "loss_magnitude": {
+                "direct_financial": {"min": "number", "most_likely": "number", "max": "number"},
+                "productivity": {"min": "number", "most_likely": "number", "max": "number"},
+                "reputational": {"min": "number", "most_likely": "number", "max": "number"},
+                "regulatory": {"min": "number", "most_likely": "number", "max": "number"},
+                "strategic": {"min": "number", "most_likely": "number", "max": "number"}
+              },
+              "annual_loss_expectancy": "number",
+              "confidence_interval": {"lower": "number", "upper": "number"}
+            }
+          ],
+          "risk_exposure_aggregation": {
+            "total_annual_loss_expectancy": "number",
+            "loss_exceedance_curve": {"points": [{"x": "number", "y": "number"}]},
+            "risk_distribution_by_category": {},
+            "risk_distribution_by_asset": {},
+            "highest_risk_scenarios": ["string"]
+          },
+          "security_investment_modeling": {
+            "current_security_budget": "number",
+            "budget_allocation": {},
+            "investment_efficiency_metrics": {},
+            "marginal_risk_reduction_curves": [
+              {
+                "control_category": "string",
+                "curve_parameters": {},
+                "optimal_investment_point": "number"
+              }
+            ],
+            "opportunity_costs": {}
+          },
+          "optimization_parameters": {
+            "risk_tolerance_thresholds": {"acceptable_risk": "number", "risk_appetite": "number"},
+            "budget_constraints": {"minimum": "number", "maximum": "number"},
+            "implementation_constraints": {"time": "number", "resource": "number", "technical": "number"},
+            "compliance_requirements": ["string"],
+            "business_continuity_requirements": ["string"]
+          },
+          "mathematical_risk_formulations": {
+            "threat_exposure_functions": {},
+            "control_effectiveness_functions": {},
+            "risk_quantification_formulas": {},
+            "monte_carlo_simulation_parameters": {},
+            "optimization_objective_functions": {}
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "optimization_model_constructor",
+    "content": "Formulate a mathematical optimization model for cyber resilience based on the risk quantification model. Define decision variables, objective functions, constraints, and solution space characteristics. Create a computational representation suitable for advanced optimization algorithms.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "readFrom": ["threat_landscape_modeler", "defense_capability_analyzer", "risk_quantification_modeler"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "cyber_resilience_optimization",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "cyber_resilience_optimization_model": {
+          "model_framework": "string",
+          "optimization_approach": "string",
+          "decision_variables": [
+            {
+              "variable_id": "string",
+              "variable_name": "string",
+              "description": "string",
+              "variable_type": "string",
+              "domain": {"lower_bound": "number", "upper_bound": "number", "step_size": "number"},
+              "current_value": "number",
+              "controls_affected": ["string"]
+            }
+          ],
+          "objective_functions": [
+            {
+              "objective_id": "string",
+              "objective_name": "string",
+              "description": "string",
+              "direction": "string",
+              "mathematical_formulation": "string",
+              "normalization_method": "string",
+              "weight": "number"
+            }
+          ],
+          "constraints": [
+            {
+              "constraint_id": "string",
+              "constraint_name": "string",
+              "description": "string",
+              "mathematical_formulation": "string",
+              "constraint_type": "string",
+              "strictness": "string",
+              "penalty_function": "string"
+            }
+          ],
+          "objective_interaction_modeling": {
+            "objective_correlation_matrix": {},
+            "pareto_frontier_characteristics": "string",
+            "priority_relationship_formulations": {}
+          },
+          "solution_space_characteristics": {
+            "dimensionality": "number",
+            "estimated_size": "number",
+            "landscape_complexity": "string",
+            "multi_modality": "string",
+            "decomposability": "string",
+            "noise_factors": ["string"]
+          },
+          "performance_evaluation_criteria": {
+            "optimization_quality_metrics": ["string"],
+            "computational_efficiency_metrics": ["string"],
+            "robustness_evaluation_methods": ["string"],
+            "sensitivity_analysis_approaches": ["string"]
+          },
+          "computational_representation": {
+            "model_encoding": "string",
+            "data_structures": ["string"],
+            "computational_complexity": {"time": "string", "space": "string"},
+            "parallelization_potential": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "optimization_algorithm_selector",
+    "content": "Select and configure appropriate optimization algorithms for the cyber resilience optimization model. Determine which methods to apply based on problem characteristics, solution space analysis, and optimization objectives.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "readFrom": ["optimization_model_constructor"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "cyber_resilience_optimization",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "optimization_algorithm_selection": {
+          "algorithm_selection_rationale": "string",
+          "primary_algorithms": [
+            {
+              "algorithm_name": "string",
+              "algorithm_class": "string",
+              "selection_rationale": "string",
+              "suitability_score": "number",
+              "expected_performance": "string",
+              "strengths_for_this_problem": ["string"],
+              "weaknesses_for_this_problem": ["string"],
+              "configuration_parameters": {}
+            }
+          ],
+          "hybrid_approach_design": {
+            "hybridization_strategy": "string",
+            "algorithm_interaction_model": "string",
+            "cooperation_mechanisms": ["string"],
+            "information_sharing_protocols": ["string"]
+          },
+          "algorithm_benchmarking_plan": {
+            "benchmark_instances": ["string"],
+            "performance_metrics": ["string"],
+            "statistical_analysis_methods": ["string"],
+            "computational_budget_allocation": {}
+          },
+          "parameter_tuning_strategy": {
+            "tuning_approach": "string",
+            "parameter_dependencies": {},
+            "tuning_budget_allocation": {},
+            "adaptive_parameter_control": "string"
+          },
+          "execution_plan": {
+            "algorithm_phases": [
+              {
+                "phase_name": "string",
+                "algorithms": ["string"],
+                "phase_objective": "string",
+                "termination_criteria": ["string"],
+                "resource_allocation": {}
+              }
+            ],
+            "parallelization_strategy": "string",
+            "computational_resource_requirements": {},
+            "estimated_completion_time": "number"
+          },
+          "solution_quality_assurance": {
+            "verification_methods": ["string"],
+            "robustness_tests": ["string"],
+            "solution_diversity_mechanisms": ["string"],
+            "local_optimality_checks": ["string"]
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "cybersecurity_optimizer",
+    "content": "Execute the selected optimization algorithms on the cyber resilience optimization model. Apply sophisticated computational techniques to identify optimal security control configurations, investment strategies, and resilience improvements.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "readFrom": ["optimization_model_constructor", "optimization_algorithm_selector"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "cyber_resilience_optimization",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "optimization_execution_results": {
+          "execution_summary": {
+            "optimization_status": "string",
+            "computational_resources_used": {},
+            "execution_time": "number",
+            "algorithm_convergence_status": "string",
+            "solution_quality_indicators": {}
+          },
+          "optimization_trajectories": [
+            {
+              "algorithm_name": "string",
+              "convergence_profile": [{"iteration": "number", "objective_value": "number"}],
+              "diversity_measures": [{"iteration": "number", "population_diversity": "number"}],
+              "constraint_violation_trajectory": [{"iteration": "number", "violation_measures": {}}],
+              "computational_efficiency_metrics": [{"iteration": "number", "efficiency_measures": {}}]
+            }
+          ],
+          "pareto_front_approximation": [
+            {
+              "solution_id": "string",
+              "objective_values": {},
+              "constraint_satisfaction": {},
+              "decision_variable_values": {}
+            }
+          ],
+          "solution_clusters": [
+            {
+              "cluster_id": "string",
+              "centroid_solution": "string",
+              "cluster_size": "number",
+              "intra_cluster_diversity": "number",
+              "distinguishing_characteristics": ["string"]
+            }
+          ],
+          "recommended_solutions": [
+            {
+              "solution_id": "string",
+              "selection_rationale": "string",
+              "objective_achievements": {},
+              "constraint_satisfaction": {},
+              "robustness_indicators": {},
+              "implementation_considerations": ["string"]
+            }
+          ],
+          "sensitivity_analysis": {
+            "parameter_sensitivity": [
+              {
+                "parameter_name": "string",
+                "sensitivity_coefficient": "number",
+                "stability_range": {"lower": "number", "upper": "number"},
+                "critical_thresholds": ["number"]
+              }
+            ],
+            "decision_variable_sensitivity": [
+              {
+                "variable_name": "string",
+                "objective_sensitivities": {},
+                "variable_stability_range": {"lower": "number", "upper": "number"},
+                "interaction_effects": ["string"]
+              }
+            ],
+            "scenario_analysis": [
+              {
+                "scenario_name": "string",
+                "parameter_configurations": {},
+                "solution_robustness": "number",
+                "performance_degradation": "number"
+              }
+            ]
+          },
+          "optimization_insights": {
+            "variable_importance_ranking": [{"variable": "string", "importance": "number"}],
+            "objective_trade_off_analysis": [{"objective_pair": ["string", "string"], "trade_off_severity": "number"}],
+            "constraint_binding_analysis": [{"constraint": "string", "binding_frequency": "number"}],
+            "decision_boundary_analysis": ["string"],
+            "counter_intuitive_findings": ["string"]
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "resilience_solution_evaluator",
+    "content": "Evaluate the optimized cyber resilience solutions generated by the optimization process. Apply comprehensive evaluation criteria including risk reduction effectiveness, implementation feasibility, operational impact, and long-term sustainability.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "readFrom": ["cybersecurity_optimizer", "risk_quantification_modeler"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "cyber_resilience_optimization",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "resilience_solution_evaluation": {
+          "evaluation_methodology": "string",
+          "evaluation_date": "string",
+          "solution_evaluations": [
+            {
+              "solution_id": "string",
+              "risk_reduction_effectiveness": {
+                "overall_risk_reduction": "number",
+                "risk_reduction_by_category": {},
+                "residual_risk_profile": {},
+                "risk_transfer_effects": "string"
+              },
+              "implementation_feasibility": {
+                "technical_feasibility_score": "number",
+                "implementation_complexity": "number",
+                "integration_challenges": ["string"],
+                "deployment_timeline_feasibility": "number",
+                "technical_dependencies": ["string"],
+                "required_expertise_availability": "number"
+              },
+              "operational_impact": {
+                "business_process_impacts": [{"process": "string", "impact_severity": "number"}],
+                "user_experience_impacts": [{"user_group": "string", "impact_severity": "number"}],
+                "performance_impacts": [{"system": "string", "impact_severity": "number"}],
+                "operational_overhead": "number",
+                "maintainability_impacts": "number"
+              },
+              "economic_assessment": {
+                "implementation_costs": {"capital_expenditure": "number", "operational_expenditure": "number"},
+                "cost_saving_opportunities": "number",
+                "return_on_security_investment": "number",
+                "payback_period": "number",
+                "total_cost_of_ownership": "number",
+                "opportunity_costs": "number"
+              },
+              "compliance_alignment": {
+                "regulatory_requirement_coverage": {},
+                "audit_supportability": "number",
+                "evidence_generation_capabilities": "number",
+                "compliance_gaps": ["string"]
+              },
+              "long_term_sustainability": {
+                "adaptability_to_threat_evolution": "number",
+                "scalability_with_business_growth": "number",
+                "technology_obsolescence_risk": "number",
+                "vendor_dependency_risks": "number",
+                "talent_requirement_sustainability": "number"
+              },
+              "overall_solution_score": "number",
+              "confidence_level": "number",
+              "evaluation_uncertainties": ["string"]
+            }
+          ],
+          "comparative_analysis": {
+            "solution_rankings": [{"criterion": "string", "rankings": [{"solution_id": "string", "rank": "number"}]}],
+            "dominance_relationships": [{"dominating": "string", "dominated": "string", "aspects": ["string"]}],
+            "complementarity_relationships": [{"solution_pair": ["string", "string"], "complementarity_aspects": ["string"]}],
+            "diversity_analysis": "string"
+          },
+          "multi_criteria_decision_analysis": {
+            "criteria_weights": {},
+            "aggregated_scores": [{"solution_id": "string", "score": "number"}],
+            "sensitivity_to_weights": [{"criterion": "string", "sensitivity": "number"}],
+            "robust_preference_relations": ["string"]
+          },
+          "recommended_solution_portfolio": {
+            "portfolio_composition": ["string"],
+            "portfolio_rationale": "string",
+            "expected_cumulative_benefits": {},
+            "portfolio_implementation_strategy": "string",
+            "risk_reduction_coverage": "number"
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "implementation_planner",
+    "content": "Develop a comprehensive implementation plan for the recommended cyber resilience solutions. Create a phased implementation roadmap, resource allocation strategy, risk mitigation approach, and validation methodology.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "readFrom": ["resilience_solution_evaluator", "cybersecurity_optimizer"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "cyber_resilience_optimization",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "implementation_plan": {
+          "plan_overview": {
+            "plan_name": "string",
+            "version": "string",
+            "planning_horizon": "string",
+            "executive_sponsor": "string",
+            "plan_objectives": ["string"],
+            "critical_success_factors": ["string"]
+          },
+          "implementation_phases": [
+            {
+              "phase_id": "string",
+              "phase_name": "string",
+              "timeline": {"start_date": "string", "end_date": "string", "duration": "string"},
+              "phase_objectives": ["string"],
+              "solutions_implemented": ["string"],
+              "key_activities": [
+                {
+                  "activity_id": "string",
+                  "activity_name": "string",
+                  "description": "string",
+                  "duration": "string",
+                  "dependencies": ["string"],
+                  "responsible_parties": ["string"],
+                  "deliverables": ["string"],
+                  "success_criteria": ["string"]
+                }
+              ],
+              "milestones": [{"milestone_id": "string", "description": "string", "target_date": "string"}],
+              "risk_reduction_targets": {},
+              "budget_allocation": "number",
+              "phase_dependencies": ["string"]
+            }
+          ],
+          "resource_requirements": {
+            "human_resources": [
+              {
+                "role": "string",
+                "skills_required": ["string"],
+                "allocation_percentage": "number",
+                "duration_needed": "string",
+                "internal_external": "string",
+                "cost_estimate": "number"
+              }
+            ],
+            "financial_resources": {
+              "capital_expenditures": [{"category": "string", "amount": "number", "timing": "string"}],
+              "operational_expenditures": [{"category": "string", "amount": "number", "timing": "string"}],
+              "contingency_funds": "number",
+              "funding_sources": ["string"]
+            },
+            "technology_resources": [
+              {
+                "technology_name": "string",
+                "purpose": "string",
+                "specifications": ["string"],
+                "acquisition_method": "string",
+                "cost_estimate": "number",
+                "implementation_timeline": "string"
+              }
+            ]
+          },
+          "implementation_risks_and_mitigations": [
+            {
+              "risk_id": "string",
+              "risk_description": "string",
+              "affected_phases": ["string"],
+              "probability": "number",
+              "impact": "number",
+              "risk_score": "number",
+              "mitigation_strategy": "string",
+              "contingency_plan": "string",
+              "risk_owner": "string"
+            }
+          ],
+          "change_management_approach": {
+            "stakeholder_groups": [
+              {
+                "group_name": "string",
+                "impact_level": "string",
+                "key_concerns": ["string"],
+                "engagement_strategy": "string",
+                "communication_approach": "string"
+              }
+            ],
+            "communication_plan": [{"audience": "string", "message": "string", "channel": "string", "frequency": "string"}],
+            "training_requirements": [{"audience": "string", "training_content": "string", "delivery_method": "string"}],
+            "resistance_management": "string"
+          },
+          "validation_and_verification": {
+            "testing_approach": "string",
+            "success_criteria": [{"criterion": "string", "measurement_method": "string", "target_value": "string"}],
+            "verification_methods": ["string"],
+            "validation_schedule": [{"activity": "string", "timing": "string"}],
+            "acceptance_procedures": "string"
+          },
+          "continuous_improvement_mechanism": {
+            "performance_metrics": ["string"],
+            "review_schedule": ["string"],
+            "feedback_mechanisms": ["string"],
+            "adaptation_process": "string",
+            "lessons_learned_approach": "string"
+          },
+          "governance_structure": {
+            "steering_committee": {"members": ["string"], "responsibilities": ["string"], "meeting_frequency": "string"},
+            "program_management": {"structure": "string", "roles": ["string"], "processes": ["string"]},
+            "decision_making_procedures": "string",
+            "escalation_paths": "string",
+            "reporting_requirements": ["string"]
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Analyze the comprehensive cyber resilience optimization results and implementation plan. Determine the most critical focus area that leadership should prioritize for immediate attention. Choose from: 'control_enhancement', 'threat_intelligence', 'incident_response', 'vulnerability_management', or 'security_architecture'.\n\nYour decision should consider optimization outcomes, risk reduction potential, implementation feasibility, and organizational context.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "readFrom": ["threat_landscape_modeler", "defense_capability_analyzer", "risk_quantification_modeler", "cybersecurity_optimizer", "resilience_solution_evaluator", "implementation_planner"],
+    "memory_id": "cyber_resilience_optimization",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_focus": "string",
+        "selection_rationale": "string",
+        "strategic_importance": "number",
+        "implementation_urgency": "number",
+        "expected_benefits": ["string"],
+        "leadership_actions_required": ["string"]
+      }
+    },
+    "actions": {
+      "control_enhancement": {
+        "agent": "control_enhancement_specialist",
+        "content": "Develop a detailed control enhancement strategy focused on the highest-impact security controls identified during optimization. Include specific control improvements, implementation guidance, and operational considerations.\n\nFormat your response as a structured document with the required sections.",
+        "readFrom": ["defense_capability_analyzer", "cybersecurity_optimizer", "implementation_planner"],
+        "output_format": {
+          "type": "markdown",
+          "sections": [
+            "Control Enhancement Strategy",
+            "Priority Controls Analysis",
+            "Implementation Approach",
+            "Operational Considerations",
+            "Performance Metrics",
+            "Maturity Progression Path"
+          ]
+        }
+      },
+      "threat_intelligence": {
+        "agent": "threat_intelligence_strategist",
+        "content": "Develop a comprehensive threat intelligence program strategy that addresses gaps identified in the optimization analysis. Include intelligence collection priorities, analysis methodologies, dissemination workflows, and integration with security operations.\n\nFormat your response as a structured document with the required sections.",
+        "readFrom": ["threat_landscape_modeler", "risk_quantification_modeler", "implementation_planner"],
+        "output_format": {
+          "type": "markdown",
+          "sections": [
+            "Threat Intelligence Strategy",
+            "Intelligence Requirements",
+            "Collection Framework",
+            "Analysis Methodology",
+            "Dissemination Processes",
+            "Operational Integration",
+            "Effectiveness Metrics"
+          ]
+        }
+      },
+      "incident_response": {
+        "agent": "incident_response_architect",
+        "content": "Design an enhanced incident response capability based on the optimization findings. Include detection improvements, response procedures, coordination mechanisms, and recovery processes that address identified gaps.\n\nFormat your response as a structured document with the required sections.",
+        "readFrom": ["defense_capability_analyzer", "risk_quantification_modeler", "implementation_planner"],
+        "output_format": {
+          "type": "markdown",
+          "sections": [
+            "Incident Response Strategy",
+            "Detection Enhancements",
+            "Response Procedures",
+            "Containment Strategies",
+            "Eradication Methods",
+            "Recovery Processes",
+            "Post-Incident Activities",
+            "Capability Metrics"
+          ]
+        }
+      },
+      "vulnerability_management": {
+        "agent": "vulnerability_management_expert",
+        "content": "Create a comprehensive vulnerability management program that addresses the gaps identified during optimization. Include vulnerability identification methods, risk-based prioritization, remediation processes, and verification procedures.\n\nFormat your response as a structured document with the required sections.",
+        "readFrom": ["threat_landscape_modeler", "defense_capability_analyzer", "implementation_planner"],
+        "output_format": {
+          "type": "markdown",
+          "sections": [
+            "Vulnerability Management Strategy",
+            "Discovery Processes",
+            "Risk-Based Prioritization",
+            "Remediation Workflows",
+            "Verification Methods",
+            "Program Metrics",
+            "Continuous Improvement"
+          ]
+        }
+      },
+      "security_architecture": {
+        "agent": "security_architecture_designer",
+        "content": "Design an enhanced security architecture based on the resilience optimization findings. Create a target architecture that addresses identified weaknesses, incorporates security principles, and supports business objectives.\n\nFormat your response as a structured document with the required sections.",
+        "readFrom": ["defense_capability_analyzer", "cybersecurity_optimizer", "implementation_planner"],
+        "output_format": {
+          "type": "markdown",
+          "sections": [
+            "Security Architecture Strategy",
+            "Architectural Principles",
+            "Reference Architecture",
+            "Security Patterns",
+            "Technology Selection Criteria",
+            "Implementation Roadmap",
+            "Architecture Governance"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "agent": "executive_cyber_advisor",
+    "content": "Synthesize all optimization analyses and recommendations into an executive-level advisory document. Provide strategic guidance, investment recommendations, risk insights, and implementation direction for senior leadership.\n\nFormat your response as a structured document with the required sections.",
+    "readFrom": ["threat_landscape_modeler", "defense_capability_analyzer", "risk_quantification_modeler", "cybersecurity_optimizer", "resilience_solution_evaluator", "implementation_planner", "dynamic_agent", "*"],
+    "memory_id": "cyber_resilience_optimization",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Strategic Context",
+        "Key Risk Insights",
+        "Optimization Outcomes",
+        "Investment Recommendations",
+        "Implementation Roadmap",
+        "Critical Success Factors",
+        "Board-Level Considerations"
+      ]
+    }}
+,
+  {
+    "agent": "cyber_resilience_metrics_designer",
+    "content": "Design a comprehensive cyber resilience metrics framework to measure the effectiveness of the optimized security program. Create metrics that quantify security posture improvements, track implementation progress, and demonstrate business value.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "readFrom": ["defense_capability_analyzer", "risk_quantification_modeler", "implementation_planner", "dynamic_agent", "executive_cyber_advisor"],
+    "memory_id": "cyber_resilience_optimization",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "metrics_framework": {
+          "framework_principles": {
+            "design_philosophy": "string",
+            "alignment_to_standards": ["string"],
+            "measurement_approach": "string",
+            "data_quality_requirements": ["string"]
+          },
+          "strategic_metrics": [
+            {
+              "metric_id": "string",
+              "metric_name": "string",
+              "description": "string",
+              "strategic_alignment": "string",
+              "calculation_method": "string",
+              "data_sources": ["string"],
+              "reporting_frequency": "string",
+              "target_values": {"baseline": "number", "target": "number", "stretch": "number"},
+              "stakeholder_relevance": ["string"]
+            }
+          ],
+          "operational_metrics": [
+            {
+              "metric_id": "string",
+              "metric_name": "string",
+              "description": "string",
+              "security_domain": "string",
+              "calculation_method": "string",
+              "data_sources": ["string"],
+              "collection_method": "string",
+              "reporting_frequency": "string",
+              "target_values": {"baseline": "number", "target": "number", "stretch": "number"},
+              "leading_lagging_indicator": "string"
+            }
+          ],
+          "metrics_visualization": {
+            "dashboard_structure": "string",
+            "audience_specific_views": [{"audience": "string", "key_metrics": ["string"]}],
+            "visualization_types": ["string"],
+            "data_aggregation_methods": ["string"],
+            "trend_analysis_techniques": ["string"]
+          },
+          "continuous_improvement_mechanism": {
+            "metrics_review_process": "string",
+            "feedback_incorporation": "string",
+            "metrics_evolution_approach": "string",
+            "obsolescence_criteria": ["string"]
+          },
+          "metrics_program_governance": {
+            "roles_and_responsibilities": [{"role": "string", "responsibilities": ["string"]}],
+            "data_quality_management": "string",
+            "escalation_procedures": "string",
+            "reporting_workflow": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "cyber_resilience_simulator",
+    "content": "Develop a cyber resilience simulation model that tests the optimized security program against advanced threats. Create scenarios that evaluate detection capabilities, response effectiveness, and system resilience under realistic attack conditions.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "readFrom": ["threat_landscape_modeler", "defense_capability_analyzer", "implementation_planner", "dynamic_agent"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "cyber_resilience_optimization",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "resilience_simulation_framework": {
+          "simulation_methodology": {
+            "approach": "string",
+            "theoretical_foundations": ["string"],
+            "simulation_boundaries": "string",
+            "validation_approach": "string"
+          },
+          "threat_scenarios": [
+            {
+              "scenario_id": "string",
+              "scenario_name": "string",
+              "threat_actor_profile": "string",
+              "attack_vectors": ["string"],
+              "attack_progression": [
+                {
+                  "stage": "string",
+                  "tactics": ["string"],
+                  "techniques": ["string"],
+                  "detection_opportunities": ["string"],
+                  "prevention_opportunities": ["string"],
+                  "simulation_parameters": {}
+                }
+              ],
+              "target_assets": ["string"],
+              "success_criteria": ["string"],
+              "business_impact_potential": {"confidentiality": "number", "integrity": "number", "availability": "number"}
+            }
+          ],
+          "defense_simulation_components": {
+            "prevention_controls": [{"control_name": "string", "efficacy_parameters": {}, "configuration_variables": ["string"]}],
+            "detection_capabilities": [{"capability_name": "string", "detection_parameters": {}, "configuration_variables": ["string"]}],
+            "response_processes": [{"process_name": "string", "response_parameters": {}, "configuration_variables": ["string"]}],
+            "recovery_mechanisms": [{"mechanism_name": "string", "recovery_parameters": {}, "configuration_variables": ["string"]}]
+          },
+          "simulation_execution_plan": {
+            "execution_phases": [
+              {
+                "phase_name": "string",
+                "scenarios": ["string"],
+                "simulation_objectives": ["string"],
+                "measurement_points": ["string"],
+                "success_criteria": ["string"]
+              }
+            ],
+            "resource_requirements": {"computational": {}, "human": {}, "time": "string"},
+            "execution_schedule": "string",
+            "participant_roles": ["string"]
+          },
+          "simulation_results_analysis": {
+            "data_collection_plan": ["string"],
+            "analysis_techniques": ["string"],
+            "visualization_methods": ["string"],
+            "interpretation_frameworks": ["string"]
+          },
+          "continuous_improvement_process": {
+            "feedback_incorporation": "string",
+            "simulation_refinement": "string",
+            "validation_methods": ["string"],
+            "evolutionary_approach": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "future_readiness_assessor",
+    "content": "Evaluate the future readiness of the optimized cyber resilience program. Analyze how well the program will adapt to emerging threats, technology evolution, business changes, and regulatory developments.\n\nYour response must be a valid JSON object with the structure shown in the schema.",
+    "readFrom": ["threat_landscape_modeler", "defense_capability_analyzer", "implementation_planner", "cyber_resilience_simulator"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "cyber_resilience_optimization",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "future_readiness_assessment": {
+          "assessment_methodology": {
+            "approach": "string",
+            "time_horizons": ["string"],
+            "uncertainty_handling": "string",
+            "confidence_classification": "string"
+          },
+          "threat_evolution_readiness": {
+            "emerging_threat_vectors": [
+              {
+                "threat_category": "string",
+                "emergence_timeline": "string",
+                "potential_impact": "number",
+                "current_readiness": "number",
+                "readiness_gaps": ["string"],
+                "adaptation_recommendations": ["string"]
+              }
+            ],
+            "threat_actor_evolution": [
+              {
+                "actor_category": "string",
+                "projected_capability_changes": "string",
+                "timeline": "string",
+                "defense_implications": ["string"],
+                "readiness_assessment": "number"
+              }
+            ],
+            "attack_technique_innovation": [
+              {
+                "technique_area": "string",
+                "innovation_direction": "string",
+                "timeline": "string",
+                "defense_implications": ["string"],
+                "readiness_assessment": "number"
+              }
+            ]
+          },
+          "technology_evolution_readiness": {
+            "security_technology_trends": [
+              {
+                "technology_area": "string",
+                "evolution_direction": "string",
+                "adoption_timeline": "string",
+                "integration_readiness": "number",
+                "strategic_alignment": "string"
+              }
+            ],
+            "it_infrastructure_evolution": [
+              {
+                "infrastructure_area": "string",
+                "projected_changes": "string",
+                "timeline": "string",
+                "security_implications": ["string"],
+                "readiness_assessment": "number"
+              }
+            ],
+            "emerging_security_paradigms": [
+              {
+                "paradigm_name": "string",
+                "adoption_timeline": "string",
+                "transformative_potential": "number",
+                "organizational_readiness": "number",
+                "adaptation_strategy": "string"
+              }
+            ]
+          },
+          "business_evolution_readiness": {
+            "business_model_changes": [
+              {
+                "change_area": "string",
+                "projected_evolution": "string",
+                "timeline": "string",
+                "security_implications": ["string"],
+                "readiness_assessment": "number"
+              }
+            ],
+            "operational_model_changes": [
+              {
+                "change_area": "string",
+                "projected_evolution": "string",
+                "timeline": "string",
+                "security_implications": ["string"],
+                "readiness_assessment": "number"
+              }
+            ],
+            "geographic_expansion": [
+              {
+                "region": "string",
+                "expansion_timeline": "string",
+                "regulatory_implications": ["string"],
+                "threat_landscape_implications": ["string"],
+                "readiness_assessment": "number"
+              }
+            ]
+          },
+          "regulatory_evolution_readiness": {
+            "emerging_regulations": [
+              {
+                "regulation_name": "string",
+                "jurisdiction": "string",
+                "implementation_timeline": "string",
+                "key_requirements": ["string"],
+                "compliance_readiness": "number",
+                "adaptation_strategy": "string"
+              }
+            ],
+            "regulatory_trend_analysis": [
+              {
+                "trend_name": "string",
+                "affected_domains": ["string"],
+                "timeline": "string",
+                "compliance_implications": ["string"],
+                "readiness_assessment": "number"
+              }
+            ],
+            "global_regulatory_harmonization": {
+              "harmonization_areas": ["string"],
+              "timeline": "string",
+              "compliance_strategy_implications": ["string"],
+              "readiness_assessment": "number"
+            }
+          },
+          "overall_future_readiness": {
+            "composite_readiness_score": "number",
+            "critical_readiness_gaps": ["string"],
+            "strategic_recommendations": ["string"],
+            "investment_priorities": ["string"],
+            "adaptability_enhancement_opportunities": ["string"]
+          }
+        }
+      }
+    }
+  }
+]

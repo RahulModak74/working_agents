@@ -1,0 +1,23 @@
+```json
+{
+  "success": true,
+  "detection_count": 3,
+  "detections": [
+    {
+      "type": "PowerShell",
+      "description": "Encoded command detected",
+      "severity": "high"
+    },
+    {
+      "type": "JavaScript",
+      "description": "Obfuscated script detected",
+      "severity": "medium"
+    },
+    {
+      "type": "VBScript",
+      "description": "Suspicious obfuscation techniques used",
+      "severity": "low"
+    }
+  ]
+}
+```

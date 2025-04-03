@@ -1,0 +1,7 @@
+```json
+{
+  "success": true,
+  "detection_count": 0,
+  "detections": []
+}
+```

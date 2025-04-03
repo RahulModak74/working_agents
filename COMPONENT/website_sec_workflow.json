@@ -1,0 +1,324 @@
+[
+  {
+    "agent": "website_vulnerability_scanner",
+    "content": "Perform a comprehensive website vulnerability scan to detect common web security issues (e.g., SQL injection, XSS, CSRF, SSRF). Gather all relevant CVE references (if applicable), severity levels, and possible exploitation paths specific to the web application.",
+    "file": "website_vulnerability_scan_results.csv",
+    "tools": ["clickhouse:query", "aio_http:get"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "scan_metadata": {
+          "scan_id": "string",
+          "timestamp": "string",
+          "target_urls": ["string"],
+          "scan_coverage": "number"
+        },
+        "vulnerability_summary": {
+          "total_vulnerabilities": "number",
+          "critical_count": "number",
+          "high_count": "number",
+          "medium_count": "number",
+          "low_count": "number"
+        },
+        "top_vulnerabilities": [
+          {
+            "identifier": "string",
+            "cvss_score": "number",
+            "affected_endpoint": "string",
+            "vulnerability_type": "string",
+            "discovery_date": "string"
+          }
+        ],
+        "scan_coverage_gaps": ["string"],
+        "initial_assessment": "string"
+      }
+    },
+    "memory_id": "web_vuln_analysis"
+  },
+  {
+    "agent": "cve_enricher",
+    "content": "Enrich the detected website vulnerabilities with detailed information. Pull in external threat intelligence on known exploits, patch information, and attack patterns for each vulnerability (including both CVE-based issues and typical web app vulnerabilities).",
+    "readFrom": ["website_vulnerability_scanner"],
+    "tools": ["aio_http:get", "clickhouse:search_vectors"],
+    "memory_id": "web_vuln_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "enriched_vulnerabilities": [
+          {
+            "identifier": "string",
+            "detailed_description": "string",
+            "attack_vectors": ["string"],
+            "exploitability": {
+              "exploit_available": "boolean",
+              "exploit_maturity": "string",
+              "exploit_delivery_methods": ["string"]
+            },
+            "mitigation_status": {
+              "patch_available": "boolean",
+              "patch_url": "string",
+              "workaround_available": "boolean",
+              "workaround_description": "string"
+            },
+            "temporal_metrics": {
+              "exploit_code_maturity": "string",
+              "remediation_level": "string",
+              "report_confidence": "string",
+              "temporal_score": "number"
+            },
+            "threat_intelligence": {
+              "active_exploitation": "boolean",
+              "threat_actor_usage": ["string"],
+              "targeted_sectors": ["string"],
+              "known_campaigns": ["string"]
+            }
+          }
+        ],
+        "intelligence_sources_used": ["string"],
+        "intelligence_last_updated": "string"
+      }
+    }
+  },
+  {
+    "agent": "website_exposure_analyzer",
+    "content": "Analyze the web application’s exposure to these vulnerabilities. Identify critical web pages or functions affected, potential impact on user data or business processes, and any mitigating controls (e.g., WAF, input validation) already in place.",
+    "readFrom": ["website_vulnerability_scanner", "cve_enricher"],
+    "tools": ["clickhouse:query", "clickhouse:hybrid_search"],
+    "memory_id": "web_vuln_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "affected_assets": [
+          {
+            "asset_id": "string",
+            "asset_name": "string",
+            "asset_type": "string",
+            "business_criticality": "string",
+            "vulnerabilities": ["string"],
+            "exposure_level": "string"
+          }
+        ],
+        "business_impact_assessment": {
+          "potential_data_exposure": {
+            "data_types": ["string"],
+            "record_count_estimate": "number",
+            "sensitivity_level": "string"
+          },
+          "operational_impact": {
+            "services_affected": ["string"],
+            "impact_level": "string",
+            "estimated_downtime": "string"
+          },
+          "regulatory_considerations": ["string"]
+        },
+        "existing_mitigations": [
+          {
+            "control_id": "string",
+            "control_name": "string",
+            "effectiveness": "string",
+            "gaps_identified": ["string"]
+          }
+        ],
+        "exposure_risk_scores": [
+          {
+            "vulnerability_id": "string",
+            "inherent_risk": "number",
+            "residual_risk": "number",
+            "contributing_factors": ["string"]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on the website vulnerability scan results, enriched vulnerability information, and exposure analysis, determine the most appropriate remediation approach. Options might include: 'immediate_patch_or_fix', 'staged_fix', 'compensating_controls', 'accept_risk', 'further_investigation'.",
+    "readFrom": ["website_vulnerability_scanner", "cve_enricher", "website_exposure_analyzer"],
+    "tools": ["clickhouse:query"],
+    "memory_id": "web_vuln_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "action": "string",
+        "reasoning": "string",
+        "prioritization": {
+          "overall_risk_score": "number",
+          "business_impact": "string",
+          "exploitation_likelihood": "number",
+          "remediation_complexity": "string"
+        }
+      }
+    },
+    "actions": {
+      "immediate_patch_or_fix": {
+        "agent": "emergency_web_fix_coordinator",
+        "content": "Create and deploy immediate fixes or patches for critical website vulnerabilities. Coordinate hotfix releases, code reviews, QA checks, and rollback procedures to ensure minimal downtime.",
+        "readFrom": ["website_vulnerability_scanner", "cve_enricher", "website_exposure_analyzer"],
+        "tools": ["clickhouse:query", "aio_http:get"]
+      },
+      "staged_fix": {
+        "agent": "web_remediation_planner",
+        "content": "Plan a phased remediation strategy for website vulnerabilities. Outline timelines, coordinate development sprints, and ensure incremental improvements without disrupting the live environment.",
+        "readFrom": ["website_vulnerability_scanner", "cve_enricher", "website_exposure_analyzer"],
+        "tools": ["clickhouse:query"]
+      },
+      "compensating_controls": {
+        "agent": "web_control_designer",
+        "content": "Design and implement compensating web security controls (e.g., WAF rules, stricter input validation, privilege restrictions) to limit exploitability until full fixes can be applied.",
+        "readFrom": ["website_vulnerability_scanner", "cve_enricher", "website_exposure_analyzer"],
+        "tools": ["clickhouse:query", "aio_http:get"]
+      },
+      "accept_risk": {
+        "agent": "web_risk_acceptance_documenter",
+        "content": "Document the decision to accept the risk associated with certain website vulnerabilities. Provide rationale, risk owner details, monitoring controls, and a reassessment timeline.",
+        "readFrom": ["website_vulnerability_scanner", "cve_enricher", "website_exposure_analyzer"],
+        "tools": ["clickhouse:query"]
+      },
+      "further_investigation": {
+        "agent": "web_investigation_coordinator",
+        "content": "Define an in-depth investigation plan for vulnerabilities with unclear technical impact or complex remediation. Outline testing procedures, PoC development, and additional information sources.",
+        "readFrom": ["website_vulnerability_scanner", "cve_enricher", "website_exposure_analyzer"],
+        "tools": ["clickhouse:query", "aio_http:get"]
+      }
+    }
+  },
+  {
+    "agent": "implementation_planner",
+    "content": "Based on the selected remediation strategy, outline a detailed implementation roadmap specific to the website environment. Include tasks, resource requirements, timelines, validation steps, and rollback plans.",
+    "readFrom": ["dynamic_agent", "*"],
+    "tools": ["clickhouse:query"],
+    "memory_id": "web_vuln_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "remediation_summary": {
+          "approach": "string",
+          "key_objectives": ["string"],
+          "timeline_overview": "string"
+        },
+        "implementation_phases": [
+          {
+            "phase_name": "string",
+            "start_date": "string",
+            "end_date": "string",
+            "key_milestones": ["string"],
+            "dependencies": ["string"]
+          }
+        ],
+        "resource_requirements": {
+          "teams_involved": ["string"],
+          "skill_requirements": ["string"],
+          "estimated_effort": "string"
+        },
+        "task_breakdown": [
+          {
+            "task_id": "string",
+            "description": "string",
+            "owner": "string",
+            "estimated_hours": "number",
+            "prerequisites": ["string"],
+            "success_criteria": "string"
+          }
+        ],
+        "rollback_plan": {
+          "triggers": ["string"],
+          "procedures": ["string"],
+          "verification_steps": ["string"]
+        },
+        "communication_plan": {
+          "stakeholders": ["string"],
+          "communication_points": ["string"],
+          "escalation_path": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "posture_improver",
+    "content": "Analyze the patterns observed in web vulnerabilities to identify long-term improvements. Recommend code review enhancements, secure coding policies, developer training, or additional web security layers (e.g., content security policies).",
+    "readFrom": [
+      "website_vulnerability_scanner",
+      "cve_enricher",
+      "website_exposure_analyzer",
+      "dynamic_agent",
+      "implementation_planner"
+    ],
+    "tools": ["clickhouse:query", "clickhouse:hybrid_search", "aio_http:get"],
+    "memory_id": "web_vuln_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "vulnerability_pattern_analysis": {
+          "common_root_causes": ["string"],
+          "affected_technology_stacks": ["string"],
+          "recurring_weakness_types": ["string"]
+        },
+        "governance_recommendations": [
+          {
+            "policy_area": "string",
+            "current_gap": "string",
+            "proposed_improvement": "string",
+            "implementation_complexity": "string"
+          }
+        ],
+        "technical_recommendations": [
+          {
+            "control_category": "string",
+            "recommendation": "string",
+            "implementation_approach": "string",
+            "expected_impact": "string"
+          }
+        ],
+        "process_improvements": [
+          {
+            "process_name": "string",
+            "identified_weakness": "string",
+            "improvement_opportunity": "string",
+            "expected_benefits": ["string"]
+          }
+        ],
+        "security_architecture_enhancements": [
+          {
+            "architecture_component": "string",
+            "current_state": "string",
+            "target_state": "string",
+            "transition_approach": "string"
+          }
+        ],
+        "metrics_and_measurement": {
+          "key_performance_indicators": ["string"],
+          "measurement_approach": "string",
+          "baseline_metrics": ["string"],
+          "target_improvements": ["string"]
+        }
+      }
+    }
+  },
+  {
+    "agent": "executive_reporter",
+    "content": "Create a comprehensive executive report on the website vulnerability assessment, remediation actions, and security posture improvements. Present the findings and plans in business-focused language appropriate for management.",
+    "readFrom": [
+      "website_vulnerability_scanner",
+      "cve_enricher",
+      "website_exposure_analyzer",
+      "dynamic_agent",
+      "implementation_planner",
+      "posture_improver"
+    ],
+    "tools": ["clickhouse:query"],
+    "memory_id": "web_vuln_analysis",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Vulnerability Assessment Overview",
+        "Business Impact Analysis",
+        "Remediation Approach",
+        "Implementation Roadmap",
+        "Long-term Security Improvements",
+        "Next Steps and Recommendations"
+      ]
+    }
+  }
+]

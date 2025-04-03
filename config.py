@@ -7,7 +7,7 @@ CONFIG = {
     "output_dir": "./agent_outputs",
     "memory_dir": "./agent_memory",
     "default_model": "deepseek/deepseek-chat:free",
-    "api_key": "sk-or-v1-xxxxxxxxxxxxxxxxxxxxxx",
+    "api_key": "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",
     "endpoint": "https://openrouter.ai/api/v1/chat/completions",
     "memory_db": "agent_memory.db"
 }

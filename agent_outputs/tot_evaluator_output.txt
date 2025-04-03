@@ -1,0 +1,33 @@
+```json
+{
+  "branch_evaluations": [
+    {
+      "branch_id": "branch_1",
+      "confidence_score": 0.85,
+      "strengths": [
+        "Clear roadmap",
+        "High resource availability",
+        "Experienced team"
+      ],
+      "weaknesses": [
+        "Longer timeline",
+        "Higher initial investment"
+      ]
+    },
+    {
+      "branch_id": "branch_2",
+      "confidence_score": 0.75,
+      "strengths": [
+        "Faster implementation",
+        "Lower initial investment"
+      ],
+      "weaknesses": [
+        "Limited resource availability",
+        "Less experienced team"
+      ]
+    }
+  ],
+  "recommended_branch": "branch_1",
+  "final_confidence": 0.85
+}
+```

@@ -1,0 +1,233 @@
+```json
+{
+  "risk_quantification_model": {
+    "model_framework": "Integrated Threat-Defense Risk Model",
+    "base_currency": "USD",
+    "modeling_approach": "Probabilistic Risk Assessment",
+    "threat_scenario_quantification": [
+      {
+        "scenario_id": "SC-001",
+        "threat_vectors": [
+          "phishing",
+          "lateral movement"
+        ],
+        "targeted_assets": [
+          "server",
+          "database"
+        ],
+        "likelihood_factors": {
+          "threat_actor_capability": 9,
+          "vulnerability_exploitation": 0.9,
+          "defense_effectiveness": 0.65
+        },
+        "annual_occurrence_probability": 0.45,
+        "loss_magnitude": {
+          "direct_financial": {
+            "min": 50000,
+            "most_likely": 150000,
+            "max": 300000
+          },
+          "productivity": {
+            "min": 10000,
+            "most_likely": 30000,
+            "max": 60000
+          },
+          "reputational": {
+            "min": 20000,
+            "most_likely": 50000,
+            "max": 100000
+          },
+          "regulatory": {
+            "min": 15000,
+            "most_likely": 40000,
+            "max": 80000
+          },
+          "strategic": {
+            "min": 10000,
+            "most_likely": 25000,
+            "max": 50000
+          }
+        },
+        "annual_loss_expectancy": 157500,
+        "confidence_interval": {
+          "lower": 120000,
+          "upper": 200000
+        }
+      },
+      {
+        "scenario_id": "SC-002",
+        "threat_vectors": [
+          "web vulnerability",
+          "sql injection"
+        ],
+        "targeted_assets": [
+          "web application",
+          "database"
+        ],
+        "likelihood_factors": {
+          "threat_actor_capability": 7,
+          "vulnerability_exploitation": 0.8,
+          "defense_effectiveness": 0.81
+        },
+        "annual_occurrence_probability": 0.35,
+        "loss_magnitude": {
+          "direct_financial": {
+            "min": 30000,
+            "most_likely": 80000,
+            "max": 150000
+          },
+          "productivity": {
+            "min": 5000,
+            "most_likely": 15000,
+            "max": 30000
+          },
+          "reputational": {
+            "min": 10000,
+            "most_likely": 25000,
+            "max": 50000
+          },
+          "regulatory": {
+            "min": 8000,
+            "most_likely": 20000,
+            "max": 40000
+          },
+          "strategic": {
+            "min": 5000,
+            "most_likely": 12000,
+            "max": 25000
+          }
+        },
+        "annual_loss_expectancy": 63000,
+        "confidence_interval": {
+          "lower": 50000,
+          "upper": 80000
+        }
+      }
+    ],
+    "risk_exposure_aggregation": {
+      "total_annual_loss_expectancy": 220500,
+      "loss_exceedance_curve": {
+        "points": [
+          {
+            "x": 50000,
+            "y": 0.9
+          },
+          {
+            "x": 100000,
+            "y": 0.7
+          },
+          {
+            "x": 150000,
+            "y": 0.5
+          },
+          {
+            "x": 200000,
+            "y": 0.3
+          },
+          {
+            "x": 250000,
+            "y": 0.1
+          }
+        ]
+      },
+      "risk_distribution_by_category": {
+        "direct_financial": 0.6,
+        "productivity": 0.15,
+        "reputational": 0.1,
+        "regulatory": 0.1,
+        "strategic": 0.05
+      },
+      "risk_distribution_by_asset": {
+        "server": 0.4,
+        "database": 0.35,
+        "web application": 0.25
+      },
+      "highest_risk_scenarios": [
+        "SC-001",
+        "SC-002"
+      ]
+    },
+    "security_investment_modeling": {
+      "current_security_budget": 500000,
+      "budget_allocation": {
+        "perimeter_security": 0.3,
+        "endpoint_security": 0.25,
+        "access_control": 0.2,
+        "data_security": 0.15,
+        "cloud_security": 0.1
+      },
+      "investment_efficiency_metrics": {
+        "cost_per_risk_reduction": 0.75,
+        "return_on_security_investment": 1.2
+      },
+      "marginal_risk_reduction_curves": [
+        {
+          "control_category": "firewall",
+          "curve_parameters": {
+            "slope": -0.05,
+            "intercept": 0.8
+          },
+          "optimal_investment_point": 100000
+        },
+        {
+          "control_category": "antivirus",
+          "curve_parameters": {
+            "slope": -0.03,
+            "intercept": 0.78
+          },
+          "optimal_investment_point": 80000
+        }
+      ],
+      "opportunity_costs": {
+        "alternative_investments": 0.2,
+        "risk_transfer": 0.1
+      }
+    },
+    "optimization_parameters": {
+      "risk_tolerance_thresholds": {
+        "acceptable_risk": 100000,
+        "risk_appetite": 50000
+      },
+      "budget_constraints": {
+        "minimum": 300000,
+        "maximum": 700000
+      },
+      "implementation_constraints": {
+        "time": 6,
+        "resource": 0.8,
+        "technical": 0.9
+      },
+      "compliance_requirements": [
+        "GDPR",
+        "PCI-DSS"
+      ],
+      "business_continuity_requirements": [
+        "RTO < 4 hours",
+        "RPO < 1 hour"
+      ]
+    },
+    "mathematical_risk_formulations": {
+      "threat_exposure_functions": {
+        "phishing": "P(A) = (C * V * D) / R",
+        "web_vulnerability": "P(A) = (C * V * D) / R"
+      },
+      "control_effectiveness_functions": {
+        "firewall": "P(t) = P0 * e^(-k*t)",
+        "antivirus": "E(t) = E0 + a*t"
+      },
+      "risk_quantification_formulas": {
+        "annual_loss_expectancy": "ALE = ARO * SLE",
+        "risk_exposure": "RE = P(A) * L"
+      },
+      "monte_carlo_simulation_parameters": {
+        "iterations": 10000,
+        "random_seed": 12345
+      },
+      "optimization_objective_functions": {
+        "minimize_risk": "min(RE)",
+        "maximize_roi": "max(ROI)"
+      }
+    }
+  }
+}
+```

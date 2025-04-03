@@ -1,0 +1,116 @@
+```json
+{
+  "overall_budget_allocation": {
+    "facebook": 0,
+    "instagram": 0,
+    "google": 0,
+    "twitter": 0,
+    "youtube": 0,
+    "whatsapp": 0,
+    "email": 100
+  },
+  "segment_specific_allocations": [
+    {
+      "segment": "new_visitor",
+      "facebook": 0,
+      "instagram": 0,
+      "google": 0,
+      "twitter": 0,
+      "youtube": 0,
+      "whatsapp": 0,
+      "email": 100
+    },
+    {
+      "segment": "returning",
+      "facebook": 0,
+      "instagram": 0,
+      "google": 0,
+      "twitter": 0,
+      "youtube": 0,
+      "whatsapp": 0,
+      "email": 0
+    },
+    {
+      "segment": "high_intent",
+      "facebook": 0,
+      "instagram": 0,
+      "google": 0,
+      "twitter": 0,
+      "youtube": 0,
+      "whatsapp": 0,
+      "email": 100
+    }
+  ],
+  "stage_specific_allocations": [
+    {
+      "journey_stage": "landing",
+      "facebook": 0,
+      "instagram": 0,
+      "google": 0,
+      "twitter": 0,
+      "youtube": 0,
+      "whatsapp": 0,
+      "email": 100
+    },
+    {
+      "journey_stage": "product_browse",
+      "facebook": 0,
+      "instagram": 0,
+      "google": 0,
+      "twitter": 0,
+      "youtube": 0,
+      "whatsapp": 0,
+      "email": 100
+    },
+    {
+      "journey_stage": "product_detail",
+      "facebook": 0,
+      "instagram": 0,
+      "google": 0,
+      "twitter": 0,
+      "youtube": 0,
+      "whatsapp": 0,
+      "email": 100
+    },
+    {
+      "journey_stage": "cart",
+      "facebook": 0,
+      "instagram": 0,
+      "google": 0,
+      "twitter": 0,
+      "youtube": 0,
+      "whatsapp": 0,
+      "email": 100
+    },
+    {
+      "journey_stage": "checkout",
+      "facebook": 0,
+      "instagram": 0,
+      "google": 0,
+      "twitter": 0,
+      "youtube": 0,
+      "whatsapp": 0,
+      "email": 100
+    },
+    {
+      "journey_stage": "exit",
+      "facebook": 0,
+      "instagram": 0,
+      "google": 0,
+      "twitter": 0,
+      "youtube": 0,
+      "whatsapp": 0,
+      "email": 100
+    }
+  ],
+  "expected_roi_by_channel": {
+    "facebook": 0,
+    "instagram": 0,
+    "google": 0,
+    "twitter": 0,
+    "youtube": 0,
+    "whatsapp": 0,
+    "email": 1
+  }
+}
+```

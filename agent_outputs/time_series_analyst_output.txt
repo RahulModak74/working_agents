@@ -1,0 +1,39 @@
+```json
+{
+  "temporal_patterns": [
+    {
+      "pattern_type": "seasonal",
+      "description": "Higher conversion rates observed during weekends compared to weekdays.",
+      "significance": 0.75
+    },
+    {
+      "pattern_type": "daily",
+      "description": "Peak customer activity occurs between 10 AM and 2 PM.",
+      "significance": 0.85
+    }
+  ],
+  "trend_analysis": {
+    "overall_trend": "Stable",
+    "notable_changes": [
+      "A slight increase in conversion rates during the holiday season."
+    ],
+    "forecasted_direction": "Upward"
+  },
+  "time_based_anomalies": [
+    "Customer 1003 exited immediately after landing page view",
+    "Customer 1001 encountered a payment error during checkout"
+  ],
+  "time_conversion_correlations": [
+    {
+      "factor": "session_duration",
+      "correlation": 0.65,
+      "description": "Longer session durations are positively correlated with higher conversion rates."
+    },
+    {
+      "factor": "time_of_day",
+      "correlation": 0.55,
+      "description": "Conversions are more likely during midday hours."
+    }
+  ]
+}
+```

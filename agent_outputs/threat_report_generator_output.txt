@@ -1,0 +1,112 @@
+# Executive Summary
+
+This security report provides a comprehensive overview of detected threats, their severity, affected systems, and recommended remediation steps. The analysis is based on telemetry data from various detection systems, including APT, beaconing, data exfiltration, and lateral movement detectors. A total of **12 detections** were identified, with an **overall severity rating of High**. The attack progression follows a pattern from **Reconnaissance to Persistence to Exfiltration**. Immediate actions are recommended to mitigate risks and secure critical systems.
+
+---
+
+# Threat Detection Overview
+
+- **Total Detections:** 12  
+- **Critical Hosts:**  
+  - 192.168.1.10  
+  - 192.168.1.15  
+  - 192.168.1.20  
+  - 192.168.1.100  
+  - 192.168.1.101  
+  - 192.168.1.102  
+- **Attack Progression:** Reconnaissance → Persistence → Exfiltration  
+- **Overall Severity:** High  
+
+---
+
+# Advanced Persistent Threats
+
+| ID  | Description                                      | Timestamp           |
+|-----|--------------------------------------------------|---------------------|
+| 1   | Unusual lateral movement from a dormant account | 2023-10-01T14:23:45Z|
+| 2   | Suspicious data exfiltration from a compromised endpoint | 2023-09-15T08:12:34Z|
+| 3   | Long-term persistence mechanism in network infrastructure | 2023-08-20T19:45:56Z|
+
+---
+
+# Command & Control Communications
+
+| Source IP    | Destination IP | Port | Interval (s) | First Seen           | Last Seen            |
+|--------------|----------------|------|--------------|----------------------|----------------------|
+| 192.168.1.10 | 203.0.113.5    | 443  | 300          | 2023-10-01T02:00:00Z | 2023-10-01T04:00:00Z |
+| 192.168.1.15 | 198.51.100.22  | 8080 | 600          | 2023-10-01T03:30:00Z | 2023-10-01T06:30:00Z |
+| 192.168.1.20 | 203.0.113.10   | 53   | 900          | 2023-10-01T01:00:00Z | 2023-10-01T07:00:00Z |
+
+---
+
+# Data Exfiltration Events
+
+| Timestamp           | Source IP    | Destination IP | Data Size | Protocol |
+|---------------------|--------------|----------------|-----------|----------|
+| 2023-10-07 03:45:12 | 192.168.1.100| 203.0.113.25   | 1.2GB     | HTTPS    |
+| 2023-10-08 22:30:45 | 192.168.1.101| 198.51.100.34  | 750MB     | FTP      |
+| 2023-10-14 04:15:30 | 192.168.1.102| 203.0.113.50   | 2.5GB     | SFTP     |
+
+---
+
+# Lateral Movement
+
+- **Reconnaissance:** 3 detections  
+- **Service Accounts:** 2 detections  
+- **Attack Chains:** 1 detection  
+
+---
+
+# Most Critical Systems
+
+The following systems have been identified as critical due to their involvement in multiple threat activities:  
+- 192.168.1.10  
+- 192.168.1.15  
+- 192.168.1.20  
+- 192.168.1.100  
+- 192.168.1.101  
+- 192.168.1.102  
+
+---
+
+# Recommended Actions
+
+1. **Isolate compromised endpoints** to prevent further damage.  
+2. **Conduct a thorough forensic analysis** to identify the root cause and extent of the compromise.  
+3. **Enhance endpoint detection and logging** to improve visibility into suspicious activities.  
+4. **Review and restrict service account permissions** to minimize lateral movement risks.  
+5. **Implement stricter outbound traffic monitoring** to detect and block exfiltration attempts.  
+6. **Update incident response playbooks** to address identified gaps and improve future response efficiency.  
+
+---
+
+# Technical Details
+
+- **Data Loader:**  
+  - Success: True  
+  - Message: "Security telemetry data loaded successfully"  
+  - Row Count: 1500  
+  - Column Count: 12  
+
+- **APT Detector:**  
+  - Success: True  
+  - Detection Count: 3  
+
+- **Beaconing Detector:**  
+  - Success: True  
+  - Detection Count: 3  
+
+- **Weekend Exfiltration Detector:**  
+  - Success: True  
+  - Detection Count: 3  
+
+- **Lateral Movement Detector:**  
+  - Reconnaissance: 3 detections  
+  - Service Accounts: 2 detections  
+  - Attack Chains: 1 detection  
+
+- **Combined Threat Analyzer:**  
+  - Total Detections: 12  
+  - Critical Hosts: 6  
+  - Attack Progression: Reconnaissance → Persistence → Exfiltration  
+  - Overall Severity: High

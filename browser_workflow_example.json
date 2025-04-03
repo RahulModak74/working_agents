@@ -1,0 +1,126 @@
+[
+  {
+    "agent": "browser_initializer",
+    "content": "Create a new browser session that we'll use to gather information from a website. First, create a chromium browser instance in non-headless mode so we can see what's happening.",
+    "tools": ["browser:create"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "browser_id": "string",
+        "message": "string"
+      }
+    }
+  },
+  {
+    "agent": "web_navigator",
+    "content": "Navigate to the Wikipedia homepage at https://www.wikipedia.org/. Wait for the page to fully load and return the current URL and page title.",
+    "readFrom": ["browser_initializer"],
+    "tools": ["browser:navigate"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "url": "string",
+        "title": "string"
+      }
+    }
+  },
+  {
+    "agent": "content_analyzer",
+    "content": "Extract the HTML content of the current Wikipedia page and provide information about the page structure, including metadata.",
+    "readFrom": ["web_navigator"],
+    "tools": ["browser:get_content"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "metadata": {
+          "url": "string",
+          "title": "string",
+          "content_length": "number"
+        },
+        "summary": "string"
+      }
+    }
+  },
+  {
+    "agent": "element_finder",
+    "content": "Find all search input elements on the Wikipedia homepage. Look for input elements with appropriate selectors like 'input[name=\"search\"]' or other relevant selectors that would identify search fields.",
+    "readFrom": ["content_analyzer"],
+    "tools": ["browser:find_elements"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "count": "number",
+        "elements": [
+          {
+            "index": "number",
+            "tag": "string",
+            "attributes": "object",
+            "recommended_selector": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "dynamic_search_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on the elements found on the Wikipedia page, determine the best way to search for information about 'machine learning'. Should we click on a specific language option first, or should we use the search field directly? Decide on the next action to take.",
+    "readFrom": ["element_finder"],
+    "tools": ["browser:find_elements"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "action": "string",
+        "reasoning": "string",
+        "selector": "string"
+      }
+    },
+    "actions": {
+      "use_search": {
+        "agent": "search_executor",
+        "content": "Use the search input field on Wikipedia to search for 'machine learning'. Find the search input element and then click on it to interact with the search function.",
+        "readFrom": ["element_finder"],
+        "tools": ["browser:click"]
+      },
+      "select_language": {
+        "agent": "language_selector",
+        "content": "Before searching, let's select English as our preferred language. Look for and click on the English language option on the Wikipedia homepage.",
+        "readFrom": ["element_finder"],
+        "tools": ["browser:click"]
+      }
+    }
+  },
+  {
+    "agent": "browser_cleanup",
+    "content": "Now that we've completed our web browsing tasks, close the browser session to free up resources.",
+    "readFrom": ["*"],
+    "tools": ["browser:close"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "message": "string"
+      }
+    }
+  },
+  {
+    "agent": "report_generator",
+    "content": "Generate a comprehensive report of all the browser automation steps we performed, including any challenges encountered and the data we gathered.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Browser Automation Summary",
+        "Page Navigation Results",
+        "Content Analysis",
+        "Element Interactions",
+        "Challenges Encountered",
+        "Improvement Recommendations"
+      ]
+    }
+  }
+]

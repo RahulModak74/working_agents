@@ -1,0 +1,43 @@
+```json
+{
+  "success": true,
+  "detection_count": 5,
+  "detections": [
+    {
+      "process_id": 1234,
+      "process_name": "explorer.exe",
+      "technique": "Process Hollowing",
+      "suspicious_memory_operations": true,
+      "rwx_segment_detected": true
+    },
+    {
+      "process_id": 5678,
+      "process_name": "svchost.exe",
+      "technique": "DLL Injection",
+      "suspicious_memory_operations": true,
+      "rwx_segment_detected": false
+    },
+    {
+      "process_id": 9101,
+      "process_name": "notepad.exe",
+      "technique": "APC Injection",
+      "suspicious_memory_operations": true,
+      "rwx_segment_detected": true
+    },
+    {
+      "process_id": 1121,
+      "process_name": "chrome.exe",
+      "technique": "Thread Execution Hijacking",
+      "suspicious_memory_operations": true,
+      "rwx_segment_detected": true
+    },
+    {
+      "process_id": 3141,
+      "process_name": "firefox.exe",
+      "technique": "Process Doppelganging",
+      "suspicious_memory_operations": true,
+      "rwx_segment_detected": false
+    }
+  ]
+}
+```

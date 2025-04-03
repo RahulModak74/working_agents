@@ -1,0 +1,8 @@
+```json
+{
+  "encoded_information": "Remember that we have a team meeting on Thursday at 2pm to discuss the new product launch",
+  "encoding_format": "text",
+  "metadata": {},
+  "storage_location": "default"
+}
+```

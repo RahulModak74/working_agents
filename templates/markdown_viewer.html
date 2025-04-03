@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Research Results</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        .header { background-color: #333; color: white; padding: 10px 20px; }
+        .header a { color: white; text-decoration: none; margin-right: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .markdown-body { padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="/">Home</a>
+        <a href="/status/{{ job_id }}">Status</a>
+        <a href="/jobs">All Jobs</a>
+    </div>
+    
+    <div class="container">
+        <div id="content" class="markdown-body"></div>
+    </div>
+    
+    <script>
+        // Render the markdown content
+        const markdownContent = `{{ content|safe }}`;
+        document.getElementById('content').innerHTML = marked.parse(markdownContent);
+    </script>
+</body>
+</html>

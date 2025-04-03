@@ -1,0 +1,37 @@
+```json
+{
+  "segments": [
+    {
+      "segment_name": "new_visitor",
+      "segment_size": 1,
+      "primary_channels": ["email"],
+      "secondary_channels": [],
+      "avoid_channels": ["facebook", "instagram", "google", "twitter", "youtube", "whatsapp"],
+      "channel_rationale": "Email shows measurable engagement and conversion rates, making it the most effective channel for new visitors.",
+      "optimal_messaging_approach": "Welcome offers and introductory content to build engagement.",
+      "expected_response_rate": 0.5
+    },
+    {
+      "segment_name": "returning",
+      "segment_size": 1,
+      "primary_channels": [],
+      "secondary_channels": [],
+      "avoid_channels": ["facebook", "instagram", "google", "twitter", "youtube", "whatsapp", "email"],
+      "channel_rationale": "No channels have shown effectiveness for this segment, indicating a need for reevaluation or new strategies.",
+      "optimal_messaging_approach": "Personalized re-engagement campaigns to win back interest.",
+      "expected_response_rate": 0
+    },
+    {
+      "segment_name": "high_intent",
+      "segment_size": 1,
+      "primary_channels": ["email"],
+      "secondary_channels": [],
+      "avoid_channels": ["facebook", "instagram", "google", "twitter", "youtube", "whatsapp"],
+      "channel_rationale": "Email drives conversions for high-intent customers during the checkout stage.",
+      "optimal_messaging_approach": "Urgency-based messaging and incentives to complete purchases.",
+      "expected_response_rate": 1
+    }
+  ],
+  "high_priority_segments": ["high_intent"]
+}
+```

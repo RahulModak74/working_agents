@@ -1,0 +1,23 @@
+```json
+{
+  "cognitive_biases": [
+    {
+      "bias_name": "Confirmation bias",
+      "description": "The problem solver may favor information that confirms their pre-existing beliefs about the hiring process.",
+      "evidence_in_reasoning": "The solution focuses on gathering feedback and data, but there is no mention of challenging existing assumptions.",
+      "likelihood_score": 0.7,
+      "impact_score": 0.6,
+      "mitigation_strategy": "Actively seek out and consider information that contradicts initial assumptions to ensure a balanced perspective."
+    },
+    {
+      "bias_name": "Technology optimism bias",
+      "description": "The problem solver may overestimate the effectiveness of technology solutions in improving the hiring process.",
+      "evidence_in_reasoning": "The solution includes implementing technology solutions like ATS or AI tools without discussing potential limitations or risks.",
+      "likelihood_score": 0.8,
+      "impact_score": 0.7,
+      "mitigation_strategy": "Conduct a thorough evaluation of technology solutions, including potential risks and limitations, before implementation."
+    }
+  ],
+  "overall_bias_assessment": "The solution process is influenced by cognitive biases, particularly confirmation bias and technology optimism bias, which may limit the effectiveness of the proposed improvements. Mitigation strategies should be implemented to address these biases and enhance the quality of the solution."
+}
+```

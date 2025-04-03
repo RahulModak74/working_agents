@@ -1,0 +1,29 @@
+```json
+{
+  "success": true,
+  "detection_count": 3,
+  "detections": [
+    {
+      "timestamp": "2023-10-07 03:45:12",
+      "source_ip": "192.168.1.100",
+      "destination_ip": "203.0.113.25",
+      "data_size": "1.2GB",
+      "protocol": "HTTPS"
+    },
+    {
+      "timestamp": "2023-10-08 22:30:45",
+      "source_ip": "192.168.1.101",
+      "destination_ip": "198.51.100.34",
+      "data_size": "750MB",
+      "protocol": "FTP"
+    },
+    {
+      "timestamp": "2023-10-14 04:15:30",
+      "source_ip": "192.168.1.102",
+      "destination_ip": "203.0.113.50",
+      "data_size": "2.5GB",
+      "protocol": "SFTP"
+    }
+  ]
+}
+```

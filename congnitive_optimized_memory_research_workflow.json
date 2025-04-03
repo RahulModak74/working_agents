@@ -1,0 +1,341 @@
+[
+  {
+    "agent": "system_architect",
+    "content": "Design a comprehensive research system architecture for investigating 'Agentic AI future vision'. Determine the optimal combination of cognitive patterns, optimization approaches, and memory systems to create a sophisticated, self-improving research framework.",
+    "tools": ["cognitive:list_patterns", "optimization:list_patterns", "memory:list_patterns", "planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "architecture_design": {
+          "cognitive_approach": {
+            "selected_pattern": "string",
+            "justification": "string"
+          },
+          "optimization_approach": {
+            "selected_pattern": "string",
+            "justification": "string"
+          },
+          "memory_system": {
+            "selected_pattern": "string",
+            "justification": "string"
+          },
+          "integration_strategy": "string",
+          "expected_synergies": ["string"]
+        }
+      }
+    }
+  },
+  {
+    "agent": "memory_system_initializer",
+    "content": "Initialize the memory system for our research on 'Agentic AI future vision'. Create a system based on the architecture's selected memory pattern that will store, organize, and provide intelligent access to our research findings.",
+    "readFrom": ["system_architect"],
+    "tools": ["memory:create_system", "memory:get_next_step", "memory:select_action", "memory:submit_result"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "memory_system_id": "string",
+        "system_description": "string",
+        "initialized_components": ["string"],
+        "memory_capabilities": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "cognitive_session_initializer",
+    "content": "Initialize a cognitive planning session for structuring our research on 'Agentic AI future vision'. Use the pattern selected in the architecture to create an optimal cognitive approach for exploring this complex, multidimensional topic.",
+    "readFrom": ["system_architect"],
+    "tools": ["cognitive:create_session", "cognitive:get_next_step", "cognitive:select_action", "cognitive:submit_result"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "cognitive_session_id": "string",
+        "pattern_description": "string",
+        "completed_stages": ["string"],
+        "reasoning_insights": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "research_plan_transformer",
+    "content": "Transform the cognitive planning results into a structured research plan for 'Agentic AI future vision'. Extract key questions, research dimensions, and optimal approaches, then store this plan in the memory system.",
+    "readFrom": ["cognitive_session_initializer", "memory_system_initializer"],
+    "tools": ["cognitive:get_results", "cognitive:transform_for_research", "memory:store_operation"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "research_plan": {
+          "goal": "string",
+          "key_questions": ["string"],
+          "subtopics": ["string"],
+          "approach": "string"
+        },
+        "memory_storage_status": "string"
+      }
+    }
+  },
+  {
+    "agent": "workflow_optimizer_initializer",
+    "content": "Initialize an optimization process for our Agentic AI research workflow. Use the pattern selected in the architecture to create a system that will continuously monitor, analyze, and improve our research process.",
+    "readFrom": ["system_architect", "research_plan_transformer"],
+    "tools": ["optimization:create_session", "optimization:get_next_step", "optimization:select_action", "optimization:submit_result"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "optimization_session_id": "string",
+        "pattern_description": "string",
+        "optimization_metrics": ["string"],
+        "improvement_targets": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "preliminary_researcher",
+    "content": "Conduct comprehensive preliminary research on 'Agentic AI future vision' using our cognitively-optimized approach. Focus on understanding what agentic AI is, the current state of development, key concepts, main researchers, and emerging trends. Store all findings in our memory system.",
+    "readFrom": ["research_plan_transformer", "memory_system_initializer"],
+    "tools": ["research:combined_search", "memory:store_operation"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "initial_findings": "string",
+        "key_concepts": ["string"],
+        "main_researchers": ["string"],
+        "leading_organizations": ["string"],
+        "emerging_trends": ["string"],
+        "search_results_summary": "string"
+      }
+    }
+  },
+  {
+    "agent": "memory_integration_agent",
+    "content": "Integrate the preliminary research findings into our memory system. Process and organize the research data according to the memory system's structure, creating connections, hierarchies, or other relationships as appropriate.",
+    "readFrom": ["preliminary_researcher", "memory_system_initializer"],
+    "tools": ["memory:integrate_research", "memory:store_operation"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "integration_status": "string",
+        "entities_added": "number",
+        "concepts_added": "number",
+        "relations_added": "number",
+        "memory_organization": "string"
+      }
+    }
+  },
+  {
+    "agent": "research_gap_analyzer",
+    "content": "Analyze the current state of our research on Agentic AI future vision to identify knowledge gaps and promising areas for deeper investigation. Use the memory system to extract research recommendations and areas where our understanding is incomplete.",
+    "readFrom": ["memory_integration_agent", "preliminary_researcher"],
+    "tools": ["memory:extract_recommendations", "planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "research_gaps": ["string"],
+        "promising_areas": ["string"],
+        "knowledge_clusters": ["string"],
+        "suggested_queries": ["string"],
+        "prioritization_rationale": "string"
+      }
+    }
+  },
+  {
+    "agent": "optimization_monitor",
+    "content": "Monitor the research process so far and identify optimization opportunities. Assess the effectiveness, efficiency, and quality of our research approach, and suggest improvements based on the optimization pattern.",
+    "readFrom": ["preliminary_researcher", "research_gap_analyzer", "workflow_optimizer_initializer"],
+    "tools": ["optimization:get_results", "planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "process_assessment": {
+          "effectiveness_rating": "number",
+          "efficiency_rating": "number",
+          "quality_rating": "number"
+        },
+        "optimization_suggestions": ["string"],
+        "adaptation_recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "research_focus_selector",
+    "content": "Based on our research gaps, promising areas, and optimization recommendations, select three key dimensions of Agentic AI future vision for in-depth investigation. Prioritize areas with the highest potential for novel insights and comprehensive understanding.",
+    "readFrom": ["research_gap_analyzer", "optimization_monitor"],
+    "tools": ["planning:chain_of_thought", "memory:store_operation"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_dimensions": ["string"],
+        "selection_rationale": "string",
+        "investigation_approach": "string",
+        "expected_insights": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "We will conduct in-depth research on each of the three key dimensions selected for Agentic AI future vision. Choose the first dimension to investigate: {dimension1}, {dimension2}, or {dimension3}.",
+    "readFrom": ["research_focus_selector"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "action": "string",
+        "reasoning": "string",
+        "investigation_strategy": "string"
+      }
+    },
+    "actions": {
+      "{dimension1}": {
+        "agent": "dimension1_researcher",
+        "content": "Conduct comprehensive, in-depth research on the {dimension1} aspect of Agentic AI future vision. Perform exhaustive searches, content analysis, and synthesis of information from diverse sources.",
+        "readFrom": ["research_focus_selector", "preliminary_researcher"],
+        "tools": ["research:search", "research:fetch_content", "research:analyze_content", "memory:store_operation"]
+      },
+      "{dimension2}": {
+        "agent": "dimension2_researcher",
+        "content": "Conduct comprehensive, in-depth research on the {dimension2} aspect of Agentic AI future vision. Perform exhaustive searches, content analysis, and synthesis of information from diverse sources.",
+        "readFrom": ["research_focus_selector", "preliminary_researcher"],
+        "tools": ["research:search", "research:fetch_content", "research:analyze_content", "memory:store_operation"]
+      },
+      "{dimension3}": {
+        "agent": "dimension3_researcher",
+        "content": "Conduct comprehensive, in-depth research on the {dimension3} aspect of Agentic AI future vision. Perform exhaustive searches, content analysis, and synthesis of information from diverse sources.",
+        "readFrom": ["research_focus_selector", "preliminary_researcher"],
+        "tools": ["research:search", "research:fetch_content", "research:analyze_content", "memory:store_operation"]
+      }
+    }
+  },
+  {
+    "agent": "second_dimension_selector",
+    "content": "Based on our first dimension research and overall investigation strategy, select the second dimension to research in-depth from the two remaining options.",
+    "readFrom": ["research_focus_selector", "dynamic_agent", "*"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_dimension": "string",
+        "reasoning": "string",
+        "complementary_aspects": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "second_dimension_researcher",
+    "content": "Conduct comprehensive, in-depth research on the {selected_dimension} aspect of Agentic AI future vision. Perform exhaustive searches, content analysis, and synthesis of information from diverse sources, with particular attention to how this dimension interacts with our first researched dimension.",
+    "readFrom": ["second_dimension_selector", "dynamic_agent", "*"],
+    "tools": ["research:search", "research:fetch_content", "research:analyze_content", "memory:store_operation"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "dimension_findings": "string",
+        "key_insights": ["string"],
+        "relevant_sources": ["string"],
+        "cross_dimensional_implications": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "third_dimension_researcher",
+    "content": "Conduct comprehensive, in-depth research on the final selected dimension of Agentic AI future vision. Perform exhaustive searches, content analysis, and synthesis of information, with particular attention to how this dimension completes our understanding when integrated with the first two dimensions.",
+    "readFrom": ["research_focus_selector", "dynamic_agent", "second_dimension_selector", "second_dimension_researcher"],
+    "tools": ["research:search", "research:fetch_content", "research:analyze_content", "memory:store_operation"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "dimension_findings": "string",
+        "key_insights": ["string"],
+        "relevant_sources": ["string"],
+        "comprehensive_perspective": "string"
+      }
+    }
+  },
+  {
+    "agent": "memory_analysis_agent",
+    "content": "Analyze the entire memory system to extract patterns, relationships, and insights about Agentic AI future vision that emerge from our comprehensive research. Look for cross-dimensional insights, unexpected connections, and emerging themes.",
+    "readFrom": ["*"],
+    "tools": ["memory:get_results", "memory:store_operation", "planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "memory_analysis": {
+          "knowledge_graph_stats": "string",
+          "central_concepts": ["string"],
+          "strongest_relationships": ["string"],
+          "emergent_patterns": ["string"]
+        },
+        "cross_dimensional_insights": ["string"],
+        "novel_discoveries": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "optimization_evaluator",
+    "content": "Evaluate the effectiveness of our optimized research process for investigating Agentic AI future vision. Assess how our cognitive patterns, optimization approaches, and memory systems enhanced our research capabilities, and identify lessons for future research.",
+    "readFrom": ["*"],
+    "tools": ["optimization:get_results", "planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "optimization_assessment": {
+          "cognitive_benefits": ["string"],
+          "optimization_benefits": ["string"],
+          "memory_system_benefits": ["string"],
+          "integration_synergies": ["string"]
+        },
+        "effectiveness_metrics": {
+          "research_quality": "number",
+          "research_efficiency": "number",
+          "insight_generation": "number",
+          "adaptability": "number"
+        },
+        "future_recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "comprehensive_synthesis",
+    "content": "Create a comprehensive synthesis of all research findings on Agentic AI future vision. Integrate insights from all three dimensions, memory analysis, and draw on the entire research process to develop a cohesive, multifaceted understanding of the future of Agentic AI.",
+    "readFrom": ["*"],
+    "tools": ["planning:chain_of_thought", "research:generate_summary", "memory:get_results"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "integrated_vision": {
+          "current_state": "string",
+          "technical_trajectory": "string",
+          "application_landscape": "string",
+          "societal_implications": "string",
+          "governance_considerations": "string",
+          "future_scenarios": ["string"]
+        },
+        "critical_uncertainties": ["string"],
+        "transformative_potential": "string",
+        "key_recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "comprehensive_report_generator",
+    "content": "Generate a comprehensive research report on the future vision of Agentic AI, synthesizing all findings from our advanced, cognitively-optimized, memory-enhanced research process. Create a well-structured, insightful document that provides a complete picture of this complex domain.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Introduction to Agentic AI",
+        "Research Methodology and Framework",
+        "Current Technical Landscape",
+        "First Dimension Analysis",
+        "Second Dimension Analysis",
+        "Third Dimension Analysis",
+        "Cross-Dimensional Insights",
+        "Emergent Patterns and Discoveries",
+        "Future Scenarios and Trajectories",
+        "Strategic Implications",
+        "Research Process Reflection",
+        "Conclusions and Recommendations",
+        "Appendix: Memory System Analysis"
+      ]
+    }
+  }
+]

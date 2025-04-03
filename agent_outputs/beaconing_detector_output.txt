@@ -1,0 +1,32 @@
+```json
+{
+  "success": true,
+  "detection_count": 3,
+  "detections": [
+    {
+      "source_ip": "192.168.1.10",
+      "destination_ip": "203.0.113.5",
+      "port": 443,
+      "interval": 300,
+      "first_seen": "2023-10-01T02:00:00Z",
+      "last_seen": "2023-10-01T04:00:00Z"
+    },
+    {
+      "source_ip": "192.168.1.15",
+      "destination_ip": "198.51.100.22",
+      "port": 8080,
+      "interval": 600,
+      "first_seen": "2023-10-01T03:30:00Z",
+      "last_seen": "2023-10-01T06:30:00Z"
+    },
+    {
+      "source_ip": "192.168.1.20",
+      "destination_ip": "203.0.113.10",
+      "port": 53,
+      "interval": 900,
+      "first_seen": "2023-10-01T01:00:00Z",
+      "last_seen": "2023-10-01T07:00:00Z"
+    }
+  ]
+}
+```

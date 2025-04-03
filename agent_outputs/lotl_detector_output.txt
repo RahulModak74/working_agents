@@ -1,0 +1,23 @@
+```json
+{
+  "success": true,
+  "detection_count": 3,
+  "detections": [
+    {
+      "tool": "PowerShell",
+      "technique": "Execution",
+      "description": "PowerShell used to download and execute malicious scripts from a remote server."
+    },
+    {
+      "tool": "regsvr32",
+      "technique": "Persistence",
+      "description": "regsvr32 used to register a malicious DLL for persistence on the system."
+    },
+    {
+      "tool": "certutil",
+      "technique": "Exfiltration",
+      "description": "certutil used to encode and decode data for exfiltration purposes."
+    }
+  ]
+}
+```

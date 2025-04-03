@@ -1,0 +1,122 @@
+[{
+    "agent": "memory_hierarchy_architect",
+    "content": "Design a context-aware memory hierarchy for the agent system. Include multiple storage tiers with different access patterns, retention policies, and context sensitivity.",
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "memory_hierarchy": {
+          "tiers": [
+            {
+              "tier_name": "string",
+              "storage_type": "string",
+              "access_pattern": "string",
+              "retention_policy": "string",
+              "context_sensitivity": "number"
+            }
+          ],
+          "promotion_criteria": [
+            {
+              "from_tier": "string",
+              "to_tier": "string",
+              "criteria": ["string"],
+              "threshold": "number"
+            }
+          ],
+          "demotion_criteria": [
+            {
+              "from_tier": "string",
+              "to_tier": "string",
+              "criteria": ["string"],
+              "threshold": "number"
+            }
+          ]
+        }
+      }
+    },
+    "memory_id": "hierarchical_memory"
+  },
+  {
+    "agent": "working_memory_manager",
+    "content": "Manage the most active tier of the memory hierarchy (working memory). Monitor context shifts, track importance metrics, and manage the limited capacity of this tier.",
+    "readFrom": ["memory_hierarchy_architect"],
+    "tools": ["sql:query", "vector_db:search"],
+    "memory_id": "hierarchical_memory",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "working_memory_state": {
+          "current_capacity": "number",
+          "maximum_capacity": "number",
+          "current_elements": [
+            {
+              "element_id": "string",
+              "importance_score": "number",
+              "recency_score": "number",
+              "context_relevance": "number",
+              "expiration_condition": "string"
+            }
+          ],
+          "recently_demoted": ["string"],
+          "attention_focus": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "context_detector",
+    "content": "Continuously monitor the conversation and task context to detect shifts that should trigger memory reorganization. Identify the current context and its key attributes.",
+    "readFrom": ["working_memory_manager"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "hierarchical_memory",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "context_analysis": {
+          "current_context": "string",
+          "context_attributes": {},
+          "context_shift_detected": "boolean",
+          "previous_context": "string",
+          "shift_magnitude": "number",
+          "relevant_memory_elements": ["string"]
+        }
+      }
+    }
+  },
+  {
+    "agent": "memory_promoter_demoter",
+    "content": "Based on the current context and memory hierarchy, promote and demote memory elements between tiers according to the defined criteria.",
+    "readFrom": ["memory_hierarchy_architect", "working_memory_manager", "context_detector"],
+    "tools": ["sql:query", "vector_db:search"],
+    "memory_id": "hierarchical_memory",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "memory_operations": {
+          "promotions": [
+            {
+              "element_id": "string",
+              "from_tier": "string",
+              "to_tier": "string",
+              "justification": "string"
+            }
+          ],
+          "demotions": [
+            {
+              "element_id": "string",
+              "from_tier": "string",
+              "to_tier": "string",
+              "justification": "string"
+            }
+          ],
+          "tier_statistics": [
+            {
+              "tier_name": "string",
+              "current_occupancy": "number",
+              "capacity": "number"
+            }
+          ]
+        }
+      }
+    }
+  }]

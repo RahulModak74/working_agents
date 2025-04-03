@@ -1,0 +1,167 @@
+[
+  {
+    "agent": "performance_monitor",
+    "content": "Design a comprehensive performance monitoring system for the agent network. Define key metrics, monitoring frequency, and baseline performance expectations.",
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "monitoring_framework": {
+          "system_metrics": [
+            {
+              "metric_name": "string",
+              "description": "string",
+              "measurement_method": "string",
+              "frequency": "string",
+              "baseline_value": "number",
+              "acceptable_range": {"min": "number", "max": "number"}
+            }
+          ],
+          "agent_metrics": [
+            {
+              "metric_name": "string",
+              "description": "string",
+              "measurement_method": "string",
+              "frequency": "string",
+              "baseline_value": "number",
+              "acceptable_range": {"min": "number", "max": "number"}
+            }
+          ],
+          "workflow_metrics": [
+            {
+              "metric_name": "string",
+              "description": "string",
+              "measurement_method": "string",
+              "frequency": "string",
+              "baseline_value": "number",
+              "acceptable_range": {"min": "number", "max": "number"}
+            }
+          ],
+          "alerting_thresholds": [
+            {
+              "metric": "string",
+              "warning_threshold": "number",
+              "critical_threshold": "number",
+              "alert_action": "string"
+            }
+          ]
+        }
+      }
+    },
+    "memory_id": "self_optimization"
+  },
+  {
+    "agent": "metric_collector",
+    "content": "Implement the data collection system for the performance metrics defined by the performance monitor. Collect, process, and store metrics at the specified frequencies.",
+    "readFrom": ["performance_monitor"],
+    "tools": ["sql:query"],
+    "memory_id": "self_optimization",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "metric_collection": {
+          "collection_status": "string",
+          "metrics_collected": [
+            {
+              "metric_name": "string",
+              "current_value": "number",
+              "timestamp": "string",
+              "collection_method": "string",
+              "status": "string"
+            }
+          ],
+          "collection_issues": [
+            {
+              "metric_name": "string",
+              "issue_description": "string",
+              "severity": "string",
+              "mitigation_strategy": "string"
+            }
+          ],
+          "data_storage": {
+            "location": "string",
+            "retention_policy": "string",
+            "access_method": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "anomaly_detector",
+    "content": "Analyze the collected performance metrics to identify anomalies, trends, and performance degradation. Use statistical methods and machine learning techniques for detection.",
+    "readFrom": ["performance_monitor", "metric_collector"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "self_optimization",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "anomaly_analysis": {
+          "detected_anomalies": [
+            {
+              "metric_name": "string",
+              "timestamp": "string",
+              "expected_value": "number",
+              "actual_value": "number",
+              "deviation_percentage": "number",
+              "detection_method": "string",
+              "confidence": "number",
+              "potential_causes": ["string"]
+            }
+          ],
+          "trend_analysis": [
+            {
+              "metric_name": "string",
+              "trend_direction": "string",
+              "trend_magnitude": "number",
+              "statistical_significance": "number",
+              "projected_values": [{"timestamp": "string", "value": "number"}]
+            }
+          ],
+          "system_health_assessment": {
+            "overall_health_score": "number",
+            "critical_areas": ["string"],
+            "stable_areas": ["string"]
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "root_cause_analyzer",
+    "content": "For detected anomalies and performance issues, perform root cause analysis to identify the underlying factors. Apply causal inference techniques to distinguish symptoms from causes.",
+    "readFrom": ["anomaly_detector", "metric_collector"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "self_optimization",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "root_cause_analysis": {
+          "analyzed_anomalies": [
+            {
+              "anomaly_id": "string",
+              "root_causes": [
+                {
+                  "cause": "string",
+                  "confidence": "number",
+                  "evidence": ["string"],
+                  "affected_components": ["string"]
+                }
+              ],
+              "causal_graph": "string",
+              "verification_steps": ["string"]
+            }
+          ],
+          "system_weaknesses": [
+            {
+              "weakness_type": "string",
+              "description": "string",
+              "affected_metrics": ["string"],
+              "improvement_potential": "number"
+            }
+          ]
+        }
+      }
+    }
+  }
+]

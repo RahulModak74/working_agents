@@ -1,0 +1,108 @@
+```json
+{
+  "campaign_phases": [
+    {
+      "phase_name": "Initial Engagement",
+      "duration_days": 7,
+      "channel_activities": [
+        {
+          "channel": "email",
+          "activity_type": "Welcome Offers",
+          "timing": "Monday, Wednesday, Friday at 10:00 AM",
+          "dependencies": [
+            "Segment Data"
+          ],
+          "expected_outcomes": [
+            "Increased engagement from new visitors"
+          ]
+        }
+      ],
+      "coordination_requirements": [
+        "Ensure email content aligns with brand voice"
+      ],
+      "measurement_points": [
+        "Engagement rate from new visitors"
+      ]
+    },
+    {
+      "phase_name": "Product Exploration",
+      "duration_days": 14,
+      "channel_activities": [
+        {
+          "channel": "email",
+          "activity_type": "Product Highlights",
+          "timing": "Monday, Wednesday, Friday at 2:00 PM",
+          "dependencies": [
+            "Product Catalog"
+          ],
+          "expected_outcomes": [
+            "Increased product browsing activity"
+          ]
+        }
+      ],
+      "coordination_requirements": [
+        "Sync product details with email content"
+      ],
+      "measurement_points": [
+        "Progression rate to product detail stage"
+      ]
+    },
+    {
+      "phase_name": "Checkout Conversion",
+      "duration_days": 7,
+      "channel_activities": [
+        {
+          "channel": "email",
+          "activity_type": "Urgency-Based Messaging",
+          "timing": "Immediate upon cart addition",
+          "dependencies": [
+            "Cart Data"
+          ],
+          "expected_outcomes": [
+            "Increased checkout completions"
+          ]
+        }
+      ],
+      "coordination_requirements": [
+        "Ensure real-time cart data integration"
+      ],
+      "measurement_points": [
+        "Conversion rate at checkout stage"
+      ]
+    },
+    {
+      "phase_name": "Re-engagement",
+      "duration_days": 7,
+      "channel_activities": [
+        {
+          "channel": "email",
+          "activity_type": "Exit Surveys and Re-engagement Offers",
+          "timing": "Within 1 hour of exit",
+          "dependencies": [
+            "Exit Data"
+          ],
+          "expected_outcomes": [
+            "Increased re-engagement from exiting users"
+          ]
+        }
+      ],
+      "coordination_requirements": [
+        "Ensure timely exit data capture"
+      ],
+      "measurement_points": [
+        "Re-engagement rate from exit stage"
+      ]
+    }
+  ],
+  "critical_timing_considerations": [
+    "Focus on email campaigns during optimal days (Monday, Wednesday, Friday) and times (10:00 AM, 2:00 PM)",
+    "Align campaigns with seasonal peaks (Holiday Season, End of Quarter)",
+    "Coordinate with key events (Email Campaign Launches, Product Launches)"
+  ],
+  "adaptation_triggers": [
+    "Low engagement rates in initial phases",
+    "Data quality issues affecting campaign performance",
+    "Changes in customer behavior or segment sizes"
+  ]
+}
+```

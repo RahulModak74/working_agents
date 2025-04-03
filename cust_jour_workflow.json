@@ -20,7 +20,7 @@
   {
     "agent": "segmentation_analyst",
     "content": "Based on the data profile from data_profiler, identify distinct customer segments. For each segment, determine behavioral patterns, conversion blockers, and potential intervention points. Focus on high-value segments that are underperforming.",
-    "readFrom": ["data_profiler"],
+    "file": "journey.csv",
     "memory_id": "journey_analysis",
     "output_format": {
       "type": "json",

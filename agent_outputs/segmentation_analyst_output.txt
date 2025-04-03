@@ -1,0 +1,84 @@
+```json
+{
+  "segments": [
+    {
+      "name": "new_visitor",
+      "size": 2,
+      "percentage": 50,
+      "characteristics": [
+        "First-time visitors",
+        "Mobile users",
+        "Low previous purchases"
+      ],
+      "behaviors": [
+        "Engages with product details",
+        "Adds items to cart",
+        "Experiences payment errors"
+      ],
+      "conversion_barriers": [
+        "Payment errors",
+        "Cart abandonment"
+      ],
+      "value_potential": 79.99,
+      "intervention_points": [
+        "Simplify payment process",
+        "Offer first-time buyer discounts",
+        "Provide mobile-optimized checkout"
+      ]
+    },
+    {
+      "name": "returning",
+      "size": 1,
+      "percentage": 25,
+      "characteristics": [
+        "Repeat visitors",
+        "Desktop users",
+        "Moderate previous purchases"
+      ],
+      "behaviors": [
+        "Extensive product browsing",
+        "Adds high-value items to cart",
+        "Cart abandonment"
+      ],
+      "conversion_barriers": [
+        "Cart abandonment",
+        "Lack of incentives"
+      ],
+      "value_potential": 149.99,
+      "intervention_points": [
+        "Offer loyalty rewards",
+        "Send cart abandonment reminders",
+        "Provide personalized recommendations"
+      ]
+    },
+    {
+      "name": "high_intent",
+      "size": 1,
+      "percentage": 25,
+      "characteristics": [
+        "Frequent purchasers",
+        "Tablet users",
+        "High previous purchases"
+      ],
+      "behaviors": [
+        "Adds multiple items to cart",
+        "Completes purchases",
+        "Engages with related products"
+      ],
+      "conversion_barriers": [
+        "None observed"
+      ],
+      "value_potential": 144.98,
+      "intervention_points": [
+        "Upsell and cross-sell opportunities",
+        "Offer bundle discounts",
+        "Provide expedited shipping options"
+      ]
+    }
+  ],
+  "priority_segments": [
+    "new_visitor",
+    "returning"
+  ]
+}
+```

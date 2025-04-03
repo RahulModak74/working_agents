@@ -30,6 +30,15 @@ except ImportError:
 # Global tool registry to store all available tools from adapters
 GLOBAL_TOOL_REGISTRY = {}
 
+# Function to check if an object is hashable (can be used as dictionary key)
+def is_hashable(obj):
+    """Check if an object can be used as a dictionary key"""
+    try:
+        hash(obj)
+        return True
+    except TypeError:
+        return False
+
 def load_all_tool_adapters():
     """Dynamically load all tool adapters from files matching *_adapter.py"""
     # Find adapters in current directory
@@ -286,13 +295,27 @@ def run_universal_workflow(workflow_file: str, data_file: str = None):
         references = {}
         if "readFrom" in step:
             for ref_name in step["readFrom"]:
+                # Fix for the unhashable type error: Handle dictionaries and handle wildcard
                 if ref_name == "*":
                     # Include all previous results except this agent
                     for prev_agent, prev_result in results.items():
                         if prev_agent != agent_name and prev_agent not in references:
                             references[prev_agent] = prev_result
-                elif ref_name in results:
+                # Check if ref_name is hashable before using it as a key
+                elif is_hashable(ref_name) and ref_name in results:
+                    # The reference is to a previous result
                     references[ref_name] = results[ref_name]
+                # Handle the case where ref_name is a dictionary
+                elif isinstance(ref_name, dict):
+                    # Try to extract a usable key from the dictionary
+                    if 'id' in ref_name and is_hashable(ref_name['id']) and ref_name['id'] in results:
+                        references[str(ref_name['id'])] = results[ref_name['id']]
+                    elif 'agent' in ref_name and is_hashable(ref_name['agent']) and ref_name['agent'] in results:
+                        references[str(ref_name['agent'])] = results[ref_name['agent']]
+                    elif 'name' in ref_name and is_hashable(ref_name['name']) and ref_name['name'] in results:
+                        references[str(ref_name['name'])] = results[ref_name['name']]
+                    else:
+                        print(f"Warning: Could not resolve reference: {ref_name}")
         
         # Check if tools are required for this step
         if "tools" in step:
@@ -337,7 +360,7 @@ def run_universal_workflow(workflow_file: str, data_file: str = None):
             print(f"🔍 Dynamic agent selected action: {action_key}")
             
             # Check if action is valid and exists in actions
-            if action_key and action_key in step.get("actions", {}):
+            if action_key and is_hashable(action_key) and action_key in step.get("actions", {}):
                 action = step["actions"][action_key]
                 next_agent_name = action.get("agent")
                 
@@ -352,8 +375,10 @@ def run_universal_workflow(workflow_file: str, data_file: str = None):
                                 for prev_agent, prev_result in results.items():
                                     if prev_agent != next_agent_name and prev_agent not in action_refs:
                                         action_refs[prev_agent] = prev_result
-                            elif ref_name in results:
+                            elif is_hashable(ref_name) and ref_name in results:
                                 action_refs[ref_name] = results[ref_name]
+                            elif isinstance(ref_name, dict):
+                                print(f"Warning: Dictionary reference in action: {ref_name}")
                     
                     # Run the next agent
                     action_result = run_agent(
@@ -365,8 +390,12 @@ def run_universal_workflow(workflow_file: str, data_file: str = None):
                     )
                     
                     results[next_agent_name] = action_result
-            else:
-                print(f"Warning: Dynamic agent couldn't determine a valid action: {action_key}")
+            elif action_key:
+                # Handle non-hashable action_key or action_key not in actions
+                if not is_hashable(action_key):
+                    print(f"Warning: Dynamic agent selected a non-hashable action: {type(action_key)}")
+                else:
+                    print(f"Warning: Dynamic agent selected invalid action: {action_key}")
         else:
             # Standard agent execution
             result = run_agent(

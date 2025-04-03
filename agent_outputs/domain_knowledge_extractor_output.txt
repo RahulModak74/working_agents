@@ -1,0 +1,11 @@
+```json
+{
+  "extracted_entities": [],
+  "extracted_relations": [],
+  "federation_metadata": {
+    "last_update": "2023-10-05T12:00:00Z",
+    "sync_status": "up-to-date",
+    "consistency_check": "consistent"
+  }
+}
+```

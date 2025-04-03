@@ -1,0 +1,18 @@
+```json
+{
+  "escalation_successful": false,
+  "current_user": "user1",
+  "current_privileges": "user1 may run the following commands on target: (ALL) NOPASSWD: /usr/bin/apt-get",
+  "root_access": false,
+  "verification_commands": [
+    "whoami",
+    "sudo -l",
+    "id"
+  ],
+  "verification_outputs": [
+    "user1",
+    "user1 may run the following commands on target: (ALL) NOPASSWD: /usr/bin/apt-get",
+    "uid=1000(user1) gid=1000(user1) groups=1000(user1),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),116(lpadmin),126(sambashare)"
+  ]
+}
+```

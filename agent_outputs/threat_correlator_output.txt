@@ -1,0 +1,30 @@
+```json
+{
+  "multi_stage_attacks": [
+    {
+      "initial_access": "PowerShell used to download and execute malicious scripts from a remote server.",
+      "persistence": "regsvr32 used to register a malicious DLL for persistence on the system.",
+      "defense_evasion": "Attempt to disable antivirus software detected.",
+      "execution": "Process Hollowing detected in explorer.exe.",
+      "exfiltration": "certutil used to encode and decode data for exfiltration purposes.",
+      "impact": "Mass file renaming detected with over 500 files renamed to suspicious extensions within a short period."
+    }
+  ],
+  "high_risk_hosts": [
+    "explorer.exe",
+    "svchost.exe",
+    "notepad.exe",
+    "chrome.exe",
+    "firefox.exe"
+  ],
+  "attack_progression": "Initial access via PowerShell script execution, followed by persistence through regsvr32, defense evasion by disabling antivirus, execution via memory injection techniques, exfiltration using certutil, and impact through ransomware activities.",
+  "correlation_matrix": {
+    "lotl_detector": ["PowerShell", "regsvr32", "certutil"],
+    "memory_injection_detector": ["explorer.exe", "svchost.exe", "notepad.exe", "chrome.exe", "firefox.exe"],
+    "persistence_detector": ["registry_modification", "scheduled_task", "startup_item"],
+    "script_obfuscation_detector": ["PowerShell", "JavaScript", "VBScript"],
+    "defense_evasion_detector": ["Disabling Antivirus", "Tampering with Security Tools", "Clearing Event Logs"],
+    "ransomware_detector": ["Mass file renaming detected", "Shadow copy deletion detected", "Suspicious file extensions detected"]
+  }
+}
+```

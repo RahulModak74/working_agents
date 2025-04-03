@@ -1,0 +1,98 @@
+```json
+{
+  "channel_metrics": [
+    {
+      "channel": "facebook",
+      "overall_engagement_rate": 0,
+      "conversion_rate": 0,
+      "avg_order_value": 0,
+      "cost_effectiveness_score": 0,
+      "best_performing_segments": [],
+      "best_performing_journey_stages": [],
+      "weaknesses": [
+        "No engagement or conversions"
+      ]
+    },
+    {
+      "channel": "instagram",
+      "overall_engagement_rate": 0,
+      "conversion_rate": 0,
+      "avg_order_value": 0,
+      "cost_effectiveness_score": 0,
+      "best_performing_segments": [],
+      "best_performing_journey_stages": [],
+      "weaknesses": [
+        "No engagement or conversions"
+      ]
+    },
+    {
+      "channel": "google",
+      "overall_engagement_rate": 0,
+      "conversion_rate": 0,
+      "avg_order_value": 0,
+      "cost_effectiveness_score": 0,
+      "best_performing_segments": [],
+      "best_performing_journey_stages": [],
+      "weaknesses": [
+        "No engagement or conversions"
+      ]
+    },
+    {
+      "channel": "twitter",
+      "overall_engagement_rate": 0,
+      "conversion_rate": 0,
+      "avg_order_value": 0,
+      "cost_effectiveness_score": 0,
+      "best_performing_segments": [],
+      "best_performing_journey_stages": [],
+      "weaknesses": [
+        "No engagement or conversions"
+      ]
+    },
+    {
+      "channel": "youtube",
+      "overall_engagement_rate": 0,
+      "conversion_rate": 0,
+      "avg_order_value": 0,
+      "cost_effectiveness_score": 0,
+      "best_performing_segments": [],
+      "best_performing_journey_stages": [],
+      "weaknesses": [
+        "No engagement or conversions"
+      ]
+    },
+    {
+      "channel": "whatsapp",
+      "overall_engagement_rate": 0,
+      "conversion_rate": 0,
+      "avg_order_value": 0,
+      "cost_effectiveness_score": 0,
+      "best_performing_segments": [],
+      "best_performing_journey_stages": [],
+      "weaknesses": [
+        "No engagement or conversions"
+      ]
+    },
+    {
+      "channel": "email",
+      "overall_engagement_rate": 0.25,
+      "conversion_rate": 0.2,
+      "avg_order_value": 0,
+      "cost_effectiveness_score": 0,
+      "best_performing_segments": [
+        "high_intent"
+      ],
+      "best_performing_journey_stages": [
+        "checkout"
+      ],
+      "weaknesses": [
+        "Low overall engagement"
+      ]
+    }
+  ],
+  "cross_channel_insights": [
+    "Email is the only channel with measurable engagement and conversions, primarily driven by high-intent customers during the checkout stage.",
+    "All other channels show zero engagement and conversions, indicating a need for strategy reevaluation or data quality improvements."
+  ]
+}
+```

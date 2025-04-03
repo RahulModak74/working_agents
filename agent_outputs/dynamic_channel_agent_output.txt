@@ -1,0 +1,14 @@
+```json
+{
+  "priority_channels": [
+    "email"
+  ],
+  "reasoning": [
+    "Email is the only channel with measurable engagement and conversions, primarily driven by high-intent customers during the checkout stage.",
+    "Email shows measurable engagement and conversion rates, making it the most effective channel for new visitors.",
+    "Email drives conversions for high-intent customers during the checkout stage."
+  ],
+  "expected_impact": 1,
+  "implementation_approach": "Focus on email campaigns using urgency-based messaging, personalized re-engagement, and incentive-driven content, optimized for high-intent customers during the checkout stage."
+}
+```

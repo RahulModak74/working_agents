@@ -1,0 +1,20 @@
+```json
+{
+  "success": true,
+  "detection_count": 3,
+  "detections": [
+    {
+      "technique": "Disabling Antivirus",
+      "description": "Attempt to disable antivirus software detected."
+    },
+    {
+      "technique": "Tampering with Security Tools",
+      "description": "Unauthorized modification of security tools identified."
+    },
+    {
+      "technique": "Clearing Event Logs",
+      "description": "Suspicious activity involving the clearing of event logs observed."
+    }
+  ]
+}
+```

@@ -1,0 +1,23 @@
+```json
+{
+  "success": true,
+  "detection_count": 3,
+  "detections": [
+    {
+      "id": 1,
+      "description": "Unusual lateral movement detected from a previously dormant account.",
+      "timestamp": "2023-10-01T14:23:45Z"
+    },
+    {
+      "id": 2,
+      "description": "Suspicious data exfiltration activity observed from a compromised endpoint.",
+      "timestamp": "2023-09-15T08:12:34Z"
+    },
+    {
+      "id": 3,
+      "description": "Long-term persistence mechanism identified in the network infrastructure.",
+      "timestamp": "2023-08-20T19:45:56Z"
+    }
+  ]
+}
+```

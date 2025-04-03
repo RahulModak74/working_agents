@@ -1,0 +1,243 @@
+```json
+{
+  "defense_capability_model": {
+    "model_version": "1.0",
+    "capability_assessment_date": "2025-02-11",
+    "capability_maturity_levels": [
+      {
+        "capability_domain": "perimeter_security",
+        "current_maturity": 4,
+        "target_maturity": 5,
+        "maturity_gaps": [
+          "limited threat intelligence integration",
+          "inconsistent policy enforcement"
+        ],
+        "improvement_velocity": 0.8
+      },
+      {
+        "capability_domain": "endpoint_security",
+        "current_maturity": 3,
+        "target_maturity": 4,
+        "maturity_gaps": [
+          "incomplete endpoint coverage",
+          "delayed response to endpoint threats"
+        ],
+        "improvement_velocity": 0.7
+      },
+      {
+        "capability_domain": "access_control",
+        "current_maturity": 3,
+        "target_maturity": 5,
+        "maturity_gaps": [
+          "inconsistent multi-factor authentication adoption",
+          "privileged access management gaps"
+        ],
+        "improvement_velocity": 0.6
+      },
+      {
+        "capability_domain": "data_security",
+        "current_maturity": 4,
+        "target_maturity": 5,
+        "maturity_gaps": [
+          "limited data classification enforcement",
+          "inconsistent data loss prevention coverage"
+        ],
+        "improvement_velocity": 0.75
+      },
+      {
+        "capability_domain": "cloud_security",
+        "current_maturity": 2,
+        "target_maturity": 4,
+        "maturity_gaps": [
+          "incomplete cloud security posture management",
+          "limited container security controls"
+        ],
+        "improvement_velocity": 0.5
+      }
+    ],
+    "security_control_effectiveness": [
+      {
+        "control_id": "SEC-FW-001",
+        "control_category": "firewall",
+        "implementation_coverage": 92,
+        "effectiveness_score": 0.65,
+        "drift_tendency": 0.1,
+        "relevant_threat_vectors": [
+          "phishing",
+          "lateral movement"
+        ],
+        "resource_requirements": {
+          "financial": 8,
+          "human": 6,
+          "technical": 7
+        }
+      },
+      {
+        "control_id": "SEC-AV-012",
+        "control_category": "antivirus",
+        "implementation_coverage": 87,
+        "effectiveness_score": 0.78,
+        "drift_tendency": 0.05,
+        "relevant_threat_vectors": [
+          "ransomware",
+          "malware_dropper"
+        ],
+        "resource_requirements": {
+          "financial": 7,
+          "human": 5,
+          "technical": 6
+        }
+      },
+      {
+        "control_id": "SEC-IAM-034",
+        "control_category": "access_control",
+        "implementation_coverage": 81,
+        "effectiveness_score": 0.45,
+        "drift_tendency": 0.15,
+        "relevant_threat_vectors": [
+          "privileged_access",
+          "credential_stuffing"
+        ],
+        "resource_requirements": {
+          "financial": 6,
+          "human": 7,
+          "technical": 5
+        }
+      },
+      {
+        "control_id": "SEC-DLP-008",
+        "control_category": "data_loss_prevention",
+        "implementation_coverage": 76,
+        "effectiveness_score": 0.62,
+        "drift_tendency": 0.1,
+        "relevant_threat_vectors": [
+          "data_exfiltration",
+          "sabotage"
+        ],
+        "resource_requirements": {
+          "financial": 7,
+          "human": 6,
+          "technical": 6
+        }
+      },
+      {
+        "control_id": "SEC-WAF-003",
+        "control_category": "web_application_firewall",
+        "implementation_coverage": 94,
+        "effectiveness_score": 0.81,
+        "drift_tendency": 0.05,
+        "relevant_threat_vectors": [
+          "web_vulnerability",
+          "sql_injection"
+        ],
+        "resource_requirements": {
+          "financial": 8,
+          "human": 5,
+          "technical": 7
+        }
+      }
+    ],
+    "detection_capability_metrics": {
+      "overall_detection_coverage": 85,
+      "mean_time_to_detect": 4321,
+      "false_positive_rate": 0.15,
+      "false_negative_rate": 0.1,
+      "detection_confidence_distribution": {
+        "high_confidence": 65,
+        "medium_confidence": 25,
+        "low_confidence": 10
+      },
+      "detection_gaps": [
+        {
+          "gap_area": "container_security",
+          "affected_threat_vectors": [
+            "container_escape",
+            "data_exfiltration"
+          ],
+          "visibility_limitations": [
+            "limited container monitoring",
+            "incomplete logging"
+          ],
+          "detection_improvement_potential": 0.7
+        },
+        {
+          "gap_area": "iot_security",
+          "affected_threat_vectors": [
+            "device_hijacking",
+            "botnet"
+          ],
+          "visibility_limitations": [
+            "inconsistent iot device inventory",
+            "limited threat detection capabilities"
+          ],
+          "detection_improvement_potential": 0.6
+        }
+      ]
+    },
+    "response_capability_metrics": {
+      "mean_time_to_respond": 3821,
+      "containment_effectiveness": 0.75,
+      "eradication_completeness": 0.8,
+      "recovery_efficiency": 0.7,
+      "response_gaps": [
+        {
+          "gap_area": "zero_day_exploits",
+          "affected_incident_types": [
+            "advanced_persistence",
+            "data_exfiltration"
+          ],
+          "response_limitations": [
+            "limited threat intelligence",
+            "delayed patch deployment"
+          ],
+          "improvement_potential": 0.65
+        },
+        {
+          "gap_area": "cloud_misconfigurations",
+          "affected_incident_types": [
+            "persistence",
+            "data_exfiltration"
+          ],
+          "response_limitations": [
+            "incomplete cloud security policies",
+            "delayed incident response"
+          ],
+          "improvement_potential": 0.7
+        }
+      ]
+    },
+    "resilience_factors": {
+      "architectural_resilience": 0.8,
+      "operational_resilience": 0.75,
+      "process_resilience": 0.7,
+      "human_resilience": 0.65,
+      "resilience_gaps": [
+        "limited cross-team collaboration",
+        "inconsistent incident response training"
+      ]
+    },
+    "mathematical_model_parameters": {
+      "security_effectiveness_functions": {
+        "perimeter_security": "P(t) = P0 * e^(-k*t)",
+        "endpoint_security": "E(t) = E0 + a*t"
+      },
+      "detection_probability_distributions": {
+        "phishing": "normal(0.85, 0.1)",
+        "ransomware": "normal(0.78, 0.15)"
+      },
+      "response_time_distributions": {
+        "data_exfiltration": "exponential(0.002)",
+        "privilege_escalation": "exponential(0.0015)"
+      },
+      "control_degradation_models": {
+        "firewall": "linear(0.05)",
+        "antivirus": "linear(0.03)"
+      },
+      "resilience_quantification_formulas": {
+        "architectural_resilience": "R_a = (C + V + D) / 3",
+        "operational_resilience": "R_o = (T + P + H) / 3"
+      }
+    }
+  }
+}
+```

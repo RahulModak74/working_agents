@@ -1,0 +1,11 @@
+```json
+{
+  "files_removed": [
+    "/home/user1/LinPEAS.sh",
+    "/home/user1/BeRoot.sh"
+  ],
+  "logs_cleared": [],
+  "remaining_artifacts": [],
+  "cleanup_status": "Completed"
+}
+```

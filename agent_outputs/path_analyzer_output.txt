@@ -1,0 +1,41 @@
+```json
+{
+  "common_paths": [
+    {
+      "path_sequence": ["landing", "product_browse", "product_detail", "cart", "checkout"],
+      "frequency": 2,
+      "conversion_rate": 0.5
+    }
+  ],
+  "drop_off_points": [
+    {
+      "stage": "landing",
+      "drop_off_rate": 0.25,
+      "preceding_stages": []
+    },
+    {
+      "stage": "checkout",
+      "drop_off_rate": 0.25,
+      "preceding_stages": ["landing", "product_browse", "product_detail", "cart"]
+    }
+  ],
+  "unusual_paths": [
+    {
+      "path_sequence": ["landing", "exit"],
+      "frequency": 1,
+      "notable_characteristics": ["Customer exited immediately after landing page view"]
+    },
+    {
+      "path_sequence": ["landing", "product_browse", "product_detail", "cart", "checkout"],
+      "frequency": 1,
+      "notable_characteristics": ["Customer encountered a payment error during checkout"]
+    }
+  ],
+  "optimization_opportunities": [
+    "Improve landing page engagement to reduce immediate exits",
+    "Address payment errors during checkout to improve conversion rates",
+    "Optimize page load times to reduce exit rates",
+    "Enhance product search functionality to improve product discovery"
+  ]
+}
+```

@@ -1,0 +1,166 @@
+[
+  {
+    "agent": "browser_setup",
+    "content": "Initialize a new browser instance for e-commerce website scraping. We'll use a headless browser to efficiently gather product information without displaying the UI.",
+    "tools": ["browser:create"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "browser_id": "string",
+        "type": "string"
+      }
+    }
+  },
+  {
+    "agent": "site_navigator",
+    "content": "Navigate to an e-commerce website. For this example, we'll use https://demo.opencart.com/ which is a demo e-commerce site. We need to wait until the network is idle to ensure all content is loaded.",
+    "readFrom": ["browser_setup"],
+    "tools": ["browser:navigate"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "url": "string",
+        "title": "string"
+      }
+    }
+  },
+  {
+    "agent": "category_finder",
+    "content": "Find all product category links on the homepage. Look for menu items or navigation elements that lead to product categories like 'Desktops', 'Laptops', 'Components', etc.",
+    "readFrom": ["site_navigator"],
+    "tools": ["browser:find_elements"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "categories": [
+          {
+            "name": "string",
+            "selector": "string",
+            "index": "number"
+          }
+        ],
+        "recommended_category": "string"
+      }
+    }
+  },
+  {
+    "agent": "category_selector",
+    "content": "Based on the categories found, navigate to the 'Laptops & Notebooks' category by clicking on the appropriate link. Use the selector and index information from the previous step.",
+    "readFrom": ["category_finder"],
+    "tools": ["browser:click"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "category_name": "string",
+        "current_url": "string"
+      }
+    }
+  },
+  {
+    "agent": "product_lister",
+    "content": "On the category page, find all product elements. Look for product containers, titles, prices, and any other relevant product information. Identify the selectors that would allow us to extract a list of products.",
+    "readFrom": ["category_selector"],
+    "tools": ["browser:find_elements", "browser:get_content"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "product_count": "number",
+        "product_selectors": {
+          "container": "string",
+          "title": "string",
+          "price": "string",
+          "image": "string"
+        },
+        "sample_products": [
+          {
+            "index": "number",
+            "title": "string",
+            "price": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "product_selector",
+    "content": "Select the first product from the list to view its details. Click on the product title or image to navigate to the product detail page.",
+    "readFrom": ["product_lister"],
+    "tools": ["browser:click"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "product_name": "string",
+        "current_url": "string"
+      }
+    }
+  },
+  {
+    "agent": "product_detail_extractor",
+    "content": "Extract detailed information about the selected product. Gather the product name, price, description, specifications, and any other relevant details.",
+    "readFrom": ["product_selector"],
+    "tools": ["browser:get_content", "browser:find_elements"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "product_name": "string",
+        "price": "string",
+        "description": "string",
+        "specifications": "object",
+        "availability": "string",
+        "images": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "data_analyzer",
+    "content": "Analyze the extracted product information. Compare the price to typical market values, evaluate the completeness of the product description, and identify any missing critical information.",
+    "readFrom": ["product_detail_extractor"],
+    "tools": [],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "price_analysis": "string",
+        "description_quality": "string",
+        "information_completeness": "number",
+        "missing_information": ["string"],
+        "recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "browser_cleanup",
+    "content": "Close the browser session now that we've completed the e-commerce product extraction workflow.",
+    "readFrom": ["*"],
+    "tools": ["browser:close"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "message": "string"
+      }
+    }
+  },
+  {
+    "agent": "report_generator",
+    "content": "Generate a comprehensive report about the e-commerce product extraction process, including the product details, analysis, and any technical challenges encountered during the automated browsing session.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "E-Commerce Scraping Summary",
+        "Product Information",
+        "Price Analysis",
+        "Market Comparison",
+        "Technical Details",
+        "Automation Challenges",
+        "Future Improvements"
+      ]
+    }
+  }
+]

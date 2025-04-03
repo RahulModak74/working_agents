@@ -1,0 +1,8 @@
+```json
+{
+  "status": "connected",
+  "connection_id": "ssh12345",
+  "message": "SSH connection established successfully.",
+  "banner": "Welcome to the target system."
+}
+```

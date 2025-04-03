@@ -1,0 +1,15 @@
+```json
+{
+  "storage_hierarchy": {
+    "tier": "short-term",
+    "location": "vector_db",
+    "access_pattern": "frequent",
+    "retention_policy": "30 days"
+  },
+  "indexing_strategy": "full_text",
+  "retrieval_examples": [
+    "Find the upcoming meetings",
+    "Retrieve the details of the team meeting on Thursday"
+  ]
+}
+```

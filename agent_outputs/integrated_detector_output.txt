@@ -1,0 +1,23 @@
+```json
+{
+  "success": true,
+  "total_detection_count": 15,
+  "detection_summary": {
+    "malware": 3,
+    "phishing": 2,
+    "ransomware": 1,
+    "data_leakage": 4,
+    "unauthorized_access": 2,
+    "ddos": 1,
+    "insider_threat": 1,
+    "misconfiguration": 1,
+    "zero_day": 0,
+    "social_engineering": 0
+  },
+  "top_threats": [
+    "data_leakage",
+    "malware",
+    "phishing"
+  ]
+}
+```

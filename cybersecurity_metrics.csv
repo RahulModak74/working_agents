@@ -1,0 +1,164 @@
+timestamp,asset_id,asset_type,asset_criticality,threat_actor,threat_type,attack_vector,vulnerability_id,vulnerability_severity,control_id,control_type,control_effectiveness,detection_time_seconds,response_time_seconds,containment_time_seconds,business_impact,financial_impact,data_exposure,compliance_violation
+2025-02-01T08:23:45,AS-10234,server,critical,APT-29,data_exfiltration,phishing,CVE-2024-1827,critical,SEC-FW-001,firewall,0.65,5832,3621,9450,high,427500,PII,GDPR
+2025-02-01T09:45:12,AS-20056,endpoint,medium,unknown,ransomware,drive-by,CVE-2024-2341,high,SEC-AV-012,antivirus,0.78,3241,1547,4820,medium,125000,none,none
+2025-02-02T14:12:36,AS-30187,database,critical,eCrime,data_theft,compromised_credentials,CVE-2023-9876,medium,SEC-IAM-034,access_control,0.45,12441,6823,18300,high,850000,PHI,HIPAA
+2025-02-03T02:34:19,AS-40598,network,high,insider,sabotage,privileged_access,CVE-2024-5432,high,SEC-DLP-008,data_loss_prevention,0.62,2189,4273,7920,medium,275000,trade_secrets,SOX
+2025-02-03T11:29:54,AS-10234,server,critical,hacktivist,defacement,web_vulnerability,CVE-2024-1122,medium,SEC-WAF-003,web_application_firewall,0.81,1537,2245,4380,low,75000,none,none
+2025-02-04T15:42:08,AS-50831,cloud,high,APT-41,backdoor,supply_chain,CVE-2024-3344,critical,SEC-EDR-015,endpoint_detection,0.72,8352,3947,12240,high,625000,intellectual_property,CMMC
+2025-02-05T07:15:23,AS-60149,application,medium,eCrime,credential_stuffing,brute_force,CVE-2023-7788,low,SEC-MFA-022,multi_factor_auth,0.89,621,1845,3120,low,50000,email_addresses,none
+2025-02-05T19:38:47,AS-70265,iot_device,low,unknown,botnet,default_credentials,CVE-2024-4567,medium,SEC-NET-005,network_segmentation,0.54,9875,5231,15420,medium,185000,none,none
+2025-02-06T05:21:34,AS-80372,container,high,APT-33,cryptomining,container_escape,CVE-2024-6789,high,SEC-CIS-018,container_security,0.67,4123,2956,7860,medium,225000,none,none
+2025-02-06T13:47:52,AS-90483,saas,critical,cybercriminal,account_takeover,api_vulnerability,CVE-2023-8765,critical,SEC-API-010,api_gateway,0.59,10568,4782,16200,high,725000,customer_data,PCI-DSS
+2025-02-07T09:28:16,AS-10594,server,high,APT-29,lateral_movement,smb_exploit,CVE-2024-2156,high,SEC-EDR-015,endpoint_detection,0.75,3854,2178,6480,medium,325000,employee_data,none
+2025-02-07T22:05:39,AS-20605,endpoint,medium,unknown,malware_dropper,email_attachment,CVE-2024-1453,medium,SEC-EML-007,email_security,0.83,1245,2347,3960,low,85000,none,none
+2025-02-08T04:51:27,AS-30716,database,critical,eCrime,sql_injection,web_application,CVE-2023-9012,high,SEC-DAM-031,database_activity_monitoring,0.71,6732,3156,10260,high,575000,financial_data,GLBA
+2025-02-08T16:33:04,AS-40827,network,high,hacktivist,ddos,botnet,CVE-2024-3321,medium,SEC-DDS-002,ddos_protection,0.76,721,1823,4380,medium,275000,none,none
+2025-02-09T10:14:42,AS-50938,cloud,critical,APT-41,persistence,cloud_misconfiguration,CVE-2024-5678,critical,SEC-CSPM-020,cloud_security_posture,0.68,7832,4123,12600,high,675000,source_code,CCPA
+2025-02-09T18:59:21,AS-60149,application,medium,eCrime,formjacking,web_skimming,CVE-2023-8542,high,SEC-WAF-003,web_application_firewall,0.77,2954,2188,5400,medium,225000,payment_data,PCI-DSS
+2025-02-10T01:41:53,AS-70260,iot_device,low,unknown,device_hijacking,firmware_vulnerability,CVE-2024-2789,low,SEC-IOT-011,iot_security,0.61,5231,3724,9720,low,65000,none,none
+2025-02-10T12:27:08,AS-80372,container,high,APT-33,data_exfiltration,container_vulnerability,CVE-2024-4411,high,SEC-CIS-018,container_security,0.73,4512,2953,8160,high,425000,health_data,HIPAA
+2025-02-11T07:14:36,AS-90483,saas,critical,cybercriminal,ransomware,admin_account_compromise,CVE-2023-9101,critical,SEC-PAM-016,privileged_access_management,0.55,11892,5347,18600,critical,1250000,customer_data,GDPR
+2025-02-11T19:52:17,AS-10234,server,critical,APT-29,advanced_persistence,zero_day,CVE-2025-0001,critical,SEC-AIR-025,advanced_incident_response,0.49,13754,6218,21600,critical,1750000,intellectual_property,CMMC
+
+vulnerability_id,cve_year,disclosure_date,vulnerability_type,affected_system,patch_available,patch_deployment_rate,exploit_published,exploit_complexity,attack_vector,privilege_required,user_interaction,attack_complexity
+CVE-2024-1827,2024,2024-01-12,remote_code_execution,windows_server,yes,0.67,yes,low,network,none,none,low
+CVE-2024-2341,2024,2024-01-28,memory_corruption,browser,yes,0.72,yes,medium,network,none,required,medium
+CVE-2023-9876,2023,2023-11-05,sql_injection,database_engine,yes,0.91,yes,low,network,low,none,low
+CVE-2024-5432,2024,2024-02-01,privilege_escalation,linux_kernel,yes,0.43,no,high,local,low,none,high
+CVE-2024-1122,2024,2024-01-05,cross_site_scripting,web_application,yes,0.86,yes,low,network,none,required,low
+CVE-2024-3344,2024,2024-01-15,authentication_bypass,cloud_service,yes,0.58,yes,medium,network,none,none,medium
+CVE-2023-7788,2023,2023-10-12,brute_force_vulnerability,authentication_system,yes,0.94,yes,low,network,none,none,high
+CVE-2024-4567,2024,2024-01-23,default_credentials,iot_firmware,yes,0.37,yes,low,network,none,none,low
+CVE-2024-6789,2024,2024-02-02,container_escape,container_runtime,yes,0.29,no,high,local,low,none,high
+CVE-2023-8765,2023,2023-11-18,api_injection,api_gateway,yes,0.73,yes,medium,network,low,none,medium
+CVE-2024-2156,2024,2024-01-08,smb_exploit,windows_network,yes,0.62,yes,medium,network,none,none,medium
+CVE-2024-1453,2024,2024-01-03,malware_execution,email_client,yes,0.83,yes,medium,email,none,required,medium
+CVE-2023-9012,2023,2023-12-07,sql_injection,web_framework,yes,0.77,yes,low,network,low,none,low
+CVE-2024-3321,2024,2024-01-17,denial_of_service,network_device,yes,0.69,yes,low,network,none,none,low
+CVE-2024-5678,2024,2024-01-30,misconfiguration,cloud_platform,yes,0.51,yes,low,network,high,none,low
+CVE-2023-8542,2023,2023-11-24,xss_persistent,web_application,yes,0.82,yes,medium,network,low,required,medium
+CVE-2024-2789,2024,2024-01-14,firmware_vulnerability,iot_device,yes,0.33,no,high,physical,high,none,high
+CVE-2024-4411,2024,2024-01-25,container_vulnerability,container_orchestration,yes,0.41,yes,high,network,high,none,high
+CVE-2023-9101,2023,2023-12-15,authentication_bypass,saas_platform,yes,0.64,yes,medium,network,none,none,medium
+CVE-2025-0001,2025,2025-01-02,zero_day_exploit,enterprise_software,no,0.00,yes,low,network,none,none,low
+
+control_id,control_name,control_type,control_framework,implementation_date,last_assessed,assessment_method,assessment_scope,control_maturity,control_automation,coverage_percentage,deficiency_count,control_owner,effectiveness_trend
+SEC-FW-001,Next-Gen Firewall,perimeter,NIST CSF,2023-12-15,2025-01-15,penetration_test,perimeter_network,4,full,92,2,network_security,stable
+SEC-AV-012,Advanced Antivirus,endpoint,ISO 27001,2024-01-05,2025-01-20,automated_testing,enterprise_endpoints,3,partial,87,5,endpoint_security,improving
+SEC-IAM-034,Identity Management,access,CIS Controls,2023-11-10,2025-01-10,manual_audit,all_users,3,partial,81,7,identity_team,stable
+SEC-DLP-008,Data Loss Prevention,data,NIST CSF,2023-10-20,2025-01-05,hybrid_assessment,critical_systems,4,partial,76,3,data_security,improving
+SEC-WAF-003,Web Application Firewall,application,OWASP,2023-12-01,2025-01-12,penetration_test,public_websites,4,full,94,1,application_security,stable
+SEC-EDR-015,Endpoint Detection,endpoint,ISO 27001,2023-11-15,2025-01-08,automated_testing,enterprise_endpoints,3,full,89,4,endpoint_security,improving
+SEC-MFA-022,Multi-Factor Authentication,access,CIS Controls,2023-09-10,2025-01-18,automated_testing,all_users,5,full,98,0,identity_team,stable
+SEC-NET-005,Network Segmentation,network,NIST CSF,2023-08-15,2025-01-22,manual_audit,enterprise_network,3,partial,72,8,network_security,declining
+SEC-CIS-018,Container Security,cloud,CIS Controls,2023-10-05,2025-01-25,hybrid_assessment,container_infrastructure,2,partial,68,6,cloud_security,improving
+SEC-API-010,API Gateway Security,application,OWASP,2023-12-20,2025-01-30,penetration_test,api_endpoints,3,full,83,3,application_security,stable
+SEC-EDR-015,Endpoint Detection,endpoint,ISO 27001,2023-11-15,2025-01-08,automated_testing,enterprise_endpoints,3,full,89,4,endpoint_security,improving
+SEC-EML-007,Email Security Gateway,communication,NIST CSF,2023-07-10,2025-01-14,automated_testing,email_infrastructure,4,full,91,2,messaging_security,stable
+SEC-DAM-031,Database Activity Monitoring,data,ISO 27001,2023-09-25,2025-01-27,hybrid_assessment,critical_databases,3,partial,74,5,data_security,improving
+SEC-DDS-002,DDoS Protection,network,CIS Controls,2023-11-28,2025-01-09,automated_testing,internet_facing,4,full,95,1,network_security,stable
+SEC-CSPM-020,Cloud Security Posture,cloud,CSA CCM,2023-10-15,2025-01-16,automated_testing,cloud_infrastructure,2,partial,65,9,cloud_security,improving
+SEC-WAF-003,Web Application Firewall,application,OWASP,2023-12-01,2025-01-12,penetration_test,public_websites,4,full,94,1,application_security,stable
+SEC-IOT-011,IoT Security Controls,iot,NIST CSF,2023-08-05,2025-01-28,manual_audit,iot_devices,2,minimal,59,11,iot_security,stable
+SEC-CIS-018,Container Security,cloud,CIS Controls,2023-10-05,2025-01-25,hybrid_assessment,container_infrastructure,2,partial,68,6,cloud_security,improving
+SEC-PAM-016,Privileged Access Management,access,ISO 27001,2023-09-15,2025-01-11,hybrid_assessment,privileged_accounts,3,full,82,4,identity_team,stable
+SEC-AIR-025,Advanced Incident Response,response,NIST CSF,2023-11-20,2025-01-23,tabletop_exercise,security_team,3,partial,78,5,incident_response,improving
+
+asset_id,asset_name,asset_type,asset_criticality,business_function,data_classification,owner,location,redundancy,recovery_time_objective,patching_compliance,known_vulnerabilities,last_assessment,risk_score
+AS-10234,Primary ERP Server,server,critical,finance,highly_confidential,finance_dept,main_datacenter,full,4,0.92,3,2025-01-05,78
+AS-20056,CFO Laptop,endpoint,medium,executive,confidential,cfo,headquarters,none,24,0.87,2,2025-01-08,65
+AS-30187,Customer Database,database,critical,marketing,regulated,data_team,main_datacenter,full,2,0.95,1,2025-01-12,82
+AS-40598,Core Router,network,high,infrastructure,internal,network_team,main_datacenter,partial,8,0.89,2,2025-01-15,71
+AS-50831,Cloud Data Lake,cloud,high,analytics,confidential,data_team,aws_east,partial,12,0.76,4,2025-01-18,68
+AS-60149,Customer Portal,application,medium,sales,public,web_team,azure_west,full,6,0.91,2,2025-01-20,63
+AS-70265,Factory Sensors,iot_device,low,manufacturing,operational,factory_ops,factory_floor,none,48,0.65,5,2025-01-22,54
+AS-80372,Microservice Cluster,container,high,product,internal,dev_team,kubernetes,full,4,0.82,3,2025-01-25,69
+AS-90483,CRM System,saas,critical,sales,regulated,sales_dept,vendor_hosted,vendor_managed,8,0.94,2,2025-01-28,76
+AS-10594,Authentication Server,server,high,infrastructure,highly_confidential,security_team,main_datacenter,full,2,0.97,1,2025-01-05,73
+AS-20605,Developer Workstation,endpoint,medium,engineering,confidential,dev_team,headquarters,none,36,0.84,3,2025-01-08,62
+AS-30716,Financial Database,database,critical,finance,regulated,finance_dept,dr_datacenter,full,4,0.93,2,2025-01-12,79
+AS-40827,Backup Network,network,high,infrastructure,internal,network_team,dr_datacenter,full,12,0.90,1,2025-01-15,67
+AS-50938,Core Infrastructure,cloud,critical,infrastructure,highly_confidential,cloud_team,multi_region,full,6,0.88,3,2025-01-18,81
+AS-60149,Customer Portal,application,medium,sales,public,web_team,azure_west,full,6,0.91,2,2025-01-20,63
+AS-70260,HVAC Controls,iot_device,low,facilities,operational,facilities_mgmt,buildings,none,72,0.58,6,2025-01-22,51
+AS-80372,Microservice Cluster,container,high,product,internal,dev_team,kubernetes,full,4,0.82,3,2025-01-25,69
+AS-90483,CRM System,saas,critical,sales,regulated,sales_dept,vendor_hosted,vendor_managed,8,0.94,2,2025-01-28,76
+
+threat_actor,actor_type,motivation,sophistication,resources,known_targets,known_ttps,attribution_confidence,first_observed,last_observed,intelligence_source,related_campaigns,estimated_success_rate
+APT-29,nation_state,espionage,5,high,government_finance,spear_phishing_zero_day,high,2022-05-15,2025-01-28,threat_intelligence,Cozy_Bear,0.73
+unknown,unattributed,financial,3,medium,multiple_industries,commodity_malware,low,2024-08-22,2025-01-15,internal_detection,unknown,0.65
+eCrime,cybercriminal,financial,4,medium,finance_healthcare,ransomware_data_theft,medium,2023-11-10,2025-01-25,threat_intelligence,ransomware_cartel,0.68
+insider,insider,sabotage,2,low,own_organization,privilege_abuse,high,2025-01-03,2025-01-03,internal_detection,none,0.82
+hacktivist,hacktivist,disruption,3,low,public_organizations,ddos_defacement,medium,2024-12-05,2025-01-18,open_source,freedom_ops,0.59
+APT-41,nation_state,espionage_financial,5,high,multiple_industries,supply_chain_backdoor,high,2023-07-12,2025-01-22,threat_intelligence,WICKED_PANDA,0.71
+cybercriminal,cybercriminal,financial,3,medium,retail_finance,credential_stuffing,medium,2024-10-18,2025-01-27,threat_intelligence,account_takeover_group,0.77
+APT-33,nation_state,destructive,4,high,energy_manufacturing,wiper_malware,high,2023-09-25,2025-01-20,threat_intelligence,HOLMIUM,0.68
+
+detection_control,detection_category,data_sources,detection_logic,false_positive_rate,coverage_percentage,detection_time_avg,confidence_level,implementation_maturity,automation_level,analyst_overhead,last_tuning_date,detection_effectiveness
+network_ids,network_traffic,network_flows,signature_based,0.08,92,45,medium,4,full,low,2025-01-05,0.85
+endpoint_edr,endpoint_activity,process_execution,behavior_based,0.05,87,32,high,3,full,medium,2025-01-10,0.92
+email_security,email_analysis,mail_flow,content_analysis,0.12,94,12,medium,4,full,low,2025-01-15,0.88
+dlp_alerts,data_monitoring,network_endpoint,policy_violation,0.15,76,68,medium,3,partial,high,2025-01-20,0.76
+cloud_security,cloud_activity,api_calls,anomaly_detection,0.07,65,54,high,2,partial,medium,2025-01-25,0.81
+user_behavior,identity_activity,authentication_logs,baselining,0.09,82,78,medium,3,partial,medium,2025-01-08,0.84
+threat_intel,intelligence_matching,multiple_sources,indicator_matching,0.03,75,25,high,4,full,low,2025-01-12,0.93
+deception,honeypot_activity,decoy_systems,interaction_based,0.01,45,18,high,2,partial,low,2025-01-18,0.97
+siem_correlation,log_aggregation,multiple_sources,rule_based,0.18,88,58,medium,3,full,high,2025-01-22,0.78
+threat_hunting,manual_search,multiple_sources,hypothesis_testing,0.04,65,120,high,3,minimal,high,2025-01-28,0.91
+
+incident_id,incident_date,incident_type,severity,detection_source,detection_method,detection_time,response_time,containment_time,eradication_time,recovery_time,affected_assets,threat_actor,attack_vector,root_cause,business_impact,financial_impact,lessons_learned,mttr_minutes
+INC-2025-001,2025-01-05,malware_infection,medium,endpoint_edr,behavior_detection,132,78,245,312,178,2,unknown,phishing,user_execution,limited_disruption,75000,security_awareness,945
+INC-2025-002,2025-01-08,credential_theft,high,user_behavior,anomaly_detection,267,125,340,420,215,5,eCrime,password_spray,weak_authentication,data_exfiltration,325000,mfa_deployment,1367
+INC-2025-003,2025-01-12,ddos_attack,medium,network_monitoring,traffic_analysis,56,42,180,180,120,3,hacktivist,botnet,insufficient_protection,service_disruption,125000,ddos_mitigation,578
+INC-2025-004,2025-01-15,ransomware,critical,endpoint_edr,file_encryption,245,85,325,1240,2780,12,cybercriminal,vulnerable_rdp,unpatched_system,business_outage,1250000,patch_management,4675
+INC-2025-005,2025-01-18,insider_threat,high,dlp_alerts,policy_violation,542,187,290,345,120,1,insider,authorized_access,access_abuse,data_theft,275000,privilege_management,1484
+INC-2025-006,2025-01-22,web_compromise,medium,waf_alerts,attack_signature,98,62,185,225,158,1,unknown,sql_injection,code_vulnerability,website_defacement,45000,secure_development,728
+INC-2025-007,2025-01-25,targeted_attack,critical,threat_hunting,anomaly_correlation,485,145,395,925,1150,7,APT-29,spear_phishing,zero_day,data_breach,875000,defense_in_depth,3100
+INC-2025-008,2025-01-28,supply_chain,high,threat_intel,ioc_detection,312,128,275,485,320,4,APT-41,third_party_compromise,vendor_security,system_compromise,425000,vendor_assessment,1520
+
+compliance_requirement,framework,requirement_description,control_mapping,implementation_status,last_assessment,assessment_result,deficiency_count,remediation_status,next_assessment,compliance_owner,residual_risk,documentation_status
+PCI-DSS,payment_card,cardholder_data_protection,12,compliant,2024-12-15,passed,0,complete,2025-06-15,security_compliance,low,complete
+HIPAA,healthcare,phi_protection,8,partially_compliant,2024-11-20,conditional_pass,3,in_progress,2025-05-20,privacy_office,medium,partial
+GDPR,privacy,data_subject_rights,15,compliant,2024-10-05,passed,1,complete,2025-04-05,dpo,low,complete
+SOX,financial,financial_controls,6,compliant,2024-12-10,passed,0,complete,2025-06-10,finance_controls,low,complete
+CCPA,privacy,consumer_privacy_rights,7,partially_compliant,2024-11-15,conditional_pass,2,in_progress,2025-05-15,privacy_office,medium,partial
+NIST-800-53,federal,security_controls,42,partially_compliant,2024-09-25,conditional_pass,7,in_progress,2025-03-25,security_compliance,medium,partial
+ISO-27001,security,information_security_management,18,compliant,2024-11-05,passed,2,complete,2025-05-05,isms_manager,low,complete
+CMMC,defense,controlled_information,14,partially_compliant,2024-10-12,conditional_pass,5,in_progress,2025-04-12,security_compliance,medium,partial
+GLBA,financial,customer_data_privacy,5,compliant,2024-12-05,passed,1,complete,2025-06-05,privacy_office,low,complete
+NERC-CIP,utilities,critical_infrastructure,9,not_applicable,null,null,null,null,null,null,null,null
+
+security_investment_id,investment_category,investment_description,annual_cost,implementation_date,lifecycle_stage,risk_reduction_impact,coverage_percentage,business_alignment,roi_calculation,payback_period_months,confidence_in_value,investment_owner
+INV-2024-001,network_security,next_gen_firewall_deployment,450000,2024-06-15,operational,high,95,high,3.2,14,high,network_security
+INV-2024-002,endpoint_security,edr_platform_upgrade,325000,2024-08-22,operational,medium,87,medium,2.5,18,medium,endpoint_security
+INV-2024-003,identity_management,privileged_access_management,275000,2024-07-10,operational,high,82,high,3.8,12,high,identity_team
+INV-2024-004,cloud_security,cspm_implementation,225000,2024-09-05,maturing,medium,65,high,2.1,24,medium,cloud_security
+INV-2024-005,security_training,phishing_simulation_platform,150000,2024-05-20,operational,medium,92,medium,4.2,10,high,security_awareness
+INV-2024-006,deception_technology,honeypot_network,185000,2024-10-15,early,medium,45,low,1.8,30,medium,security_operations
+INV-2024-007,threat_intelligence,premium_intelligence_feeds,275000,2024-04-10,operational,high,75,medium,2.9,16,medium,threat_intelligence
+INV-2024-008,data_security,dlp_implementation,325000,2024-08-15,maturing,medium,76,high,2.3,22,medium,data_security
+INV-2024-009,application_security,web_application_firewall,215000,2024-06-25,operational,high,94,high,3.5,13,high,application_security
+INV-2024-010,security_orchestration,soar_platform,295000,2024-11-05,early,medium,58,medium,1.9,28,medium,security_operations
+
+maturity_dimension,maturity_category,current_maturity_level,target_maturity_level,maturity_gap,improvement_plan,resource_requirements,expected_timeline,improvement_priority,improvement_complexity,improvement_dependencies,improvement_owner
+threat_detection,security_operations,3,4,1,enhanced_analytics,medium,6_months,high,medium,data_integration,security_operations
+incident_response,security_operations,3,4,1,automated_playbooks,medium,6_months,high,medium,soar_implementation,incident_response
+vulnerability_management,security_operations,2,4,2,automated_scanning,high,12_months,high,high,scanning_infrastructure,vulnerability_management
+cloud_security,infrastructure,2,4,2,cspm_implementation,high,12_months,high,high,cloud_inventory,cloud_security
+identity_governance,identity,3,5,2,lifecycle_automation,high,18_months,high,high,directory_integration,identity_team
+data_protection,data_security,3,4,1,dlp_expansion,medium,9_months,medium,medium,data_classification,data_security
+security_architecture,infrastructure,2,4,2,zero_trust_implementation,high,24_months,high,high,network_segmentation,security_architecture
+third_party_risk,risk_management,1,3,2,vendor_assessment_program,medium,12_months,medium,medium,procurement_process,third_party_risk
+security_governance,governance,3,4,1,policy_automation,low,6_months,medium,low,policy_framework,security_governance
+security_culture,awareness,2,4,2,enhanced_awareness_program,medium,12_months,medium,medium,training_platform,security_awareness
+security_monitoring,security_operations,3,4,1,use_case_expansion,medium,9_months,high,medium,log_sources,security_operations
+application_security,development,2,4,2,secure_sdlc_implementation,high,18_months,high,high,development_processes,application_security
+
+For the CSV files, I recommend naming them:
+
+cybersecurity_incidents.csv
+vulnerability_data.csv
+security_controls.csv
+asset_inventory.csv
+threat_actors.csv
+detection_capabilities.csv

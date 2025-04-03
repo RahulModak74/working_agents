@@ -1,0 +1,273 @@
+[
+  {
+    "agent": "research_planner",
+    "content": "Plan a comprehensive research strategy to explore the future vision of Agentic AI. We need to understand current developments, key research directions, potential applications, ethical considerations, and future predictions. Create a structured plan with specific research questions.",
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "research_topic": "string",
+        "research_plan": {
+          "goal": "string",
+          "key_questions": ["string"],
+          "subtopics": ["string"]
+        },
+        "search_queries": ["string"],
+        "reasoning": "string"
+      }
+    }
+  },
+  {
+    "agent": "preliminary_researcher",
+    "content": "Conduct a broad preliminary search on 'Agentic AI future vision' to gather initial information about the topic. Focus on understanding what agentic AI is, current state of development, and key concepts that define the field.",
+    "readFrom": ["research_planner"],
+    "tools": ["research:combined_search"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "initial_findings": "string",
+        "key_concepts": ["string"],
+        "main_researchers": ["string"],
+        "leading_organizations": ["string"],
+        "emerging_trends": ["string"],
+        "search_results": ["object"]
+      }
+    }
+  },
+  {
+    "agent": "technical_researcher",
+    "content": "Conduct a deeper technical investigation on Agentic AI architecture, capabilities, and implementation approaches. Focus on technical aspects like reasoning mechanisms, planning capabilities, tool use, autonomous decision-making, and multi-step task execution.",
+    "readFrom": ["research_planner", "preliminary_researcher"],
+    "tools": ["research:search", "research:fetch_content", "research:analyze_content"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "technical_foundations": {
+          "architecture_approaches": ["string"],
+          "reasoning_methods": ["string"],
+          "planning_techniques": ["string"],
+          "tool_use_mechanisms": ["string"],
+          "memory_systems": ["string"]
+        },
+        "current_limitations": ["string"],
+        "breakthrough_areas": ["string"],
+        "technical_challenges": ["string"],
+        "sources": ["object"]
+      }
+    }
+  },
+  {
+    "agent": "applications_researcher",
+    "content": "Research current and future applications of Agentic AI across different domains. Identify industries where Agentic AI is making the most impact, emerging use cases, and potential transformative applications in the next 5-10 years.",
+    "readFrom": ["research_planner", "preliminary_researcher"],
+    "tools": ["research:search", "research:fetch_content", "research:analyze_content"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "current_applications": [
+          {
+            "domain": "string",
+            "description": "string",
+            "impact": "string",
+            "examples": ["string"]
+          }
+        ],
+        "emerging_applications": ["string"],
+        "future_potential": ["string"],
+        "industry_transformation": ["string"],
+        "sources": ["object"]
+      }
+    }
+  },
+  {
+    "agent": "ethics_researcher",
+    "content": "Investigate the ethical implications, governance challenges, and societal impacts of Agentic AI. Research questions of alignment, safety, accountability, autonomy, and potential risks that need to be addressed as Agentic AI develops further.",
+    "readFrom": ["research_planner", "preliminary_researcher"],
+    "tools": ["research:search", "research:fetch_content", "research:analyze_content"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "ethical_considerations": {
+          "alignment_challenges": ["string"],
+          "safety_concerns": ["string"],
+          "accountability_frameworks": ["string"],
+          "transparency_issues": ["string"]
+        },
+        "governance_approaches": ["string"],
+        "policy_recommendations": ["string"],
+        "societal_impacts": ["string"],
+        "sources": ["object"]
+      }
+    }
+  },
+  {
+    "agent": "future_trends_researcher",
+    "content": "Research predictions and forecasts about the future trajectory of Agentic AI. Identify long-term trends, transformative potential, expert predictions, and possible scenarios for how Agentic AI might evolve over the next decade.",
+    "readFrom": ["research_planner", "preliminary_researcher", "technical_researcher", "applications_researcher"],
+    "tools": ["research:search", "research:fetch_content", "research:analyze_content"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "expert_predictions": [
+          {
+            "expert": "string",
+            "prediction": "string",
+            "timeframe": "string"
+          }
+        ],
+        "development_trajectory": ["string"],
+        "breakthrough_expectations": ["string"],
+        "potential_paradigm_shifts": ["string"],
+        "uncertain_factors": ["string"],
+        "sources": ["object"]
+      }
+    }
+  },
+  {
+    "agent": "contrasting_viewpoints_researcher",
+    "content": "Research different perspectives on Agentic AI, including optimistic, pessimistic, and neutral viewpoints. Identify areas of consensus and controversy among experts, and document the range of opinions about the future of this technology.",
+    "readFrom": ["preliminary_researcher", "ethics_researcher", "future_trends_researcher"],
+    "tools": ["research:search", "research:fetch_content", "research:analyze_content", "planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "optimistic_perspectives": ["string"],
+        "pessimistic_perspectives": ["string"],
+        "neutral_assessments": ["string"],
+        "areas_of_consensus": ["string"],
+        "major_controversies": ["string"],
+        "reasoning_process": "string",
+        "sources": ["object"]
+      }
+    }
+  },
+  {
+    "agent": "integration_analyst",
+    "content": "Analyze and integrate all research findings to create a comprehensive understanding of the future vision for Agentic AI. Synthesize technical capabilities, applications, ethical considerations, and future trends into a cohesive picture.",
+    "readFrom": ["*"],
+    "tools": ["planning:chain_of_thought", "research:generate_summary"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "integrated_findings": {
+          "current_state": "string",
+          "primary_drivers": ["string"],
+          "key_challenges": ["string"],
+          "future_vision": "string"
+        },
+        "major_themes": ["string"],
+        "research_gaps": ["string"],
+        "synthesis_process": "string"
+      }
+    }
+  },
+  {
+    "agent": "report_generator",
+    "content": "Generate a comprehensive research report on the future vision of Agentic AI, synthesizing all findings from our research agents. The report should be well-structured, insightful, and accessible to technical and non-technical audiences alike.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Introduction to Agentic AI",
+        "Current Technical Landscape",
+        "Applications and Use Cases",
+        "Ethical Considerations and Governance",
+        "Future Trajectory and Predictions",
+        "Contrasting Perspectives",
+        "Implications for Society and Industry",
+        "Conclusions and Recommendations",
+        "References and Resources"
+      ]
+    }
+  },
+  {
+    "agent": "dynamic_research_director",
+    "type": "dynamic",
+    "initial_prompt": "Based on all the research conducted on Agentic AI future vision, determine which area requires further, more focused investigation. Choose from: 'technical_developments', 'regulatory_landscape', 'economic_impact', 'human_ai_collaboration', or 'competitive_analysis'.",
+    "readFrom": ["*"],
+    "tools": ["planning:get_summary"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "action": "string",
+        "reasoning": "string",
+        "specific_focus": "string",
+        "expected_insights": ["string"]
+      }
+    },
+    "actions": {
+      "technical_developments": {
+        "agent": "technical_deep_diver",
+        "content": "Conduct a deep-dive technical analysis on the most promising architectural approaches for advanced Agentic AI systems. Focus on breakthrough capabilities, novel algorithms, and emerging technical paradigms that could define the next generation of agentic systems.",
+        "readFrom": ["technical_researcher", "integration_analyst"],
+        "tools": ["research:combined_search", "planning:chain_of_thought"]
+      },
+      "regulatory_landscape": {
+        "agent": "regulatory_analyst",
+        "content": "Analyze the evolving regulatory landscape around Agentic AI globally. Examine current and proposed regulations, policy frameworks, industry standards, and governance models being developed to address the unique challenges of autonomous AI agents.",
+        "readFrom": ["ethics_researcher", "integration_analyst"],
+        "tools": ["research:combined_search", "planning:chain_of_thought"]
+      },
+      "economic_impact": {
+        "agent": "economic_analyst",
+        "content": "Evaluate the potential economic impact of widespread Agentic AI deployment across industries. Analyze productivity implications, labor market effects, business model transformations, and new economic opportunities created by autonomous AI agents.",
+        "readFrom": ["applications_researcher", "integration_analyst"],
+        "tools": ["research:combined_search", "planning:chain_of_thought"]
+      },
+      "human_ai_collaboration": {
+        "agent": "collaboration_researcher",
+        "content": "Explore emerging models of human-AI collaboration involving agentic systems. Research how autonomous agents can effectively work alongside humans, augment human capabilities, and create new collaborative paradigms across work, creativity, and daily life.",
+        "readFrom": ["applications_researcher", "ethics_researcher"],
+        "tools": ["research:combined_search", "planning:chain_of_thought"]
+      },
+      "competitive_analysis": {
+        "agent": "competitive_analyst",
+        "content": "Perform a competitive analysis of major organizations developing Agentic AI systems. Compare approaches, capabilities, strategic positioning, and competitive advantages among leading companies, research labs, and academic institutions in this space.",
+        "readFrom": ["preliminary_researcher", "technical_researcher"],
+        "tools": ["research:combined_search", "planning:chain_of_thought"]
+      }
+    }
+  },
+  {
+    "agent": "visual_insights_creator",
+    "content": "Create visual representations of the research findings about Agentic AI future vision. Design conceptual diagrams, timelines, comparison charts, and other visual elements to effectively communicate the key insights from our research.",
+    "readFrom": ["*"],
+    "tools": [],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "visual_concepts": [
+          {
+            "title": "string",
+            "description": "string",
+            "visualization_type": "string",
+            "key_elements": ["string"],
+            "insights_conveyed": ["string"]
+          }
+        ],
+        "timeline_elements": ["string"],
+        "relationship_mappings": ["string"],
+        "data_visualization_suggestions": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "final_presentation_creator",
+    "content": "Create a compelling presentation that summarizes our comprehensive research on the future vision of Agentic AI. The presentation should be visually engaging, well-structured, and suitable for executive-level audiences.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Title and Introduction",
+        "Executive Overview",
+        "Understanding Agentic AI",
+        "Current Landscape",
+        "Future Trajectory",
+        "Strategic Implications",
+        "Action Recommendations",
+        "Appendix: Research Methodology"
+      ]
+    }
+  }
+]

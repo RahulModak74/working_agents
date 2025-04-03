@@ -1,0 +1,23 @@
+```json
+{
+  "total_detections": 12,
+  "critical_hosts": [
+    "192.168.1.10",
+    "192.168.1.15",
+    "192.168.1.20",
+    "192.168.1.100",
+    "192.168.1.101",
+    "192.168.1.102"
+  ],
+  "attack_progression": "Reconnaissance to Persistence to Exfiltration",
+  "overall_severity": "High",
+  "recommended_actions": [
+    "Isolate compromised endpoints",
+    "Conduct a thorough forensic analysis",
+    "Enhance endpoint detection and logging",
+    "Review and restrict service account permissions",
+    "Implement stricter outbound traffic monitoring",
+    "Update incident response playbooks"
+  ]
+}
+```

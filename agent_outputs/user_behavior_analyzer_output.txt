@@ -1,0 +1,63 @@
+```json
+{
+  "user_risk_profiles": [
+    {
+      "user_id": "45678",
+      "session_count": 1,
+      "typical_endpoints": [
+        "/api/login",
+        "/api/auth",
+        "/api/users",
+        "/api/logout"
+      ],
+      "unusual_actions": [
+        "Repeated failed attempts to access /api/admin",
+        "Access reset password endpoint",
+        "Attempted access to non-existent admin user endpoint"
+      ],
+      "risk_indicators": [
+        "Multiple access denied responses (403)",
+        "Access to sensitive endpoint (/api/admin)",
+        "High response time for login endpoint"
+      ],
+      "overall_risk_score": 85
+    }
+  ],
+  "behavioral_anomalies": [
+    {
+      "anomaly_type": "Suspicious Access Patterns",
+      "affected_users": [
+        "45678"
+      ],
+      "affected_sessions": [
+        "a3c8d9e7f6b2"
+      ],
+      "significance": "High",
+      "potential_explanation": "Possible unauthorized access attempt or account compromise"
+    }
+  ],
+  "credential_compromise_indicators": [
+    {
+      "indicator": "Access to password reset endpoint",
+      "affected_user_ids": [
+        "45678"
+      ],
+      "sessions_involved": [
+        "a3c8d9e7f6b2"
+      ],
+      "confidence": 75
+    }
+  ],
+  "session_progression_analysis": {
+    "normal_progression_patterns": [
+      "Login -> User actions -> Logout"
+    ],
+    "abnormal_progressions": [
+      "Login -> Failed admin access attempts -> Reset password -> Logout"
+    ],
+    "potential_automated_sessions": [
+      "a3c8d9e7f6b2"
+    ]
+  }
+}
+```

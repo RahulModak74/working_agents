@@ -1,0 +1,327 @@
+[
+  {
+    "agent": "data_profiler",
+    "content": "Analyze the customer journey data in customer_journey.csv. Identify key metrics, channel usage patterns, and segment preferences. Focus on identifying which channels customers engage with most effectively across different journey stages.",
+    "file": "customer_journey.csv",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "total_customers": "number",
+        "journey_stages": ["string"],
+        "channel_distribution": {
+          "facebook": "number",
+          "instagram": "number",
+          "google": "number",
+          "twitter": "number",
+          "youtube": "number",
+          "whatsapp": "number",
+          "email": "number",
+          "other": "number"
+        },
+        "conversion_by_channel": {
+          "facebook": "number",
+          "instagram": "number",
+          "google": "number",
+          "twitter": "number",
+          "youtube": "number",
+          "whatsapp": "number",
+          "email": "number",
+          "other": "number"
+        },
+        "data_quality_issues": ["string"],
+        "key_segments": ["object"]
+      }
+    },
+    "memory_id": "channel_analysis"
+  },
+  {
+    "agent": "channel_effectiveness_analyzer",
+    "content": "Based on the data profile, analyze the effectiveness of each channel (Facebook, Instagram, Google, Twitter, YouTube, WhatsApp, email) across different journey stages and customer segments. Calculate engagement metrics, conversion rates, and ROI indicators for each channel.",
+    "readFrom": ["data_profiler"],
+    "memory_id": "channel_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "channel_metrics": [
+          {
+            "channel": "string",
+            "overall_engagement_rate": "number",
+            "conversion_rate": "number",
+            "avg_order_value": "number",
+            "cost_effectiveness_score": "number",
+            "best_performing_segments": ["string"],
+            "best_performing_journey_stages": ["string"],
+            "weaknesses": ["string"]
+          }
+        ],
+        "cross_channel_insights": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "segment_channel_matcher",
+    "content": "For each customer segment identified in the data, determine the optimal channel mix for marketing campaigns. Consider past engagement patterns, conversion rates, and demographic/behavioral characteristics of each segment.",
+    "readFrom": ["data_profiler", "channel_effectiveness_analyzer"],
+    "memory_id": "channel_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "segments": [
+          {
+            "segment_name": "string",
+            "segment_size": "number",
+            "primary_channels": ["string"],
+            "secondary_channels": ["string"],
+            "avoid_channels": ["string"],
+            "channel_rationale": "string",
+            "optimal_messaging_approach": "string",
+            "expected_response_rate": "number"
+          }
+        ],
+        "high_priority_segments": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "journey_stage_channel_mapper",
+    "content": "Map the optimal channels to target customers at each stage of their journey. Identify which channels are most effective for awareness, consideration, conversion, and retention phases. Consider the sequence and timing of multi-channel approaches.",
+    "readFrom": ["data_profiler", "channel_effectiveness_analyzer"],
+    "memory_id": "channel_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "journey_stages": [
+          {
+            "stage": "string",
+            "primary_channels": ["string"],
+            "secondary_channels": ["string"],
+            "channel_sequence": ["string"],
+            "optimal_timing": "string",
+            "content_recommendations": ["string"],
+            "effectiveness_metrics": {
+              "engagement_rate": "number",
+              "progression_rate": "number",
+              "cost_per_progression": "number"
+            }
+          }
+        ],
+        "cross_stage_insights": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "temporal_channel_analyzer",
+    "content": "Analyze temporal patterns in channel effectiveness. Identify time-based factors that influence channel performance, including day of week, time of day, seasonal trends, and external event correlations.",
+    "readFrom": ["data_profiler", "channel_effectiveness_analyzer"],
+    "memory_id": "channel_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "time_based_patterns": [
+          {
+            "channel": "string",
+            "optimal_days": ["string"],
+            "optimal_times": ["string"],
+            "seasonal_trends": ["string"],
+            "event_correlations": ["string"],
+            "significance_score": "number"
+          }
+        ],
+        "cross_channel_temporal_strategy": "string"
+      }
+    }
+  },
+  {
+    "agent": "channel_budget_optimizer",
+    "content": "Develop an optimal budget allocation strategy across channels based on their effectiveness, reach, and efficiency metrics. Provide percentage allocations for campaign budget across Facebook, Instagram, Google, Twitter, YouTube, WhatsApp, and email.",
+    "readFrom": ["channel_effectiveness_analyzer", "segment_channel_matcher", "journey_stage_channel_mapper", "temporal_channel_analyzer"],
+    "memory_id": "channel_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "overall_budget_allocation": {
+          "facebook": "number",
+          "instagram": "number",
+          "google": "number",
+          "twitter": "number",
+          "youtube": "number",
+          "whatsapp": "number",
+          "email": "number"
+        },
+        "segment_specific_allocations": [
+          {
+            "segment": "string",
+            "facebook": "number",
+            "instagram": "number",
+            "google": "number",
+            "twitter": "number",
+            "youtube": "number",
+            "whatsapp": "number",
+            "email": "number"
+          }
+        ],
+        "stage_specific_allocations": [
+          {
+            "journey_stage": "string",
+            "facebook": "number",
+            "instagram": "number",
+            "google": "number",
+            "twitter": "number",
+            "youtube": "number",
+            "whatsapp": "number",
+            "email": "number"
+          }
+        ],
+        "expected_roi_by_channel": {
+          "facebook": "number",
+          "instagram": "number",
+          "google": "number",
+          "twitter": "number",
+          "youtube": "number",
+          "whatsapp": "number",
+          "email": "number"
+        }
+      }
+    }
+  },
+  {
+    "agent": "campaign_content_recommender",
+    "content": "For each priority channel, recommend content types, formats, and messaging strategies that will maximize effectiveness based on historical data. Consider channel-specific best practices and audience preferences.",
+    "readFrom": ["channel_effectiveness_analyzer", "segment_channel_matcher", "journey_stage_channel_mapper"],
+    "memory_id": "channel_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "channel_content_strategies": [
+          {
+            "channel": "string",
+            "effective_content_types": ["string"],
+            "recommended_formats": ["string"],
+            "messaging_approaches": ["string"],
+            "creative_elements": ["string"],
+            "call_to_action_recommendations": ["string"],
+            "personalization_opportunities": ["string"]
+          }
+        ],
+        "cross_channel_content_consistency": "string"
+      }
+    }
+  },
+  {
+    "agent": "dynamic_channel_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on all previous analyses, determine the top 3 channels to prioritize for the next marketing campaign, considering ROI potential, audience fit, and implementation ease.",
+    "readFrom": ["data_profiler", "channel_effectiveness_analyzer", "segment_channel_matcher", "journey_stage_channel_mapper", "temporal_channel_analyzer", "channel_budget_optimizer", "campaign_content_recommender"],
+    "memory_id": "channel_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "priority_channels": ["string"],
+        "reasoning": ["string"],
+        "expected_impact": "number",
+        "implementation_approach": "string"
+      }
+    },
+    "actions": {
+      "facebook_instagram": {
+        "agent": "social_media_strategist",
+        "content": "Develop a detailed Facebook and Instagram campaign strategy, including ad formats, targeting parameters, budget allocation, and content recommendations.",
+        "readFrom": ["channel_effectiveness_analyzer", "segment_channel_matcher", "campaign_content_recommender"]
+      },
+      "google_youtube": {
+        "agent": "search_video_strategist",
+        "content": "Create a comprehensive Google and YouTube campaign strategy, including keyword targeting, ad formats, audience segments, and video content recommendations.",
+        "readFrom": ["channel_effectiveness_analyzer", "segment_channel_matcher", "campaign_content_recommender"]
+      },
+      "twitter": {
+        "agent": "twitter_strategist",
+        "content": "Design a Twitter campaign strategy focused on engagement, hashtag strategy, influencer collaboration, and real-time marketing opportunities.",
+        "readFrom": ["channel_effectiveness_analyzer", "segment_channel_matcher", "campaign_content_recommender"]
+      },
+      "whatsapp_messaging": {
+        "agent": "messaging_strategist",
+        "content": "Develop a WhatsApp business messaging strategy, including conversation templates, automation opportunities, personalization approaches, and compliance considerations.",
+        "readFrom": ["channel_effectiveness_analyzer", "segment_channel_matcher", "campaign_content_recommender"]
+      },
+      "email_marketing": {
+        "agent": "email_strategist",
+        "content": "Create an email marketing strategy with segmentation approach, messaging templates, automation workflows, and testing methodologies.",
+        "readFrom": ["channel_effectiveness_analyzer", "segment_channel_matcher", "campaign_content_recommender"]
+      }
+    }
+  },
+  {
+    "agent": "campaign_calendar_planner",
+    "content": "Develop a comprehensive marketing calendar that schedules channel activities based on all previous analyses. Include timing recommendations, channel sequencing, and coordination strategies across platforms.",
+    "readFrom": ["dynamic_channel_agent", "temporal_channel_analyzer", "*"],
+    "memory_id": "channel_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "campaign_phases": [
+          {
+            "phase_name": "string",
+            "duration_days": "number",
+            "channel_activities": [
+              {
+                "channel": "string",
+                "activity_type": "string",
+                "timing": "string",
+                "dependencies": ["string"],
+                "expected_outcomes": ["string"]
+              }
+            ],
+            "coordination_requirements": ["string"],
+            "measurement_points": ["string"]
+          }
+        ],
+        "critical_timing_considerations": ["string"],
+        "adaptation_triggers": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "campaign_measurement_planner",
+    "content": "Design a comprehensive measurement framework for evaluating the effectiveness of the multi-channel campaign. Include KPIs, attribution methodology, testing approaches, and reporting frameworks.",
+    "readFrom": ["dynamic_channel_agent", "channel_budget_optimizer", "campaign_calendar_planner", "*"],
+    "memory_id": "channel_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "channel_specific_kpis": [
+          {
+            "channel": "string",
+            "primary_kpis": ["string"],
+            "secondary_kpis": ["string"],
+            "measurement_methodology": "string",
+            "benchmarks": ["string"]
+          }
+        ],
+        "attribution_model": "string",
+        "testing_framework": "string",
+        "reporting_cadence": "string",
+        "optimization_triggers": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "executive_summary_generator",
+    "content": "Create a comprehensive executive summary of the channel optimization analysis and recommendations. Include key insights, strategic channel priorities, budget allocations, expected outcomes, and implementation approach.",
+    "readFrom": ["data_profiler", "channel_effectiveness_analyzer", "segment_channel_matcher", "journey_stage_channel_mapper", "temporal_channel_analyzer", "channel_budget_optimizer", "campaign_content_recommender", "dynamic_channel_agent", "campaign_calendar_planner", "campaign_measurement_planner"],
+    "memory_id": "channel_analysis",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Channel Analysis Highlights",
+        "Recommended Channel Strategy",
+        "Channel-Specific Tactics",
+        "Budget Allocation",
+        "Implementation Timeline",
+        "Expected Business Impact",
+        "Measurement Approach",
+        "Next Steps"
+      ]
+    }
+  }
+]

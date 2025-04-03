@@ -5,8 +5,6 @@ import os
 import json
 import re
 import subprocess
-import importlib.util
-import glob
 from typing import Dict, Any, List, Optional
 
 # Ensure the main directory is in the path
@@ -26,55 +24,6 @@ except ImportError:
     }
     # Ensure output directory exists
     os.makedirs(CONFIG["output_dir"], exist_ok=True)
-
-# Global tool registry to store all available tools from adapters
-GLOBAL_TOOL_REGISTRY = {}
-
-def load_all_tool_adapters():
-    """Dynamically load all tool adapters from files matching *_adapter.py"""
-    # Find adapters in current directory
-    adapter_files = glob.glob(os.path.join(current_dir, "*_adapter.py"))
-    # Also find adapters in subdirectories (especially the COMPONENT directory)
-    adapter_files += glob.glob(os.path.join(current_dir, "*", "*_adapter.py"))
-    
-    print(f"Found {len(adapter_files)} adapter files: {[os.path.basename(f) for f in adapter_files]}")
-    
-    for adapter_file in adapter_files:
-        adapter_name = os.path.basename(adapter_file)
-        module_name = os.path.splitext(adapter_name)[0]
-        
-        try:
-            # Dynamically import the module
-            spec = importlib.util.spec_from_file_location(module_name, adapter_file)
-            adapter_module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(adapter_module)
-            
-            # Check if the module has a TOOL_REGISTRY
-            if hasattr(adapter_module, 'TOOL_REGISTRY'):
-                print(f"Loaded tool adapter: {module_name} with {len(adapter_module.TOOL_REGISTRY)} tools")
-                
-                # Update the global registry
-                for tool_id, tool_handler in adapter_module.TOOL_REGISTRY.items():
-                    GLOBAL_TOOL_REGISTRY[tool_id] = tool_handler
-            
-            # Check if the module has an execute_tool function
-            if hasattr(adapter_module, 'execute_tool'):
-                print(f"Loaded execute_tool from: {module_name}")
-                
-        except Exception as e:
-            print(f"Error loading adapter {adapter_name}: {e}")
-
-def execute_tool(tool_id: str, **kwargs) -> Any:
-    """Execute a tool by its ID with the provided parameters"""
-    if tool_id not in GLOBAL_TOOL_REGISTRY:
-        return {"error": f"Unknown tool: {tool_id}"}
-    
-    try:
-        handler = GLOBAL_TOOL_REGISTRY[tool_id]
-        return handler(**kwargs)
-    except Exception as e:
-        print(f"Error executing tool {tool_id}: {str(e)}")
-        return {"error": str(e)}
 
 def extract_json_from_text(text: str) -> Dict[str, Any]:
     """Extract JSON from text, handling various formats"""
@@ -257,17 +206,6 @@ def run_agent(agent_name: str, prompt: str, file_path: Optional[str] = None,
 def run_universal_workflow(workflow_file: str, data_file: str = None):
     """Run any workflow using the universal approach"""
     
-    # Get the directory where the workflow file is located
-    workflow_dir = os.path.dirname(os.path.abspath(workflow_file))
-    
-    # First, load all tool adapters
-    load_all_tool_adapters()
-    
-    # Print available tools for debugging
-    print(f"Loaded a total of {len(GLOBAL_TOOL_REGISTRY)} tools from all adapters")
-    if GLOBAL_TOOL_REGISTRY:
-        print(f"Available tools: {', '.join(sorted(GLOBAL_TOOL_REGISTRY.keys()))}")
-    
     # Load the workflow
     with open(workflow_file, 'r', encoding='utf-8') as f:
         workflow = json.load(f)
@@ -293,19 +231,6 @@ def run_universal_workflow(workflow_file: str, data_file: str = None):
                             references[prev_agent] = prev_result
                 elif ref_name in results:
                     references[ref_name] = results[ref_name]
-        
-        # Check if tools are required for this step
-        if "tools" in step:
-            required_tools = step["tools"]
-            missing_tools = [tool for tool in required_tools if tool not in GLOBAL_TOOL_REGISTRY]
-            
-            if missing_tools:
-                print(f"Warning: Missing required tools for {agent_name}: {missing_tools}")
-                # Add note about missing tools to the agent prompt
-                content += f"\n\nNote: The following tools are not available: {', '.join(missing_tools)}"
-            else:
-                # Add note about available tools to the agent prompt
-                content += f"\n\nYou have access to these tools: {', '.join(required_tools)}"
         
         # Handle dynamic agent
         if step.get("type") == "dynamic":

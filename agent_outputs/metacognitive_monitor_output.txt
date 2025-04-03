@@ -1,0 +1,51 @@
+```json
+{
+  "reasoning_patterns": [
+    "Analytical reasoning",
+    "Iterative problem-solving",
+    "Data-driven decision making"
+  ],
+  "explicit_assumptions": [
+    "The current hiring process has identifiable inefficiencies.",
+    "Feedback from stakeholders will provide actionable insights.",
+    "Technology solutions can improve the hiring process."
+  ],
+  "implicit_assumptions": [
+    "The organization has the resources to implement the suggested improvements.",
+    "Stakeholders are willing to provide honest and constructive feedback.",
+    "The proposed metrics will accurately measure the effectiveness of the hiring process."
+  ],
+  "potential_biases": [
+    {
+      "bias_type": "Confirmation bias",
+      "description": "The problem solver may favor information that confirms their pre-existing beliefs about the hiring process.",
+      "evidence": "The solution focuses on gathering feedback and data, but there is no mention of challenging existing assumptions.",
+      "impact": "May overlook alternative perspectives or solutions that do not align with initial beliefs."
+    },
+    {
+      "bias_type": "Technology optimism bias",
+      "description": "The problem solver may overestimate the effectiveness of technology solutions in improving the hiring process.",
+      "evidence": "The solution includes implementing technology solutions like ATS or AI tools without discussing potential limitations or risks.",
+      "impact": "May lead to over-reliance on technology without considering its potential drawbacks."
+    }
+  ],
+  "key_decision_points": [
+    {
+      "decision": "Implement technology solutions like ATS or AI tools.",
+      "alternatives_considered": [
+        "Manual process improvements",
+        "Increased human resource allocation"
+      ],
+      "selection_rationale": "Technology solutions are seen as more scalable and efficient in the long term."
+    },
+    {
+      "decision": "Establish clear metrics to measure the effectiveness of the hiring process.",
+      "alternatives_considered": [
+        "Qualitative feedback only",
+        "No formal measurement"
+      ],
+      "selection_rationale": "Quantitative metrics provide objective data to assess and improve the hiring process."
+    }
+  ]
+}
+```

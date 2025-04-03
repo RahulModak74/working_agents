@@ -1,0 +1,11 @@
+```json
+{
+  "status": "success",
+  "metadata": {
+    "url": "https://www.wikipedia.org/",
+    "title": "Wikipedia",
+    "content_length": 0
+  },
+  "summary": "Wikipedia homepage providing access to a vast repository of knowledge in multiple languages."
+}
+```

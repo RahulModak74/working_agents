@@ -1,0 +1,195 @@
+[
+  {
+    "agent": "connection_manager",
+    "content": "Connect to the target system using SSH. Establish a secure connection while handling any authentication errors. Once connected, capture and save the connection ID for subsequent steps in the workflow.",
+    "tools": ["ssh:connect"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "connection_id": "string",
+        "message": "string",
+        "banner": "string"
+      }
+    },
+    "memory_id": "privesc_session"
+  },
+  {
+    "agent": "system_analyzer",
+    "content": "Analyze the target system for basic information. Collect OS details, kernel version, user information, and other system data that might reveal privilege escalation vectors. Run essential commands to understand the target environment.",
+    "readFrom": ["connection_manager"],
+    "tools": ["ssh:execute"],
+    "memory_id": "privesc_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "os_info": "string",
+        "kernel_version": "string",
+        "current_user": "string",
+        "sudo_permissions": "string",
+        "relevant_findings": ["string"],
+        "potential_vectors": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "vulnerability_scanner",
+    "content": "Perform in-depth vulnerability scanning on the target system. Look for misconfigurations, SUID/SGID binaries, writeable paths, weak permissions, cron jobs, and other common privilege escalation vectors. Systematically check each potential area of weakness.",
+    "readFrom": ["connection_manager", "system_analyzer"],
+    "tools": ["ssh:execute"],
+    "memory_id": "privesc_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "suid_binaries": ["string"],
+        "writable_paths": ["string"],
+        "cron_jobs": ["string"],
+        "sudo_misconfigs": ["string"],
+        "world_writable_files": ["string"],
+        "kernel_exploits": ["string"],
+        "other_findings": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "exploit_helper",
+    "content": "Upload necessary privilege escalation tools to the target system. This could include scripts like LinPEAS/WinPEAS, BeRoot, or other tools that help identify vulnerabilities. Make the tools executable and available for subsequent exploitation.",
+    "readFrom": ["connection_manager", "system_analyzer"],
+    "tools": ["ssh:upload", "ssh:execute"],
+    "memory_id": "privesc_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "tools_uploaded": ["string"],
+        "upload_locations": ["string"],
+        "execution_status": ["string"],
+        "initial_findings": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on the system analysis and vulnerability scan results, determine the most promising privilege escalation vector to exploit. Choose from: 'suid_exploit', 'sudo_exploit', 'cron_job_exploit', 'kernel_exploit', 'path_exploit', or 'custom_exploit'.",
+    "readFrom": ["system_analyzer", "vulnerability_scanner", "exploit_helper"],
+    "tools": ["ssh:execute"],
+    "memory_id": "privesc_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "action": "string",
+        "reasoning": "string",
+        "predicted_success_rate": "number",
+        "requirements": ["string"]
+      }
+    },
+    "actions": {
+      "suid_exploit": {
+        "agent": "suid_exploiter",
+        "content": "Exploit a SUID binary vulnerability to escalate privileges. Use the specific SUID binary identified during the vulnerability scan and execute the appropriate exploitation technique to gain higher privileges.",
+        "readFrom": ["vulnerability_scanner"],
+        "tools": ["ssh:execute"]
+      },
+      "sudo_exploit": {
+        "agent": "sudo_exploiter",
+        "content": "Exploit a sudo misconfiguration to escalate privileges. Use the identified sudo permissions or vulnerabilities to execute commands as a higher privileged user, potentially gaining root access.",
+        "readFrom": ["vulnerability_scanner"],
+        "tools": ["ssh:execute"]
+      },
+      "cron_job_exploit": {
+        "agent": "cron_exploiter",
+        "content": "Exploit a vulnerable cron job to escalate privileges. Manipulate the identified cron job, its script, or its environment to execute code with higher privileges when the scheduled task runs.",
+        "readFrom": ["vulnerability_scanner"],
+        "tools": ["ssh:execute"]
+      },
+      "kernel_exploit": {
+        "agent": "kernel_exploiter",
+        "content": "Exploit a kernel vulnerability to escalate privileges. Compile and execute a suitable kernel exploit based on the kernel version identified during system analysis. Handle dependencies and execute the exploit safely.",
+        "readFrom": ["system_analyzer", "vulnerability_scanner"],
+        "tools": ["ssh:upload", "ssh:execute"]
+      },
+      "path_exploit": {
+        "agent": "path_exploiter",
+        "content": "Exploit a PATH vulnerability to escalate privileges. Create and place malicious executables in writable paths that might be executed by higher privileged processes or users.",
+        "readFrom": ["vulnerability_scanner"],
+        "tools": ["ssh:execute"]
+      },
+      "custom_exploit": {
+        "agent": "custom_exploiter",
+        "content": "Implement a custom privilege escalation technique based on unique findings from the vulnerability scan. Craft a specialized exploit that combines multiple weaknesses or leverages uncommon misconfigurations.",
+        "readFrom": ["system_analyzer", "vulnerability_scanner", "exploit_helper"],
+        "tools": ["ssh:upload", "ssh:execute"]
+      }
+    }
+  },
+  {
+    "agent": "privilege_verifier",
+    "content": "Verify whether the privilege escalation attempt was successful. Check the current user's permissions, group memberships, and effective privileges to confirm whether root or administrator access was achieved.",
+    "readFrom": ["dynamic_agent", "*"],
+    "tools": ["ssh:execute"],
+    "memory_id": "privesc_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "escalation_successful": "boolean",
+        "current_user": "string",
+        "current_privileges": "string",
+        "root_access": "boolean",
+        "verification_commands": ["string"],
+        "verification_outputs": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "persistence_establisher",
+    "content": "If privilege escalation was successful, establish persistence on the system to maintain elevated access. Create backdoor accounts, add SSH keys, or implement other persistence mechanisms while remaining stealthy.",
+    "readFrom": ["privilege_verifier"],
+    "tools": ["ssh:execute"],
+    "memory_id": "privesc_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "persistence_established": "boolean",
+        "mechanisms": ["string"],
+        "access_credentials": ["string"],
+        "cleanup_required": "boolean",
+        "stealth_assessment": "string"
+      }
+    }
+  },
+  {
+    "agent": "cleanup_agent",
+    "content": "Perform cleanup operations to remove evidence of the privilege escalation testing. Remove uploaded tools, logs, temporary files, and other artifacts that might indicate testing activities.",
+    "readFrom": ["exploit_helper", "dynamic_agent", "privilege_verifier", "persistence_establisher"],
+    "tools": ["ssh:execute"],
+    "memory_id": "privesc_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "files_removed": ["string"],
+        "logs_cleared": ["string"],
+        "remaining_artifacts": ["string"],
+        "cleanup_status": "string"
+      }
+    }
+  },
+  {
+    "agent": "report_generator",
+    "content": "Generate a comprehensive report of the privilege escalation testing process. Include details of the initial access, vulnerabilities identified, exploit methods used, success status, persistence established, and recommendations for remediation.",
+    "readFrom": ["system_analyzer", "vulnerability_scanner", "dynamic_agent", "privilege_verifier", "persistence_establisher", "cleanup_agent"],
+    "memory_id": "privesc_session",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "System Information",
+        "Vulnerabilities Identified",
+        "Exploitation Method",
+        "Privilege Escalation Results",
+        "Persistence Status",
+        "Recommended Security Improvements",
+        "Conclusion"
+      ]
+    }
+  }
+]

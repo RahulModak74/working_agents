@@ -1,0 +1,19 @@
+```json
+{
+  "status": "success",
+  "count": 1,
+  "elements": [
+    {
+      "index": 0,
+      "tag": "input",
+      "attributes": {
+        "name": "search",
+        "type": "search",
+        "placeholder": "Search Wikipedia",
+        "aria-label": "Search Wikipedia"
+      },
+      "recommended_selector": "input[name='search']"
+    }
+  ]
+}
+```

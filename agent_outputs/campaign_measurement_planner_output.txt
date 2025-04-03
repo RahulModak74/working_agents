@@ -1,0 +1,30 @@
+```json
+{
+  "channel_specific_kpis": [
+    {
+      "channel": "email",
+      "primary_kpis": [
+        "engagement_rate",
+        "conversion_rate"
+      ],
+      "secondary_kpis": [
+        "progression_rate",
+        "re-engagement_rate"
+      ],
+      "measurement_methodology": "Track email opens, clicks, and conversions using UTM parameters and email analytics tools.",
+      "benchmarks": [
+        "Industry average email engagement rate: 20%",
+        "Industry average email conversion rate: 2%"
+      ]
+    }
+  ],
+  "attribution_model": "Last-click attribution",
+  "testing_framework": "A/B testing for email content, timing, and messaging approaches.",
+  "reporting_cadence": "Weekly performance reports with monthly deep dives.",
+  "optimization_triggers": [
+    "Low engagement rates in initial phases",
+    "Data quality issues affecting campaign performance",
+    "Changes in customer behavior or segment sizes"
+  ]
+}
+```

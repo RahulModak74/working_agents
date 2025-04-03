@@ -1,0 +1,30 @@
+```json
+{
+  "federation_status": {
+    "active_nodes": [
+      "Node1",
+      "Node2",
+      "Node3"
+    ],
+    "sync_status": "up-to-date",
+    "conflict_resolution": [],
+    "routing_table": [
+      {
+        "query_pattern": "Person",
+        "node_assignment": "Node1",
+        "caching_strategy": "none"
+      },
+      {
+        "query_pattern": "Organization",
+        "node_assignment": "Node2",
+        "caching_strategy": "none"
+      },
+      {
+        "query_pattern": "Project",
+        "node_assignment": "Node3",
+        "caching_strategy": "none"
+      }
+    ]
+  }
+}
+```
