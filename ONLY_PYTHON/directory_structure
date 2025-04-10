@@ -1,0 +1,88 @@
+# Directory Structure for the Multi-Agent System Project
+
+Here's the recommended directory structure for organizing all the files:
+
+```
+working_agents/
+│
+├── config.py                   # Configuration settings (already exists)
+│
+├── agent_framework.py          # Core framework implementation
+├── agent_tools.py              # Tool implementations
+├── agent_system_types.py       # Specialized agent system implementations
+│
+├── examples/
+│   ├── main.py                 # Basic examples of all agent systems
+│   └── complex_urban_planning.py # Complex urban planning example
+│
+├── agent_outputs/              # Directory for output files (created automatically)
+│   ├── urban_planning_solution.json # Generated solution file
+│   └── urban_planning.log      # Log file for the urban planning example
+│
+├── agent_memory/               # Directory for memory storage (created automatically)
+│
+└── README.md                   # Project documentation
+```
+
+## How to Set Up This Directory Structure
+
+1. If you already have `config.py` in your `working_agents` directory, keep it there.
+
+2. Create the Python modules in the `working_agents` directory:
+   ```bash
+   cd working_agents
+   touch agent_framework.py agent_tools.py agent_system_types.py
+   ```
+
+3. Create an examples directory for the example scripts:
+   ```bash
+   mkdir -p examples
+   touch examples/main.py examples/complex_urban_planning.py
+   ```
+
+4. Make sure the output directories exist (your config already has code for this):
+   ```bash
+   mkdir -p agent_outputs agent_memory
+   ```
+
+5. Copy the provided code into each respective file:
+   - `agent_framework.py` - The core framework implementation
+   - `agent_tools.py` - Tool implementations
+   - `agent_system_types.py` - Specialized agent system implementations
+   - `examples/main.py` - Basic examples of all agent systems
+   - `examples/complex_urban_planning.py` - Complex urban planning example
+   - `README.md` - Project documentation
+
+6. Make the example scripts executable:
+   ```bash
+   chmod +x examples/main.py examples/complex_urban_planning.py
+   ```
+
+## Running the Examples
+
+To run the basic examples:
+```bash
+python examples/main.py
+```
+
+To run the complex urban planning example:
+```bash
+python examples/complex_urban_planning.py
+```
+
+## Important Notes
+
+1. Make sure the imports in the examples are updated to refer to the modules in the parent directory:
+   ```python
+   import sys
+   import os
+   sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+   
+   from agent_framework import AgentSystem
+   from agent_tools import ToolRegistry
+   from agent_system_types import AdvancedCognitionSystem
+   ```
+
+2. The SQLite database will be created in the working directory where you run the script.
+
+3. Check the output directory for results after running the examples.
