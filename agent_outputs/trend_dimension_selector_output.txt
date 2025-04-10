@@ -1,0 +1,31 @@
+```json
+{
+  "selected_dimensions": [
+    {
+      "name": "Native AI and machine learning frameworks integrated with SAP HANA",
+      "priority_rationale": "Seamless integration of AI frameworks within the database layer enables scalable, real-time advanced analytics and automated decision-making directly at the data source.",
+      "expected_impact": "Dramatically improves operational efficiency, accelerates innovation cycles, and provides competitive advantage through embedded intelligence."
+    },
+    {
+      "name": "Accelerating industry-specific innovation using domain-adapted AI models within SAP HANA",
+      "priority_rationale": "Tailoring AI models to specific industries unlocks highly actionable, context-aware insights that can drastically improve business outcomes.",
+      "expected_impact": "Transforms core business processes, enhances differentiation, and drives faster ROI from AI investments in SAP HANA."
+    },
+    {
+      "name": "Automated data orchestration and optimization powered by AI",
+      "priority_rationale": "Automating data management reduces complexities and manual effort, ensuring high-quality, trusted data for AI and analytics at speed and scale.",
+      "expected_impact": "Enables agile data-driven innovation, reduces operational costs, and supports real-time, intelligent enterprise workflows."
+    },
+    {
+      "name": "Developing low-code/no-code AI solutions to empower non-technical business users",
+      "priority_rationale": "Lowering technical barriers democratizes AI adoption, fostering widespread innovation and faster realization of AI benefits across the organization.",
+      "expected_impact": "Accelerates AI-driven transformation by enabling business users to create and deploy AI solutions, improving agility and business responsiveness."
+    },
+    {
+      "name": "Expansion of embedded analytics and predictive capabilities within enterprise workflows",
+      "priority_rationale": "Integrated analytics and predictive models streamline processes and enhance decision quality without disrupting existing workflows.",
+      "expected_impact": "Increases user adoption, drives continuous process optimization, and supports proactive, data-driven decision-making throughout the enterprise."
+    }
+  ]
+}
+```

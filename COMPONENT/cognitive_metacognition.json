@@ -1,0 +1,141 @@
+[
+  {
+    "agent": "problem_solver",
+    "content": "Analyze and solve the following problem: {problem_description}. Show all your reasoning steps explicitly.",
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "problem_understanding": "string",
+        "reasoning_steps": ["string"],
+        "solution": "string",
+        "confidence": "number"
+      }
+    },
+    "memory_id": "metacog_session"
+  },
+  {
+    "agent": "metacognitive_monitor",
+    "content": "Review the problem-solving process used by the problem_solver agent. Identify the reasoning patterns, assumptions made, potential cognitive biases, and key decision points in the solution process.",
+    "readFrom": ["problem_solver"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "metacog_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "reasoning_patterns": ["string"],
+        "explicit_assumptions": ["string"],
+        "implicit_assumptions": ["string"],
+        "potential_biases": [
+          {
+            "bias_type": "string",
+            "description": "string",
+            "evidence": "string",
+            "impact": "string"
+          }
+        ],
+        "key_decision_points": [
+          {
+            "decision": "string",
+            "alternatives_considered": ["string"],
+            "selection_rationale": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "counterfactual_explorer",
+    "content": "Explore counterfactual scenarios for the problem-solving process. What if different assumptions were made? What if different reasoning strategies were employed? How would the solution change?",
+    "readFrom": ["problem_solver", "metacognitive_monitor"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "metacog_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "counterfactual_scenarios": [
+          {
+            "altered_element": "string",
+            "alternative_approach": "string",
+            "projected_outcome": "string",
+            "comparison_to_original": "string"
+          }
+        ],
+        "most_promising_alternatives": ["string"],
+        "least_promising_alternatives": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "bias_detector",
+    "content": "Perform a detailed analysis of cognitive biases that may have influenced the solution process. For each potential bias, rate its likelihood and impact on the solution quality.",
+    "readFrom": ["problem_solver", "metacognitive_monitor"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "metacog_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "cognitive_biases": [
+          {
+            "bias_name": "string",
+            "description": "string",
+            "evidence_in_reasoning": "string",
+            "likelihood_score": "number",
+            "impact_score": "number",
+            "mitigation_strategy": "string"
+          }
+        ],
+        "overall_bias_assessment": "string"
+      }
+    }
+  },
+  {
+    "agent": "reasoning_optimizer",
+    "content": "Based on the metacognitive analysis, counterfactual exploration, and bias detection, propose an optimized reasoning process for solving this type of problem. Design a step-by-step framework that addresses the weaknesses identified.",
+    "readFrom": ["problem_solver", "metacognitive_monitor", "counterfactual_explorer", "bias_detector"],
+    "tools": ["planning:create_plan"],
+    "memory_id": "metacog_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "optimized_framework": {
+          "name": "string",
+          "purpose": "string",
+          "steps": [
+            {
+              "step_name": "string",
+              "description": "string",
+              "purpose": "string",
+              "implementation_guidance": "string"
+            }
+          ],
+          "bias_mitigation_techniques": ["string"],
+          "verification_methods": ["string"]
+        }
+      }
+    }
+  },
+  {
+    "agent": "solution_reviser",
+    "content": "Using the optimized reasoning framework, revisit the original problem and develop a revised solution. Compare this solution to the original and highlight key improvements.",
+    "readFrom": ["problem_solver", "reasoning_optimizer"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "metacog_session",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Problem Restatement",
+        "Optimized Reasoning Process",
+        "Revised Solution",
+        "Comparison to Original Solution",
+        "Key Improvements",
+        "Metacognitive Insights"
+      ]
+    }
+  }
+]
+
+
+
+
+

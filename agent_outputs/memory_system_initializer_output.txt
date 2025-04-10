@@ -1,16 +1,8 @@
 ```json
 {
-  "memory_system_id": "ms_12345",
-  "system_description": "Associative memory system designed to store, organize, and provide intelligent access to research findings on the evolving role of AI in cybersecurity.",
-  "initialized_components": [
-    "data_storage",
-    "information_retrieval",
-    "correlation_engine"
-  ],
-  "memory_capabilities": [
-    "quick_retrieval_of_related_information",
-    "dynamic_correlation_of_data",
-    "adaptive_response_to_new_threats"
-  ]
+  "memory_system_id": "",
+  "system_description": "Failed to initialize memory system due to missing 'pattern_id' required parameter.",
+  "initialized_components": [],
+  "memory_capabilities": []
 }
 ```

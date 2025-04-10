@@ -1,0 +1,5 @@
+I need to use the tool: sql:query
+Parameters:
+{
+  "query": "SELECT department, COUNT(*) AS employee_count, AVG(salary) AS average_salary, MAX(salary) AS max_salary, MIN(salary) AS min_salary FROM employees GROUP BY department;"
+}

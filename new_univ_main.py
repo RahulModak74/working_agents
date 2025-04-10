@@ -142,6 +142,26 @@ def run_agent(agent_name: str, prompt: str, file_path: Optional[str] = None,
             else:
                 enhanced_prompt += str(ref_content)
     
+    # Add file content if provided
+    if file_path and os.path.exists(file_path):
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                file_content = f.read()
+                
+                # For large files, just include a limited amount
+                if len(file_content) > 10000:
+                    preview = file_content[:10000] + "...[content truncated]..."
+                    enhanced_prompt += f"\n\nHere is a preview of the content of {os.path.basename(file_path)}:\n```\n{preview}\n```"
+                else:
+                    enhanced_prompt += f"\n\nHere is the content of {os.path.basename(file_path)}:\n```\n{file_content}\n```"
+            
+            print(f"Successfully loaded file: {file_path}")
+        except Exception as e:
+            print(f"Warning: Could not read file {file_path}: {e}")
+    else:
+        if file_path:
+            print(f"Warning: File not found: {file_path}")
+    
     # Add explicit formatting instructions
     if output_type == "json" and schema:
         enhanced_prompt += "\n\n### Response Format Instructions:\n"
@@ -155,9 +175,6 @@ def run_agent(agent_name: str, prompt: str, file_path: Optional[str] = None,
             enhanced_prompt += f"# {section}\n\n"
         enhanced_prompt += "\nEnsure each section heading uses a single # character followed by the exact section name as listed above."
     
-    # Output file
-    output_file = os.path.join(CONFIG["output_dir"], f"{agent_name}_output.txt")
-    
     # Build the payload
     format_type = "JSON" if output_type == "json" else "markdown"
     system_message = f"You are a specialized assistant handling {format_type} outputs. Your responses must strictly follow the format specified in the instructions."
@@ -170,40 +187,147 @@ def run_agent(agent_name: str, prompt: str, file_path: Optional[str] = None,
     elif "finance" in agent_name.lower() or "investment" in agent_name.lower() or "portfolio" in prompt.lower():
         system_message = "You are a financial analysis assistant. " + system_message
     
+    # Add tool usage instructions if tools are needed
+    if "You have access to these tools:" in enhanced_prompt:
+        system_message += """
+You have access to tools specified in the instructions. To use a tool, format your response like this:
+
+I need to use the tool: $TOOL_NAME
+Parameters:
+{
+  "param1": "value1",
+  "param2": "value2"
+}
+
+Wait for the tool result before continuing.
+"""
+    
+    # Define conversation for tool usage
+    conversation = [
+        {"role": "system", "content": system_message},
+        {"role": "user", "content": enhanced_prompt}
+    ]
+    
+    # Output file
+    output_file = os.path.join(CONFIG["output_dir"], f"{agent_name}_output.txt")
+    final_response = None
+    
+    # Execute the call with potential tool usage loop
+    print(f"🤖 Running agent: {agent_name}")
+    try:
+        # Initial API call
+        api_response = call_api(conversation)
+        response_content = api_response
+        
+        # Check if the response contains a tool usage request
+        tool_usage_pattern = r"I need to use the tool: ([a-zA-Z0-9_:]+)\s*\nParameters:\s*\{([^}]+)\}"
+        tool_match = re.search(tool_usage_pattern, response_content, re.DOTALL)
+        
+        # Loop for tool usage if needed
+        max_tool_calls = 5  # Set a limit to avoid infinite loops
+        tool_calls = 0
+        
+        while tool_match and tool_calls < max_tool_calls:
+            tool_calls += 1
+            
+            # Extract tool name and parameters
+            tool_name = tool_match.group(1).strip()
+            params_text = "{" + tool_match.group(2) + "}"
+            
+            try:
+                # Parse parameters
+                params = json.loads(params_text)
+                print(f"📡 Tool call {tool_calls}: {tool_name}")
+                
+                # Execute the tool
+                if tool_name in GLOBAL_TOOL_REGISTRY:
+                    tool_result = execute_tool(tool_name, **params)
+                    tool_result_str = json.dumps(tool_result, indent=2)
+                    
+                    # Add the tool interaction to the conversation
+                    conversation.append({"role": "assistant", "content": response_content})
+                    conversation.append({
+                        "role": "user", 
+                        "content": f"Tool result for {tool_name}:\n```json\n{tool_result_str}\n```\n\nPlease continue based on this result."
+                    })
+                    
+                    # Get response with the tool result
+                    api_response = call_api(conversation)
+                    response_content = api_response
+                    
+                    # Check for another tool usage
+                    tool_match = re.search(tool_usage_pattern, response_content, re.DOTALL)
+                else:
+                    # Tool not found
+                    conversation.append({"role": "assistant", "content": response_content})
+                    conversation.append({
+                        "role": "user", 
+                        "content": f"Error: Tool '{tool_name}' not found. Please continue without using this tool."
+                    })
+                    
+                    # Get response after tool error
+                    api_response = call_api(conversation)
+                    response_content = api_response
+                    
+                    # Check for another tool usage
+                    tool_match = re.search(tool_usage_pattern, response_content, re.DOTALL)
+            except json.JSONDecodeError:
+                # Invalid JSON in parameters
+                conversation.append({"role": "assistant", "content": response_content})
+                conversation.append({
+                    "role": "user", 
+                    "content": f"Error: Invalid parameter format. Parameters must be valid JSON. Please continue without using this tool."
+                })
+                
+                # Get response after parameter error
+                api_response = call_api(conversation)
+                response_content = api_response
+                
+                # Check for another tool usage
+                tool_match = re.search(tool_usage_pattern, response_content, re.DOTALL)
+        
+        # Final response after all tool usage
+        final_response = response_content
+        
+        # Save the content to the output file
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(final_response)
+        
+        # Process based on output type
+        if output_type == "json":
+            result = extract_json_from_text(final_response)
+            if "error" in result:
+                print(f"⚠️ Warning: JSON extraction failed for {agent_name}. Content: {final_response[:100]}...")
+            print(f"✅ {agent_name} completed")
+            return result
+        elif output_type == "markdown":
+            # Verify sections if required
+            if sections:
+                missing_sections = []
+                for section in sections:
+                    if not re.search(rf"#\s*{re.escape(section)}", final_response, re.IGNORECASE):
+                        missing_sections.append(section)
+                
+                if missing_sections:
+                    print(f"Warning: Missing {len(missing_sections)} required sections in markdown output")
+            
+            print(f"✅ {agent_name} completed")
+            return {"markdown_content": final_response}
+        else:
+            print(f"✅ {agent_name} completed")
+            return {"text_content": final_response}
+    
+    except Exception as e:
+        print(f"❌ Error with {agent_name}: {e}")
+        return {"error": f"Error: {str(e)}", "content": str(e)}
+
+# Helper function to call the API
+def call_api(conversation):
+    """Call the API with the given conversation"""
     payload = {
         "model": CONFIG["default_model"],
-        "messages": [
-            {
-                "role": "system",
-                "content": system_message
-            },
-            {
-                "role": "user",
-                "content": enhanced_prompt
-            }
-        ]
+        "messages": conversation
     }
-    
-    # Add file content if provided
-    if file_path and os.path.exists(file_path):
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                file_content = f.read()
-                
-                # For large files, just include a limited amount
-                if len(file_content) > 10000:
-                    preview = file_content[:10000] + "...[content truncated]..."
-                    payload["messages"].append({
-                        "role": "user",
-                        "content": f"Here is a preview of the content of {os.path.basename(file_path)}:\n{preview}"
-                    })
-                else:
-                    payload["messages"].append({
-                        "role": "user",
-                        "content": f"Here is the content of {os.path.basename(file_path)}:\n{file_content}"
-                    })
-        except Exception as e:
-            print(f"Warning: Could not read file {file_path}: {e}")
     
     # Convert payload to JSON string for curl
     payload_str = json.dumps(payload).replace("'", "'\\''")
@@ -212,57 +336,26 @@ def run_agent(agent_name: str, prompt: str, file_path: Optional[str] = None,
     curl_command = f"""curl {CONFIG["endpoint"]} \\
   -H "Authorization: Bearer {CONFIG["api_key"]}" \\
   -H "Content-Type: application/json" \\
-  -o "{output_file}" \\
   -d '{payload_str}'"""
     
     # Execute the command
-    print(f"🤖 Running agent: {agent_name}")
+    output_file = "temp_output.json"
     try:
-        subprocess.run(curl_command, shell=True, check=True)
+        subprocess.run(curl_command + f" -o {output_file}", shell=True, check=True)
         
         # Read and parse the response
         with open(output_file, 'r', encoding='utf-8') as f:
             response = f.read()
         
         # Parse API response
-        try:
-            json_response = json.loads(response)
-            content = json_response.get('content', '') or json_response.get('choices', [{}])[0].get('message', {}).get('content', '')
+        json_response = json.loads(response)
+        content = json_response.get('content', '') or json_response.get('choices', [{}])[0].get('message', {}).get('content', '')
+        
+        return content
             
-            # Save the content to the output file
-            with open(output_file, 'w', encoding='utf-8') as f:
-                f.write(content)
-            
-            # Process based on output type
-            if output_type == "json":
-                result = extract_json_from_text(content)
-                print(f"✅ {agent_name} completed")
-                return result
-            elif output_type == "markdown":
-                # Verify sections if required
-                if sections:
-                    missing_sections = []
-                    for section in sections:
-                        if not re.search(rf"#\s*{re.escape(section)}", content, re.IGNORECASE):
-                            missing_sections.append(section)
-                    
-                    if missing_sections:
-                        print(f"Warning: Missing {len(missing_sections)} required sections in markdown output")
-                
-                print(f"✅ {agent_name} completed")
-                return {"markdown_content": content}
-            else:
-                print(f"✅ {agent_name} completed")
-                return {"text_content": content}
-                
-        except json.JSONDecodeError:
-            print(f"❌ Invalid API response from {agent_name}")
-            return {"error": "Invalid API response", "content": response[:500]}
-            
-    except subprocess.CalledProcessError as e:
-        print(f"❌ Command failed for {agent_name}: {e}")
-        return {"error": f"Command failed: {str(e)}"}
-
+    except Exception as e:
+        print(f"Error calling API: {e}")
+        return f"Error: {str(e)}"
 def run_universal_workflow(workflow_file: str, data_file: str = None):
     """Run any workflow using the universal approach"""
     

@@ -2,61 +2,95 @@
 {
   "user_risk_profiles": [
     {
-      "user_id": "45678",
-      "session_count": 1,
+      "user_id": "anonymous_unknown",
+      "session_count": 172,
       "typical_endpoints": [
-        "/api/login",
-        "/api/auth",
-        "/api/users",
-        "/api/logout"
+        "/",
+        "/login",
+        "/api/auth"
       ],
       "unusual_actions": [
-        "Repeated failed attempts to access /api/admin",
-        "Access reset password endpoint",
-        "Attempted access to non-existent admin user endpoint"
+        "Multiple failed logins",
+        "Accessing hidden or restricted endpoints",
+        "Unusual HTTP methods usage",
+        "Repeated DELETE requests without authentication"
       ],
       "risk_indicators": [
-        "Multiple access denied responses (403)",
-        "Access to sensitive endpoint (/api/admin)",
-        "High response time for login endpoint"
+        "Brute force login attempts",
+        "Reconnaissance via vulnerability scanning",
+        "Spike in error-generating sessions",
+        "Behavior pattern deviation from normal interactive use"
       ],
-      "overall_risk_score": 85
+      "overall_risk_score": 90
     }
   ],
   "behavioral_anomalies": [
     {
-      "anomaly_type": "Suspicious Access Patterns",
-      "affected_users": [
-        "45678"
-      ],
-      "affected_sessions": [
-        "a3c8d9e7f6b2"
-      ],
+      "anomaly_type": "High volume of access to hidden or restricted endpoints",
+      "affected_users": ["anonymous_unknown"],
+      "affected_sessions": ["sess_98765", "sess_93456"],
       "significance": "High",
-      "potential_explanation": "Possible unauthorized access attempt or account compromise"
+      "potential_explanation": "Automated scanners or attackers probing for sensitive configuration files and admin panels"
+    },
+    {
+      "anomaly_type": "Unusual timing of suspicious sessions during off-hours",
+      "affected_users": ["anonymous_unknown"],
+      "affected_sessions": ["sess_90231", "sess_93456", "sess_98765"],
+      "significance": "Medium",
+      "potential_explanation": "Likely scripted attacks scheduled overnight to avoid detection"
+    },
+    {
+      "anomaly_type": "Non-standard HTTP methods in API targeting",
+      "affected_users": ["anonymous_unknown"],
+      "affected_sessions": ["sess_93456", "sess_87654"],
+      "significance": "Medium",
+      "potential_explanation": "Automated enumeration attempts or exploitation probes"
+    },
+    {
+      "anomaly_type": "Rapid sequential requests from datacenter IPs with abnormal user agents",
+      "affected_users": ["anonymous_unknown"],
+      "affected_sessions": ["sess_87654", "sess_86543"],
+      "significance": "High",
+      "potential_explanation": "Bot-driven attack campaigns leveraging IP blocks from hosting providers"
     }
   ],
   "credential_compromise_indicators": [
     {
-      "indicator": "Access to password reset endpoint",
-      "affected_user_ids": [
-        "45678"
-      ],
-      "sessions_involved": [
-        "a3c8d9e7f6b2"
-      ],
-      "confidence": 75
+      "indicator": "Multiple failed login attempts followed by suspicious session behavior",
+      "affected_user_ids": ["anonymous_unknown"],
+      "sessions_involved": ["sess_98765", "sess_86543"],
+      "confidence": 0.9
+    },
+    {
+      "indicator": "Credential stuffing and brute-force API key attempts triggering many 429 errors",
+      "affected_user_ids": ["anonymous_unknown"],
+      "sessions_involved": ["sess_86543"],
+      "confidence": 0.85
+    },
+    {
+      "indicator": "Unusual geolocation mismatches during login and sensitive actions",
+      "affected_user_ids": ["anonymous_unknown"],
+      "sessions_involved": ["sess_90231"],
+      "confidence": 0.75
     }
   ],
   "session_progression_analysis": {
     "normal_progression_patterns": [
-      "Login -> User actions -> Logout"
+      "GET / -> GET /login -> POST /login -> GET /dashboard -> normal user activity",
+      "API auth POST followed by typical REST endpoint sequences"
     ],
     "abnormal_progressions": [
-      "Login -> Failed admin access attempts -> Reset password -> Logout"
+      "Multiple POSTs to /admin without prior authentication flows",
+      "Direct GET requests to /hidden-status or /.env without navigation",
+      "DELETE operations issued before login/authentication",
+      "Sequenced enumeration calls on /api/users and /api/tokens at high request rates"
     ],
     "potential_automated_sessions": [
-      "a3c8d9e7f6b2"
+      "sess_98765",
+      "sess_93456",
+      "sess_90231",
+      "sess_87654",
+      "sess_86543"
     ]
   }
 }

@@ -1,0 +1,8 @@
+I need to use the tool: memory:create_system
+Parameters:
+{
+  "system_name": "CyberSecurity_AI_Research_Memory",
+  "description": "A specialized memory system to store, organize, and provide intelligent retrieval of research findings on the evolving role of AI in cybersecurity.",
+  "memory_patterns": ["hierarchical", "contextual tagging", "semantic search"],
+  "components": ["data_ingestion", "context_organizer", "semantic_indexer", "retrieval_module", "knowledge_updater"]
+}

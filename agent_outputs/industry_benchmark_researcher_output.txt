@@ -1,0 +1,43 @@
+```json
+{
+  "sales_benchmarks": {
+    "sales_growth_rate": "5-10% annually for high-performing companies",
+    "average_sales_cycle_length": "3-6 months depending on industry complexity",
+    "win_rate": "20-30% for new opportunities",
+    "customer_retention_rate": "85-90%"
+  },
+  "order_processing_benchmarks": {
+    "order_cycle_time": "1-3 days for standard orders",
+    "order accuracy rate": "98-99%",
+    "perfect order rate": "90-95%",
+    "order entry touchless rate": "60-80%"
+  },
+  "supply_chain_benchmarks": {
+    "inventory turnover": "5-10 times annually",
+    "supply chain cycle time": "30-60 days",
+    "forecast accuracy": "75-85%",
+    "on-time delivery rate": "95-98%",
+    "supply chain cost as % of sales": "7-9%"
+  },
+  "partner_management_benchmarks": {
+    "channel partner contribution to revenue": "30-50%",
+    "partner enablement satisfaction": "80-85%",
+    "partner churn rate": "Less than 10%"
+  },
+  "data_quality_benchmarks": {
+    "data accuracy": "95-99%",
+    "data completeness": "90-95%",
+    "duplicate customer records": "<3%",
+    "timeliness of data updates": "Within 24 hours"
+  },
+  "benchmark_sources": [
+    "APQC Process Classification Framework",
+    "Gartner Industry Benchmarks",
+    "Aberdeen Group Supply Chain Metrics",
+    "SAP Performance Benchmarking",
+    "IBM Global C-suite Study",
+    "Deloitte Digital CRM Benchmarks",
+    "IDC Sales Enablement Research"
+  ]
+}
+```

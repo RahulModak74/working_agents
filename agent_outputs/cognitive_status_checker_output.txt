@@ -1,0 +1,17 @@
+```json
+{
+  "session_id": "tree_of_thoughts_1744112720_5934",
+  "pattern": "tree_of_thoughts",
+  "status": "created",
+  "current_stage": 0,
+  "stages": [
+    "generate_root_approaches",
+    "select_promising_branches",
+    "explore_branches",
+    "evaluate_branches",
+    "develop_solution"
+  ],
+  "created_at": 1744112720,
+  "results_available": []
+}
+```

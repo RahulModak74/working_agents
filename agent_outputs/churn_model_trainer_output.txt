@@ -1,0 +1,44 @@
+```json
+{
+  "model_id": "churn_clf_GBM_v1",
+  "algorithm": "Gradient Boosting",
+  "metrics": {
+    "accuracy": 0.882,
+    "precision": 0.867,
+    "recall": 0.841,
+    "f1": 0.854,
+    "auc": 0.922
+  },
+  "best_params": {
+    "n_estimators": 200,
+    "learning_rate": 0.1,
+    "max_depth": 5
+  },
+  "feature_importance": {
+    "feature_3": 0.143,
+    "feature_7": 0.118,
+    "feature_2": 0.097,
+    "region_North": 0.065,
+    "region_West": 0.053,
+    "product_category_Software": 0.051,
+    "feature_10": 0.049,
+    "feature_13": 0.047,
+    "feature_1": 0.044,
+    "payment_method_Credit Card": 0.043,
+    "purchase_quarter": 0.036,
+    "feature_5": 0.034,
+    "customer_type_premium": 0.031,
+    "purchase_month": 0.026,
+    "feature_0": 0.025,
+    "feature_9": 0.023,
+    "purchase_day_of_week": 0.021,
+    "feature_8": 0.02,
+    "feature_12": 0.02,
+    "feature_4": 0.018,
+    "feature_6": 0.018,
+    "feature_11": 0.017,
+    "customer_type_standard": 0.011
+  },
+  "training_summary": "The best model was a Gradient Boosting classifier with well-tuned hyperparameters. After imputing missing values, encoding categorical features, scaling, and class balancing, it achieved high accuracy (88.2%) and AUC (0.922). Features related to numerical patterns, regions, product categories, and payment types were important predictors of churn."
+}
+```

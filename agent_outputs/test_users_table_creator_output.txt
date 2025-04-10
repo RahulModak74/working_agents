@@ -1,0 +1,7 @@
+```json
+{
+  "query_executed": "CREATE TABLE test_users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, email TEXT UNIQUE, age INTEGER, balance REAL, is_active BOOLEAN, signup_date DATE, profile BLOB)",
+  "status": "failure",
+  "error_message": "Not connected to a database"
+}
+```

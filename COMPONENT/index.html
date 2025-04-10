@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Advanced Research System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        input[type="text"], textarea { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
+        button { background-color: #4285f4; color: white; border: none; padding: 10px 20px; margin-top: 20px; cursor: pointer; }
+        button:hover { background-color: #3367d6; }
+        .dimension-container { margin-top: 10px; }
+        .dimension-field { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Advanced Research System</h1>
+        <p>Enter your research topic and optional details below.</p>
+        
+        <form action="/submit" method="post">
+            <label for="topic">Research Topic:</label>
+            <input type="text" id="topic" name="topic" required placeholder="Enter your research topic here">
+            
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="4" placeholder="Provide more details about what you're looking to research"></textarea>
+            
+            <label>Optional Research Dimensions:</label>
+            <div class="dimension-container">
+                <div class="dimension-field">
+                    <input type="text" name="dimension1" placeholder="Dimension 1 (e.g., Technical Capabilities)">
+                </div>
+                <div class="dimension-field">
+                    <input type="text" name="dimension2" placeholder="Dimension 2 (e.g., Ethical Implications)">
+                </div>
+                <div class="dimension-field">
+                    <input type="text" name="dimension3" placeholder="Dimension 3 (e.g., Economic Impact)">
+                </div>
+            </div>
+            
+            <button type="submit">Submit Research Request</button>
+        </form>
+        
+        <p><a href="/jobs">View all research jobs</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "agent1": {
+    "error": "Could not extract valid JSON from response",
+    "text": ""
+  },
+  "agent2": {
+    "error": "Could not extract valid JSON from response",
+    "text": ""
+  },
+  "dynamic_agent": {
+    "error": "Could not extract valid JSON from response",
+    "text": ""
+  },
+  "dynamic_agent_action": null,
+  "final_reporter": {
+    "markdown_content": ""
+  }
+}

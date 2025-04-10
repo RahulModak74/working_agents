@@ -1,0 +1,8 @@
+```json
+{
+  "status": "Connection successful. Database is initialized but contains no tables.",
+  "database_name": "test_sqlite.db",
+  "existing_tables": [],
+  "initialization_success": true
+}
+```

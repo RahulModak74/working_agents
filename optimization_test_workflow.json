@@ -1,0 +1,113 @@
+[
+  {
+    "agent": "optimization_pattern_lister",
+    "content": "List all available optimization patterns to verify the optimization tools are properly loaded and functioning.",
+    "tools": ["optimization:list_patterns"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "patterns": "object"
+      }
+    }
+  },
+  {
+    "agent": "optimization_session_creator",
+    "content": "Based on the available patterns, create a new optimization session using the 'multi_objective' pattern.",
+    "readFrom": ["optimization_pattern_lister"],
+    "tools": ["optimization:create_session"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "session_id": "string",
+        "pattern": "string"
+      }
+    }
+  },
+  {
+    "agent": "optimization_status_checker",
+    "content": "Check the status of the optimization session created in the previous step. Use the session_id from the previous step to verify status retrieval functionality.",
+    "readFrom": ["optimization_session_creator"],
+    "tools": ["optimization:get_status"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "session_id": "string",
+        "pattern": "string",
+        "status": "string",
+        "current_stage": "number"
+      }
+    }
+  },
+  {
+    "agent": "optimization_step_getter",
+    "content": "Get the next step of the optimization workflow. Use the session_id from the optimization_session_creator step.",
+    "readFrom": ["optimization_session_creator", "optimization_status_checker"],
+    "tools": ["optimization:get_next_step"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "step_id": "number",
+        "agent_name": "string"
+      }
+    }
+  },
+  {
+    "agent": "optimization_result_submitter",
+    "content": "Submit a test result to the optimization workflow. Use the session_id from the optimization_session_creator step and agent_name from the optimization_step_getter step.",
+    "readFrom": ["optimization_session_creator", "optimization_step_getter"],
+    "tools": ["optimization:submit_result"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "message": "string",
+        "session_status": "string"
+      }
+    }
+  },
+  {
+    "agent": "optimization_result_getter",
+    "content": "Get the results of the optimization session. Use the session_id from the optimization_session_creator step.",
+    "readFrom": ["optimization_session_creator", "optimization_result_submitter"],
+    "tools": ["optimization:get_results"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "session_id": "string",
+        "status": "string",
+        "results": "object"
+      }
+    }
+  },
+  {
+    "agent": "optimization_workflow_applier",
+    "content": "Apply optimization results to a simple test workflow. Use the session_id from the optimization_session_creator step.",
+    "readFrom": ["optimization_session_creator", "optimization_result_getter"],
+    "tools": ["optimization:apply_to_workflow"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "changes": "object"
+      }
+    }
+  },
+  {
+    "agent": "optimization_test_reporter",
+    "content": "Generate a comprehensive report on the optimization tools testing results.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Optimization Tools Test Summary",
+        "Tool Verification Results",
+        "Test Workflow Execution",
+        "Identified Issues",
+        "Recommendations"
+      ]
+    }
+  }
+]

@@ -1,0 +1,31 @@
+```json
+{
+  "order_count": 10,
+  "key_metrics": {
+    "total_gross_amount": 8502935.81,
+    "average_order_value": 850293.58,
+    "currency_distribution": {
+      "USD": "dominant (in BusinessPartners), transactional data likely primarily in USD equivalent",
+      "EUR": "appears among several partners, limited insight on respective order volumes",
+      "Others": "AUD, INR, AED, GBP, CAD – present in partner master data, unclear contribution to sales order aggregate values"
+    },
+    "created_by_distribution": {
+      "10.00": 2,
+      "13.00": 2,
+      "14.00": 1,
+      "4.00": 1,
+      "6.00": 1,
+      "1.00": 2,
+      "8.00": 1
+    },
+    "discount_stats": {
+      "min_discount": 0.28,
+      "max_discount": 0.9,
+      "average_discount": 0.655
+    },
+    "order_entry_date_range": "2018/06/30 to 2019/03/16"
+  },
+  "insights": "The sales orders dataset shows a relatively broad range of order gross amounts with high individual order values, indicating large transaction sizes. Discounts vary widely, with some unusually high (up to 90%), suggesting either exceptional discounts or potential data anomalies. Sales orders are spread over roughly 9 months, reflecting active order flow during this period. The currency data aligns with multiple regions of operation but is dominated by USD-linked transactions. Order creators come from a diverse set of user IDs, showing distributed data entry or sales reps. PARTNERID and CustomerID linkage appears weak due to differing formats, impacting customer segmentation. Presence of extreme discounts and some duplicate or ambiguous partner/customer records signals risk of skewed financial and customer reports unless addressed.",
+  "quality_adjusted_analysis": "Data quality issues such as inconsistent ID formats (decimals vs strings), duplicated or truncated contact info, high discount outliers, and inconsistent date formats all complicate reliable analysis. These defects reduce trust in exact order counts, linking BusinessPartners with transactions, or accurate financial rollups. Critical gaps, especially mixed date formats and dangling or inconsistent foreign key references, limit longitudinal tracking or consolidated reporting. Before using these figures operationally, data cleansing should standardize IDs, validate discount ranges, deduplicate overlapping entities, and harmonize timestamps to reduce misinterpretation and enhance integration across SAP data domains."
+}
+```

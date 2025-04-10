@@ -1,0 +1,16 @@
+```json
+{
+  "status": "success",
+  "session_id": "multi_objective_1744112619_6200",
+  "pattern": "multi_objective",
+  "description": "Optimization approach that balances multiple competing objectives through metacognitive reflection",
+  "stages": [
+    "initial_solution",
+    "metacognitive_analysis",
+    "counterfactual_exploration",
+    "bias_detection",
+    "reasoning_optimization",
+    "solution_revision"
+  ]
+}
+```

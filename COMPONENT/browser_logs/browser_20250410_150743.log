@@ -1,0 +1,14 @@
+2025-04-10 15:07:43,032 - browser_adapter - INFO - ==================================================
+2025-04-10 15:07:43,032 - browser_adapter - INFO - BROWSER ADAPTER INITIALIZED
+2025-04-10 15:07:43,032 - browser_adapter - INFO - Logging to: /home/rahul/enhanced_agents_with_tools/COMPONENT/browser_logs/browser_20250410_150743.log
+2025-04-10 15:07:43,032 - browser_adapter - INFO - ==================================================
+2025-04-10 15:07:43,032 - browser_adapter - INFO - ✅ Playwright successfully imported
+2025-04-10 15:07:43,032 - browser_adapter - INFO - Screenshot directory: /home/rahul/enhanced_agents_with_tools/COMPONENT/screenshots
+2025-04-10 15:07:43,032 - browser_adapter - ERROR - ❌ Failed to start Playwright: It looks like you are using Playwright Sync API inside the asyncio loop.
+Please use the Async API instead.
+2025-04-10 15:07:43,032 - browser_adapter - INFO - ================================================================================
+2025-04-10 15:07:43,032 - browser_adapter - INFO - ✅ Browser automation tools registered successfully
+2025-04-10 15:07:43,032 - browser_adapter - INFO - Available browser tools: browser:click, browser:close, browser:create, browser:find_elements, browser:get_content, browser:navigate, browser:stats
+2025-04-10 15:07:43,032 - browser_adapter - INFO - Logs will be written to: /home/rahul/enhanced_agents_with_tools/COMPONENT/browser_logs/browser_20250410_150743.log
+2025-04-10 15:07:43,032 - browser_adapter - INFO - Screenshots will be saved to: /home/rahul/enhanced_agents_with_tools/COMPONENT/screenshots
+2025-04-10 15:07:43,032 - browser_adapter - INFO - ================================================================================

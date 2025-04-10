@@ -1,0 +1,59 @@
+[
+  {
+    "agent": "sqlite_setup",
+    "content": "I need to set up a SQLite database for testing. First, I'll use the repl:execute tool to create a database file in the current directory where the SQL adapter is looking for it.",
+    "tools": ["repl:execute"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "database_path": "string",
+        "message": "string"
+      }
+    }
+  },
+  {
+    "agent": "sql_tables_test",
+    "content": "Now I'll test the sql:tables tool to list tables in the database. I need to use the database parameter set to test_sqlite.db.",
+    "readFrom": ["sqlite_setup"],
+    "tools": ["sql:tables"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "tables": ["string"],
+        "message": "string"
+      }
+    }
+  },
+  {
+    "agent": "sql_query_test",
+    "content": "Now I'll test the sql:query tool to run a simple query on our database. I need to use the database parameter set to test_sqlite.db.",
+    "readFrom": ["sql_tables_test"],
+    "tools": ["sql:query"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "query_results": "object",
+        "message": "string"
+      }
+    }
+  },
+  {
+    "agent": "test_report",
+    "content": "Summarize the results of our SQL adapter testing, including which operations worked and which didn't.",
+    "readFrom": ["sqlite_setup", "sql_tables_test", "sql_query_test"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Test Summary",
+        "Database Setup",
+        "Tables Listing Test",
+        "Query Test",
+        "Overall Assessment"
+      ]
+    }
+  }
+]

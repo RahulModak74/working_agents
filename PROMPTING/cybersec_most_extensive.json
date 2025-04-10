@@ -1,0 +1,1177 @@
+[
+  {
+    "agent": "system_architect",
+    "content": "Design a comprehensive research system architecture for investigating 'Cyber security evolving role with AI'. Determine the optimal combination of cognitive patterns, optimization approaches, and memory systems to create a sophisticated, self-improving research framework.",
+    "tools": [
+      "cognitive:list_patterns",
+      "optimization:list_patterns",
+      "memory:list_patterns",
+      "planning:create_plan"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "architecture_design": {
+          "cognitive_approach": {
+            "selected_pattern": "string",
+            "justification": "string"
+          },
+          "optimization_approach": {
+            "selected_pattern": "string",
+            "justification": "string"
+          },
+          "memory_system": {
+            "selected_pattern": "string",
+            "justification": "string"
+          },
+          "integration_strategy": "string",
+          "expected_synergies": [
+            "string"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "agent": "memory_system_initializer",
+    "content": "Initialize the memory system for our research on 'Cyber security evolving role with AI'. Create a system based on the architecture's selected memory pattern that will store, organize, and provide intelligent access to our research findings.",
+    "readFrom": [
+      "system_architect"
+    ],
+    "tools": [
+      "memory:create_system",
+      "memory:get_next_step",
+      "memory:select_action",
+      "memory:submit_result"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "memory_system_id": "string",
+        "system_description": "string",
+        "initialized_components": [
+          "string"
+        ],
+        "memory_capabilities": [
+          "string"
+        ]
+      }
+    }
+  },
+  {
+    "agent": "cognitive_session_initializer",
+    "content": "Initialize a cognitive planning session for structuring our research on 'Cyber security evolving role with AI'. Use the pattern selected in the architecture to create an optimal cognitive approach for exploring this complex, multidimensional topic.",
+    "readFrom": [
+      "system_architect"
+    ],
+    "tools": [
+      "cognitive:create_session",
+      "cognitive:get_next_step",
+      "cognitive:select_action",
+      "cognitive:submit_result"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "cognitive_session_id": "string",
+        "pattern_description": "string",
+        "completed_stages": [
+          "string"
+        ],
+        "reasoning_insights": [
+          "string"
+        ]
+      }
+    }
+  },
+  {
+    "agent": "web_discovery_browser",
+    "content": "Initialize a browser to discover key cybersecurity and AI websites, academic repositories, and research portals. Navigate to at least 3 reliable sources focused on the intersection of AI and cybersecurity to identify key topics for our research framework.",
+    "tools": [
+      "browser:create",
+      "browser:navigate",
+      "browser:get_content",
+      "browser:find_elements",
+      "browser:click",
+      "memory:store_operation"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "discovered_sources": [
+          {
+            "title": "string",
+            "url": "string",
+            "key_topics": ["string"],
+            "relevance": "string"
+          }
+        ],
+        "emerging_themes": ["string"],
+        "browser_session_id": "string"
+      }
+    }
+  },
+  {
+    "agent": "research_plan_transformer",
+    "content": "Transform the cognitive planning results and web discovery findings into a structured research plan for 'Cyber security evolving role with AI'. Extract key questions, research dimensions, and optimal approaches, then store this plan in the memory system.",
+    "readFrom": [
+      "cognitive_session_initializer",
+      "memory_system_initializer",
+      "web_discovery_browser"
+    ],
+    "tools": [
+      "cognitive:get_results",
+      "cognitive:transform_for_research",
+      "memory:store_operation"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "research_plan": {
+          "goal": "string",
+          "key_questions": [
+            "string"
+          ],
+          "subtopics": [
+            "string"
+          ],
+          "approach": "string"
+        },
+        "memory_storage_status": "string"
+      }
+    }
+  },
+  {
+    "agent": "workflow_optimizer_initializer",
+    "content": "Initialize an optimization process for our Agentic AI research workflow. Use the pattern selected in the architecture to create a system that will continuously monitor, analyze, and improve our research process.",
+    "readFrom": [
+      "system_architect",
+      "research_plan_transformer"
+    ],
+    "tools": [
+      "optimization:create_session",
+      "optimization:get_next_step",
+      "optimization:select_action",
+      "optimization:submit_result"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "optimization_session_id": "string",
+        "pattern_description": "string",
+        "optimization_metrics": [
+          "string"
+        ],
+        "improvement_targets": [
+          "string"
+        ]
+      }
+    }
+  },
+  {
+    "agent": "preliminary_researcher",
+    "content": "Conduct comprehensive preliminary research on 'Cyber security evolving role with AI' using our cognitively-optimized approach. Focus on understanding what agentic AI is, the current state of development, key concepts, main researchers, and emerging trends. Store all findings in our memory system.",
+    "readFrom": [
+      "research_plan_transformer",
+      "memory_system_initializer",
+      "web_discovery_browser"
+    ],
+    "tools": [
+      "research:combined_search",
+      "memory:store_operation"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "initial_findings": "string",
+        "key_concepts": [
+          "string"
+        ],
+        "main_researchers": [
+          "string"
+        ],
+        "leading_organizations": [
+          "string"
+        ],
+        "emerging_trends": [
+          "string"
+        ],
+        "search_results_summary": "string"
+      }
+    }
+  },
+  {
+    "agent": "memory_integration_agent",
+    "content": "Integrate the preliminary research findings into our memory system. Process and organize the research data according to the memory system's structure, creating connections, hierarchies, or other relationships as appropriate.",
+    "readFrom": [
+      "preliminary_researcher",
+      "memory_system_initializer"
+    ],
+    "tools": [
+      "memory:store_operation",
+      "memory:get_stats"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "integration_status": "string",
+        "entities_added": "number",
+        "concepts_added": "number",
+        "relations_added": "number",
+        "memory_organization": "string"
+      }
+    }
+  },
+  {
+    "agent": "research_gap_analyzer",
+    "content": "Analyze the current state of our research on Cyber security evolving role with AI to identify knowledge gaps and promising areas for deeper investigation. Use the memory system to extract insights and areas where our understanding is incomplete.",
+    "readFrom": [
+      "memory_integration_agent",
+      "preliminary_researcher"
+    ],
+    "tools": [
+      "memory:retrieve_all",
+      "planning:chain_of_thought"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "research_gaps": [
+          "string"
+        ],
+        "promising_areas": [
+          "string"
+        ],
+        "knowledge_clusters": [
+          "string"
+        ],
+        "suggested_queries": [
+          "string"
+        ],
+        "prioritization_rationale": "string"
+      }
+    }
+  },
+  {
+    "agent": "academic_literature_browser",
+    "content": "Browse academic literature repositories and cybersecurity conference proceedings to find recent research on AI in cybersecurity. Focus on identifying recent papers, technical advancements, and innovative applications at the intersection of AI and cybersecurity.",
+    "readFrom": [
+      "research_gap_analyzer"
+    ],
+    "tools": [
+      "browser:create",
+      "browser:navigate",
+      "browser:get_content",
+      "browser:find_elements",
+      "browser:click",
+      "memory:store_operation"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "academic_sources": [
+          {
+            "title": "string",
+            "authors": ["string"],
+            "publication": "string",
+            "year": "string",
+            "url": "string",
+            "key_findings": ["string"]
+          }
+        ],
+        "research_trends": ["string"],
+        "technical_advances": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "optimization_monitor",
+    "content": "Monitor the research process so far and identify optimization opportunities. Assess the effectiveness, efficiency, and quality of our research approach, and suggest improvements based on the optimization pattern.",
+    "readFrom": [
+      "preliminary_researcher",
+      "research_gap_analyzer",
+      "workflow_optimizer_initializer",
+      "academic_literature_browser"
+    ],
+    "tools": [
+      "optimization:get_results",
+      "planning:chain_of_thought"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "process_assessment": {
+          "effectiveness_rating": "number",
+          "efficiency_rating": "number",
+          "quality_rating": "number"
+        },
+        "optimization_suggestions": [
+          "string"
+        ],
+        "adaptation_recommendations": [
+          "string"
+        ]
+      }
+    }
+  },
+  {
+    "agent": "research_focus_selector",
+    "content": "Based on our research gaps, promising areas, and optimization recommendations, select three key dimensions of Cyber security evolving role with AI for in-depth investigation. Prioritize areas with the highest potential for novel insights and comprehensive understanding.",
+    "readFrom": [
+      "research_gap_analyzer",
+      "optimization_monitor",
+      "academic_literature_browser"
+    ],
+    "tools": [
+      "planning:chain_of_thought",
+      "memory:store_operation"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_dimensions": [
+          "string"
+        ],
+        "selection_rationale": "string",
+        "investigation_approach": "string",
+        "expected_insights": [
+          "string"
+        ]
+      }
+    }
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "We will research each dimension for Cyber security evolving role with AI. Choose first from: 'AI in web penetration', 'AI in SOC', 'AI in incidence reporting', 'AI in IOC', 'AI in red team', 'AI in blue team', 'AI in purple team', 'AI in docker like container', 'AI in cloud security', 'AI in mobile security'.",
+    "readFrom": [
+      "research_focus_selector"
+    ],
+    "tools": [
+      "planning:chain_of_thought"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "action": "string",
+        "reasoning": "string",
+        "investigation_strategy": "string"
+      }
+    },
+    "actions": {
+      "AI in web penetration": {
+        "agent": "dimension1_action",
+        "content": "Research the 'AI in web penetration' aspect of 'Cyber security evolving role with AI' with proper citations and link tracking.",
+        "tools": [
+          "research:search",
+          "research:cite_sources",
+          "memory:store_operation",
+          "browser:create",
+          "browser:navigate",
+          "browser:get_content"
+        ],
+        "output_format": {
+          "type": "json",
+          "schema": {
+            "findings": "string",
+            "sources": [
+              {
+                "title": "string",
+                "url": "string",
+                "relevance": "string"
+              }
+            ]
+          }
+        }
+      },
+      "AI in SOC": {
+        "agent": "dimension2_action",
+        "content": "Research the 'AI in SOC' aspect of 'Cyber security evolving role with AI' with proper citations and link tracking.",
+        "tools": [
+          "research:search",
+          "research:cite_sources",
+          "memory:store_operation",
+          "browser:create",
+          "browser:navigate",
+          "browser:get_content"
+        ],
+        "output_format": {
+          "type": "json",
+          "schema": {
+            "findings": "string",
+            "sources": [
+              {
+                "title": "string",
+                "url": "string",
+                "relevance": "string"
+              }
+            ]
+          }
+        }
+      },
+      "AI in incidence reporting": {
+        "agent": "dimension3_action",
+        "content": "Research the 'AI in incidence reporting' aspect of 'Cyber security evolving role with AI' with proper citations and link tracking.",
+        "tools": [
+          "research:search",
+          "research:cite_sources",
+          "memory:store_operation",
+          "browser:create",
+          "browser:navigate",
+          "browser:get_content"
+        ],
+        "output_format": {
+          "type": "json",
+          "schema": {
+            "findings": "string",
+            "sources": [
+              {
+                "title": "string",
+                "url": "string",
+                "relevance": "string"
+              }
+            ]
+          }
+        }
+      },
+      "AI in IOC": {
+        "agent": "dimension4_action",
+        "content": "Research the 'AI in IOC' aspect of 'Cyber security evolving role with AI' with proper citations and link tracking.",
+        "tools": [
+          "research:search",
+          "research:cite_sources",
+          "memory:store_operation",
+          "browser:create",
+          "browser:navigate",
+          "browser:get_content"
+        ],
+        "output_format": {
+          "type": "json",
+          "schema": {
+            "findings": "string",
+            "sources": [
+              {
+                "title": "string",
+                "url": "string",
+                "relevance": "string"
+              }
+            ]
+          }
+        }
+      },
+      "AI in red team": {
+        "agent": "dimension5_action",
+        "content": "Research the 'AI in red team' aspect of 'Cyber security evolving role with AI' with proper citations and link tracking.",
+        "tools": [
+          "research:search",
+          "research:cite_sources",
+          "memory:store_operation",
+          "browser:create",
+          "browser:navigate",
+          "browser:get_content"
+        ],
+        "output_format": {
+          "type": "json",
+          "schema": {
+            "findings": "string",
+            "sources": [
+              {
+                "title": "string",
+                "url": "string",
+                "relevance": "string"
+              }
+            ]
+          }
+        }
+      },
+      "AI in blue team": {
+        "agent": "dimension6_action",
+        "content": "Research the 'AI in blue team' aspect of 'Cyber security evolving role with AI' with proper citations and link tracking.",
+        "tools": [
+          "research:search",
+          "research:cite_sources",
+          "memory:store_operation",
+          "browser:create",
+          "browser:navigate",
+          "browser:get_content"
+        ],
+        "output_format": {
+          "type": "json",
+          "schema": {
+            "findings": "string",
+            "sources": [
+              {
+                "title": "string",
+                "url": "string",
+                "relevance": "string"
+              }
+            ]
+          }
+        }
+      },
+      "AI in purple team": {
+        "agent": "dimension7_action",
+        "content": "Research the 'AI in purple team' aspect of 'Cyber security evolving role with AI' with proper citations and link tracking.",
+        "tools": [
+          "research:search",
+          "research:cite_sources",
+          "memory:store_operation",
+          "browser:create",
+          "browser:navigate",
+          "browser:get_content"
+        ],
+        "output_format": {
+          "type": "json",
+          "schema": {
+            "findings": "string",
+            "sources": [
+              {
+                "title": "string",
+                "url": "string",
+                "relevance": "string"
+              }
+            ]
+          }
+        }
+      },
+      "AI in docker like container": {
+        "agent": "dimension8_action",
+        "content": "Research the 'AI in docker like container' aspect of 'Cyber security evolving role with AI' with proper citations and link tracking.",
+        "tools": [
+          "research:search",
+          "research:cite_sources",
+          "memory:store_operation",
+          "browser:create",
+          "browser:navigate",
+          "browser:get_content"
+        ],
+        "output_format": {
+          "type": "json",
+          "schema": {
+            "findings": "string",
+            "sources": [
+              {
+                "title": "string",
+                "url": "string",
+                "relevance": "string"
+              }
+            ]
+          }
+        }
+      },
+      "AI in cloud security": {
+        "agent": "dimension9_action",
+        "content": "Research the 'AI in cloud security' aspect of 'Cyber security evolving role with AI' with proper citations and link tracking.",
+        "tools": [
+          "research:search",
+          "research:cite_sources",
+          "memory:store_operation",
+          "browser:create",
+          "browser:navigate",
+          "browser:get_content"
+        ],
+        "output_format": {
+          "type": "json",
+          "schema": {
+            "findings": "string",
+            "sources": [
+              {
+                "title": "string",
+                "url": "string",
+                "relevance": "string"
+              }
+            ]
+          }
+        }
+      },
+      "AI in mobile security": {
+        "agent": "dimension10_action",
+        "content": "Research the 'AI in mobile security' aspect of 'Cyber security evolving role with AI' with proper citations and link tracking.",
+        "tools": [
+          "research:search",
+          "research:cite_sources",
+          "memory:store_operation",
+          "browser:create",
+          "browser:navigate",
+          "browser:get_content"
+        ],
+        "output_format": {
+          "type": "json",
+          "schema": {
+            "findings": "string",
+            "sources": [
+              {
+                "title": "string",
+                "url": "string",
+                "relevance": "string"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "dimension1_researcher",
+    "content": "Conduct comprehensive research on the 'AI in web penetration' aspect of 'Cyber security evolving role with AI'. Focus on collecting authoritative sources, key insights, and relevant data.",
+    "readFrom": [
+      "preliminary_researcher",
+      "research_focus_selector"
+    ],
+    "tools": [
+      "research:search",
+      "research:cite_sources",
+      "memory:store_operation",
+      "browser:navigate",
+      "browser:get_content",
+      "browser:find_elements"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "dimension_findings": "string",
+        "key_insights": [
+          "string"
+        ],
+        "sources": [
+          {
+            "title": "string",
+            "url": "string",
+            "authors": [
+              "string"
+            ],
+            "relevance": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "dimension2_researcher",
+    "content": "Conduct comprehensive research on the 'AI in SOC' aspect of 'Cyber security evolving role with AI'. Focus on collecting authoritative sources, key insights, and relevant data.",
+    "readFrom": [
+      "preliminary_researcher",
+      "research_focus_selector"
+    ],
+    "tools": [
+      "research:search",
+      "research:cite_sources",
+      "memory:store_operation",
+      "browser:navigate",
+      "browser:get_content",
+      "browser:find_elements"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "dimension_findings": "string",
+        "key_insights": [
+          "string"
+        ],
+        "sources": [
+          {
+            "title": "string",
+            "url": "string",
+            "authors": [
+              "string"
+            ],
+            "relevance": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "dimension3_researcher",
+    "content": "Conduct comprehensive research on the 'AI in incidence reporting' aspect of 'Cyber security evolving role with AI'. Focus on collecting authoritative sources, key insights, and relevant data.",
+    "readFrom": [
+      "preliminary_researcher",
+      "research_focus_selector"
+    ],
+    "tools": [
+      "research:search",
+      "research:cite_sources",
+      "memory:store_operation",
+      "browser:navigate",
+      "browser:get_content",
+      "browser:find_elements"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "dimension_findings": "string",
+        "key_insights": [
+          "string"
+        ],
+        "sources": [
+          {
+            "title": "string",
+            "url": "string",
+            "authors": [
+              "string"
+            ],
+            "relevance": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "dimension4_researcher",
+    "content": "Conduct comprehensive research on the 'AI in IOC' aspect of 'Cyber security evolving role with AI'. Focus on collecting authoritative sources, key insights, and relevant data.",
+    "readFrom": [
+      "preliminary_researcher",
+      "research_focus_selector"
+    ],
+    "tools": [
+      "research:search",
+      "research:cite_sources",
+      "memory:store_operation",
+      "browser:navigate",
+      "browser:get_content",
+      "browser:find_elements"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "dimension_findings": "string",
+        "key_insights": [
+          "string"
+        ],
+        "sources": [
+          {
+            "title": "string",
+            "url": "string",
+            "authors": [
+              "string"
+            ],
+            "relevance": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "dimension5_researcher",
+    "content": "Conduct comprehensive research on the 'AI in red team' aspect of 'Cyber security evolving role with AI'. Focus on collecting authoritative sources, key insights, and relevant data.",
+    "readFrom": [
+      "preliminary_researcher",
+      "research_focus_selector"
+    ],
+    "tools": [
+      "research:search",
+      "research:cite_sources",
+      "memory:store_operation",
+      "browser:navigate",
+      "browser:get_content",
+      "browser:find_elements"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "dimension_findings": "string",
+        "key_insights": [
+          "string"
+        ],
+        "sources": [
+          {
+            "title": "string",
+            "url": "string",
+            "authors": [
+              "string"
+            ],
+            "relevance": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "dimension6_researcher",
+    "content": "Conduct comprehensive research on the 'AI in blue team' aspect of 'Cyber security evolving role with AI'. Focus on collecting authoritative sources, key insights, and relevant data.",
+    "readFrom": [
+      "preliminary_researcher",
+      "research_focus_selector"
+    ],
+    "tools": [
+      "research:search",
+      "research:cite_sources",
+      "memory:store_operation",
+      "browser:navigate",
+      "browser:get_content",
+      "browser:find_elements"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "dimension_findings": "string",
+        "key_insights": [
+          "string"
+        ],
+        "sources": [
+          {
+            "title": "string",
+            "url": "string",
+            "authors": [
+              "string"
+            ],
+            "relevance": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "dimension7_researcher",
+    "content": "Conduct comprehensive research on the 'AI in purple team' aspect of 'Cyber security evolving role with AI'. Focus on collecting authoritative sources, key insights, and relevant data.",
+    "readFrom": [
+      "preliminary_researcher",
+      "research_focus_selector"
+    ],
+    "tools": [
+      "research:search",
+      "research:cite_sources",
+      "memory:store_operation",
+      "browser:navigate",
+      "browser:get_content",
+      "browser:find_elements"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "dimension_findings": "string",
+        "key_insights": [
+          "string"
+        ],
+        "sources": [
+          {
+            "title": "string",
+            "url": "string",
+            "authors": [
+              "string"
+            ],
+            "relevance": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "dimension8_researcher",
+    "content": "Conduct comprehensive research on the 'AI in docker like container' aspect of 'Cyber security evolving role with AI'. Focus on collecting authoritative sources, key insights, and relevant data.",
+    "readFrom": [
+      "preliminary_researcher",
+      "research_focus_selector"
+    ],
+    "tools": [
+      "research:search",
+      "research:cite_sources",
+      "memory:store_operation",
+      "browser:navigate",
+      "browser:get_content",
+      "browser:find_elements"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "dimension_findings": "string",
+        "key_insights": [
+          "string"
+        ],
+        "sources": [
+          {
+            "title": "string",
+            "url": "string",
+            "authors": [
+              "string"
+            ],
+            "relevance": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "dimension9_researcher",
+    "content": "Conduct comprehensive research on the 'AI in cloud security' aspect of 'Cyber security evolving role with AI'. Focus on collecting authoritative sources, key insights, and relevant data.",
+    "readFrom": [
+      "preliminary_researcher",
+      "research_focus_selector"
+    ],
+    "tools": [
+      "research:search",
+      "research:cite_sources",
+      "memory:store_operation",
+      "browser:navigate",
+      "browser:get_content",
+      "browser:find_elements"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "dimension_findings": "string",
+        "key_insights": [
+          "string"
+        ],
+        "sources": [
+          {
+            "title": "string",
+            "url": "string",
+            "authors": [
+              "string"
+            ],
+            "relevance": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "dimension10_researcher",
+    "content": "Conduct comprehensive research on the 'AI in mobile security' aspect of 'Cyber security evolving role with AI'. Focus on collecting authoritative sources, key insights, and relevant data.",
+    "readFrom": [
+      "preliminary_researcher",
+      "research_focus_selector"
+    ],
+    "tools": [
+      "research:search",
+      "research:cite_sources",
+      "memory:store_operation",
+      "browser:navigate",
+      "browser:get_content",
+      "browser:find_elements"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "dimension_findings": "string",
+        "key_insights": [
+          "string"
+        ],
+        "sources": [
+          {
+            "title": "string",
+            "url": "string",
+            "authors": [
+              "string"
+            ],
+            "relevance": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "vendor_solution_browser",
+    "content": "Browse and analyze key cybersecurity vendor websites to identify current AI-powered solutions and technologies in the market. Focus on understanding how vendors are implementing AI across different cybersecurity dimensions.",
+    "readFrom": [
+      "dimension*_researcher"
+    ],
+    "tools": [
+      "browser:create",
+      "browser:navigate",
+      "browser:get_content",
+      "browser:find_elements",
+      "browser:click",
+      "memory:store_operation"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "vendor_solutions": [
+          {
+            "vendor": "string",
+            "solution_name": "string",
+            "dimension": "string",
+            "ai_capabilities": ["string"],
+            "url": "string"
+          }
+        ],
+        "market_trends": ["string"],
+        "implementation_approaches": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "content_extractor",
+    "content": "Extract the most valuable technical content from all dimension research results. Focus on detailed technical insights, methodologies, and specific implementations rather than just general descriptions or source metadata.",
+    "readFrom": [
+      "vendor_solution_browser",
+      "memory:retrieve_all"
+    ],
+    "tools": [
+      "memory:retrieve_all",
+      "planning:chain_of_thought"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "extracted_content": [
+          {
+            "dimension": "string",
+            "technical_details": "string",
+            "implementation_insights": "string",
+            "key_methodologies": ["string"],
+            "specific_technologies": ["string"]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "cross_dimensional_analyzer",
+    "content": "Analyze relationships and patterns across all ten dimensions of 'Cyber security evolving role with AI'. Draw connections between dimensions and identify emergent insights.",
+    "readFrom": [
+      "*"
+    ],
+    "tools": [
+      "memory:retrieve_all",
+      "planning:chain_of_thought"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "cross_connections": [
+          {
+            "dimensions_involved": [
+              "string"
+            ],
+            "relationship": "string",
+            "insight": "string"
+          }
+        ],
+        "emergent_themes": [
+          "string"
+        ],
+        "meta_analysis": "string"
+      }
+    }
+  },
+  {
+    "agent": "source_collector",
+    "content": "Collect and organize the most important sources used in researching 'Cyber security evolving role with AI'. Limit to 3-5 key sources per dimension and ensure proper citation.",
+    "readFrom": [
+      "*"
+    ],
+    "tools": [
+      "research:cite_sources",
+      "memory:retrieve_all"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "source_collection": [
+          {
+            "dimension": "string",
+            "sources": [
+              {
+                "title": "string",
+                "url": "string",
+                "authors": [
+                  "string"
+                ],
+                "publication_date": "string",
+                "citation_format": "string"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "timeout": 30
+  },
+  {
+    "agent": "section_drafter",
+    "content": "Generate detailed section drafts for each dimension of the comprehensive report. Each section should be thorough, technical, and insightful, with a minimum of 500 words per dimension. Focus on depth of analysis over breadth, and integrate technical details with high-level insights.",
+    "readFrom": [
+      "dimension*_researcher",
+      "content_extractor",
+      "source_collector"
+    ],
+    "tools": [
+      "research:generate_summary",
+      "memory:retrieve_all"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "section_drafts": [
+          {
+            "dimension": "string",
+            "content": "string",
+            "word_count": "number"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "comprehensive_report_generator",
+    "content": "Generate a comprehensive research report on 'Cyber security evolving role with AI' that integrates all dimension research, cross-dimensional insights, and technical details. Each dimension section should be detailed (500+ words) with proper citations supporting the technical content. Focus on depth of analysis, technical specificity, and integration of cross-dimensional insights.",
+    "readFrom": [
+      "content_extractor",
+      "cross_dimensional_analyzer",
+      "source_collector",
+      "section_drafter",
+      "*"
+    ],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Introduction to Cyber security evolving role with AI",
+        "Research Methodology",
+        "AI in web penetration Analysis",
+        "AI in SOC Analysis",
+        "AI in incidence reporting Analysis",
+        "AI in IOC Analysis",
+        "AI in red team Analysis",
+        "AI in blue team Analysis",
+        "AI in purple team Analysis",
+        "AI in docker like container Analysis",
+        "AI in cloud security Analysis",
+        "AI in mobile security Analysis",
+        "Cross-Dimensional Insights",
+        "Conclusions and Recommendations",
+        "References and Sources"
+      ]
+    },
+    "tools": [
+      "research:cite_sources",
+      "memory:retrieve_all"
+    ]
+  },
+  {
+    "agent": "report_editor",
+    "content": "Review the comprehensive report for coherence, technical depth, and integration of insights across dimensions. Ensure each section is substantial (500+ words), technically detailed, and properly supported by citations. Make final edits to enhance readability while maintaining technical accuracy.",
+    "readFrom": [
+      "comprehensive_report_generator",
+      "section_drafter",
+      "content_extractor"
+    ],
+    "tools": [
+      "planning:chain_of_thought",
+      "memory:retrieve_all"
+    ],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Introduction to Cyber security evolving role with AI",
+        "Research Methodology",
+        "AI in web penetration Analysis",
+        "AI in SOC Analysis",
+        "AI in incidence reporting Analysis",
+        "AI in IOC Analysis",
+        "AI in red team Analysis",
+        "AI in blue team Analysis",
+        "AI in purple team Analysis",
+        "AI in docker like container Analysis",
+        "AI in cloud security Analysis",
+        "AI in mobile security Analysis",
+        "Cross-Dimensional Insights",
+        "Conclusions and Recommendations",
+        "References and Sources"
+      ]
+    }
+  }]

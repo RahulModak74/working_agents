@@ -1,0 +1,7 @@
+```json
+{
+  "status": "success",
+  "tables": [],
+  "message": "No tables found in the database 'test_sqlite.db'."
+}
+```

@@ -1,0 +1,46 @@
+{
+  "model_id": "customer_type_classifier_v1",
+  "algorithm": "GradientBoosting",
+  "metrics": {
+    "accuracy": 0.78,
+    "precision": {
+      "standard": 0.80,
+      "premium": 0.74,
+      "enterprise": 0.70
+    },
+    "recall": {
+      "standard": 0.85,
+      "premium": 0.68,
+      "enterprise": 0.65
+    },
+    "f1_score": {
+      "standard": 0.82,
+      "premium": 0.71,
+      "enterprise": 0.67
+    },
+    "weighted_f1": 0.76
+  },
+  "best_params": {
+    "n_estimators": 300,
+    "learning_rate": 0.05,
+    "max_depth": 5,
+    "subsample": 0.8,
+    "min_samples_split": 4,
+    "min_samples_leaf": 2
+  },
+  "feature_importance": {
+    "feature_3": 0.15,
+    "feature_7": 0.12,
+    "feature_9": 0.11,
+    "purchase_quarter": 0.09,
+    "feature_0": 0.08,
+    "product_category": 0.07,
+    "payment_method": 0.07,
+    "region": 0.06,
+    "feature_6": 0.06,
+    "purchase_day_of_week": 0.05,
+    "feature_2": 0.05,
+    "feature_4": 0.04
+  },
+  "training_summary": "Among Random Forest, Gradient Boosting, and SVC models trained with balanced classes, extensive hyperparameter tuning, and optimized preprocessing, Gradient Boosting provided the highest weighted F1 score of 0.76. This model effectively handles multiclass prediction by incorporating categorical and numerical features with imputed missing values, scaled numeric data, and one-hot encoded categorical variables. Key influential features include both temporal purchasing patterns and engineered numeric fields."
+}

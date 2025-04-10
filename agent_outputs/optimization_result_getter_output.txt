@@ -1,0 +1,7 @@
+```json
+{
+  "session_id": "",
+  "status": "error",
+  "results": {}
+}
+```

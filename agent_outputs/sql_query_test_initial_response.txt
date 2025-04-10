@@ -1,0 +1,7 @@
+```json
+{
+  "status": "error",
+  "query_results": {},
+  "message": "No tables found in the database 'test_sqlite.db'. Cannot execute query without tables."
+}
+```

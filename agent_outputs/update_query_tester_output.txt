@@ -1,0 +1,8 @@
+```json
+{
+  "query_executed": "UPDATE employees SET salary = salary * 1.1 WHERE department = 'Sales';",
+  "rows_affected": 0,
+  "updated_data": {},
+  "update_success": false
+}
+```

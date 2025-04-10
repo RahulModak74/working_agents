@@ -1,0 +1,98 @@
+2025-04-08 12:31:28,712 - browser_adapter - INFO - ==================================================
+2025-04-08 12:31:28,712 - browser_adapter - INFO - BROWSER ADAPTER INITIALIZED
+2025-04-08 12:31:28,712 - browser_adapter - INFO - Logging to: /home/rahul/enhanced_agents_with_tools/COMPONENT/browser_logs/browser_20250408_123128.log
+2025-04-08 12:31:28,712 - browser_adapter - INFO - ==================================================
+2025-04-08 12:31:28,729 - browser_adapter - INFO - ✅ Playwright successfully imported
+2025-04-08 12:31:28,730 - browser_adapter - INFO - Screenshot directory: /home/rahul/enhanced_agents_with_tools/COMPONENT/screenshots
+2025-04-08 12:31:28,892 - browser_adapter - INFO - 🚀 Playwright started successfully
+2025-04-08 12:31:28,893 - browser_adapter - INFO - ================================================================================
+2025-04-08 12:31:28,893 - browser_adapter - INFO - ✅ Browser automation tools registered successfully
+2025-04-08 12:31:28,893 - browser_adapter - INFO - Available browser tools: browser:click, browser:close, browser:create, browser:find_elements, browser:get_content, browser:navigate, browser:stats
+2025-04-08 12:31:28,893 - browser_adapter - INFO - Logs will be written to: /home/rahul/enhanced_agents_with_tools/COMPONENT/browser_logs/browser_20250408_123128.log
+2025-04-08 12:31:28,893 - browser_adapter - INFO - Screenshots will be saved to: /home/rahul/enhanced_agents_with_tools/COMPONENT/screenshots
+2025-04-08 12:31:28,893 - browser_adapter - INFO - ================================================================================
+2025-04-08 12:31:32,495 - browser_adapter - INFO - Tool called: browser:create(browser_id=test_browser, browser_type=chromium, headless=False)
+2025-04-08 12:31:32,495 - browser_adapter - INFO - 🔧 Creating browser: type=chromium, headless=False, id=test_browser
+2025-04-08 12:31:32,495 - browser_adapter - INFO - Selected Chromium browser
+2025-04-08 12:31:33,150 - browser_adapter - INFO - Browser launched successfully: chromium
+2025-04-08 12:31:33,178 - browser_adapter - INFO - Browser context created
+2025-04-08 12:31:33,401 - browser_adapter - INFO - Page created in browser
+2025-04-08 12:31:33,402 - browser_adapter - INFO - ✅ Browser created successfully with ID: test_browser
+2025-04-08 12:31:33,402 - browser_adapter - INFO - browser:create result: success
+2025-04-08 12:31:35,027 - browser_adapter - INFO - Tool called: browser:navigate(url=https://www.google.com, browser_id=test_browser, wait_until=load)
+2025-04-08 12:31:35,027 - browser_adapter - INFO - 🌐 Navigating to URL: https://www.google.com in browser: test_browser
+2025-04-08 12:31:35,027 - browser_adapter - INFO - Getting page for browser: test_browser
+2025-04-08 12:31:35,027 - browser_adapter - INFO - Page for browser test_browser is responsive
+2025-04-08 12:31:35,027 - browser_adapter - INFO - Starting navigation to https://www.google.com with wait_until=load
+2025-04-08 12:31:36,035 - browser_adapter - INFO - ✅ Navigation successful to: https://www.google.com/
+2025-04-08 12:31:36,035 - browser_adapter - INFO - Page title: Google
+2025-04-08 12:31:36,036 - browser_adapter - INFO - Navigation took 0.99 seconds
+2025-04-08 12:31:36,142 - browser_adapter - INFO - 📸 Screenshot saved: /home/rahul/enhanced_agents_with_tools/COMPONENT/screenshots/test_browser_navigate_20250408_123136.png
+2025-04-08 12:31:36,142 - browser_adapter - INFO - browser:navigate result: success
+2025-04-08 12:31:37,944 - browser_adapter - INFO - Tool called: browser:get_content(browser_id=test_browser, content_type=text)
+2025-04-08 12:31:37,944 - browser_adapter - INFO - 📄 Getting text content from browser: test_browser
+2025-04-08 12:31:37,944 - browser_adapter - INFO - Getting page for browser: test_browser
+2025-04-08 12:31:37,944 - browser_adapter - INFO - Page for browser test_browser is responsive
+2025-04-08 12:31:37,956 - browser_adapter - INFO - Getting content from page: Google (https://www.google.com/)
+2025-04-08 12:31:37,956 - browser_adapter - INFO - Retrieving text content
+2025-04-08 12:31:38,060 - browser_adapter - INFO - 📸 Screenshot saved: /home/rahul/enhanced_agents_with_tools/COMPONENT/screenshots/test_browser_get_content_20250408_123137.png
+2025-04-08 12:31:38,060 - browser_adapter - INFO - Content preview: About
+Store
+GmailImages
+Sign in
+ 
+Google offered in: हिन्दी বাংলা తెలుగు मराठी தமிழ் ગુજરાતી ಕನ್ನಡ മലയാളം ਪੰਜਾਬੀ
+India
+Advertising
+Business
+How Search works
+Privacy
+Terms
+Settings
+2025-04-08 12:31:38,060 - browser_adapter - INFO - Content length: 179 characters
+2025-04-08 12:31:38,060 - browser_adapter - INFO - browser:get_content result: success, content length: 179
+2025-04-08 12:31:39,570 - browser_adapter - INFO - Tool called: browser:find_elements(selector=a, browser_id=test_browser)
+2025-04-08 12:31:39,570 - browser_adapter - INFO - 🔍 Finding elements with selector: 'a' in browser: test_browser
+2025-04-08 12:31:39,570 - browser_adapter - INFO - Getting page for browser: test_browser
+2025-04-08 12:31:39,570 - browser_adapter - INFO - Page for browser test_browser is responsive
+2025-04-08 12:31:39,570 - browser_adapter - INFO - Executing query selector: a
+2025-04-08 12:31:39,599 - browser_adapter - INFO - Found 25 elements matching selector: a
+2025-04-08 12:31:39,735 - browser_adapter - INFO - Element 0: a - 'About...' - https://about.google/?fg=1&utm_source=google-IN&utm_medium=referral&utm_campaign=hp-header
+2025-04-08 12:31:39,853 - browser_adapter - INFO - Element 1: a - 'Store...' - https://store.google.com/IN?utm_source=hp_header&utm_medium=google_ooo&utm_campaign=GS100042&hl=en-IN
+2025-04-08 12:31:39,968 - browser_adapter - INFO - Element 2: a - 'Gmail...' - https://mail.google.com/mail/&ogbl
+2025-04-08 12:31:40,084 - browser_adapter - INFO - Element 3: a - 'Images...' - https://www.google.com/imghp?hl=en&ogbl
+2025-04-08 12:31:40,211 - browser_adapter - INFO - Element 4: a - '...' - https://www.google.co.in/intl/en/about/products
+2025-04-08 12:31:40,322 - browser_adapter - INFO - Element 5: a - 'Sign in...' - https://accounts.google.com/ServiceLogin?hl=en&passive=true&continue=https://www.google.com/&ec=GAZAmgQ
+2025-04-08 12:31:40,441 - browser_adapter - INFO - Element 6: a - 'हिन्दी...' - https://www.google.com/setprefs?sig=0_PX_qdmMUmpKRVH8xx52e9Y0pxmo%3D&hl=hi&source=homepage&sa=X&ved=0ahUKEwji__Xi7seMAxXd2DQHHQ-uKZMQ2ZgBCBg
+2025-04-08 12:31:40,564 - browser_adapter - INFO - Element 7: a - 'বাংলা...' - https://www.google.com/setprefs?sig=0_PX_qdmMUmpKRVH8xx52e9Y0pxmo%3D&hl=bn&source=homepage&sa=X&ved=0ahUKEwji__Xi7seMAxXd2DQHHQ-uKZMQ2ZgBCBk
+2025-04-08 12:31:40,675 - browser_adapter - INFO - Element 8: a - 'తెలుగు...' - https://www.google.com/setprefs?sig=0_PX_qdmMUmpKRVH8xx52e9Y0pxmo%3D&hl=te&source=homepage&sa=X&ved=0ahUKEwji__Xi7seMAxXd2DQHHQ-uKZMQ2ZgBCBo
+2025-04-08 12:31:40,785 - browser_adapter - INFO - Element 9: a - 'मराठी...' - https://www.google.com/setprefs?sig=0_PX_qdmMUmpKRVH8xx52e9Y0pxmo%3D&hl=mr&source=homepage&sa=X&ved=0ahUKEwji__Xi7seMAxXd2DQHHQ-uKZMQ2ZgBCBs
+2025-04-08 12:31:40,905 - browser_adapter - INFO - Element 10: a - 'தமிழ்...' - https://www.google.com/setprefs?sig=0_PX_qdmMUmpKRVH8xx52e9Y0pxmo%3D&hl=ta&source=homepage&sa=X&ved=0ahUKEwji__Xi7seMAxXd2DQHHQ-uKZMQ2ZgBCBw
+2025-04-08 12:31:41,018 - browser_adapter - INFO - Element 11: a - 'ગુજરાતી...' - https://www.google.com/setprefs?sig=0_PX_qdmMUmpKRVH8xx52e9Y0pxmo%3D&hl=gu&source=homepage&sa=X&ved=0ahUKEwji__Xi7seMAxXd2DQHHQ-uKZMQ2ZgBCB0
+2025-04-08 12:31:41,134 - browser_adapter - INFO - Element 12: a - 'ಕನ್ನಡ...' - https://www.google.com/setprefs?sig=0_PX_qdmMUmpKRVH8xx52e9Y0pxmo%3D&hl=kn&source=homepage&sa=X&ved=0ahUKEwji__Xi7seMAxXd2DQHHQ-uKZMQ2ZgBCB4
+2025-04-08 12:31:41,244 - browser_adapter - INFO - Element 13: a - 'മലയാളം...' - https://www.google.com/setprefs?sig=0_PX_qdmMUmpKRVH8xx52e9Y0pxmo%3D&hl=ml&source=homepage&sa=X&ved=0ahUKEwji__Xi7seMAxXd2DQHHQ-uKZMQ2ZgBCB8
+2025-04-08 12:31:41,366 - browser_adapter - INFO - Element 14: a - 'ਪੰਜਾਬੀ...' - https://www.google.com/setprefs?sig=0_PX_qdmMUmpKRVH8xx52e9Y0pxmo%3D&hl=pa&source=homepage&sa=X&ved=0ahUKEwji__Xi7seMAxXd2DQHHQ-uKZMQ2ZgBCCA
+2025-04-08 12:31:41,478 - browser_adapter - INFO - Element 15: a - 'Advertising...' - https://www.google.com/intl/en_in/ads/?subid=ww-ww-et-g-awa-a-g_hpafoot1_1!o2&utm_source=google.com&utm_medium=referral&utm_campaign=google_hpafooter&fg=1
+2025-04-08 12:31:41,588 - browser_adapter - INFO - Element 16: a - 'Business...' - https://www.google.com/services/?subid=ww-ww-et-g-awa-a-g_hpbfoot1_1!o2&utm_source=google.com&utm_medium=referral&utm_campaign=google_hpbfooter&fg=1
+2025-04-08 12:31:41,702 - browser_adapter - INFO - Element 17: a - 'How Search works...' - https://google.com/search/howsearchworks/?fg=1
+2025-04-08 12:31:41,818 - browser_adapter - INFO - Element 18: a - 'Privacy...' - https://policies.google.com/privacy?hl=en-IN&fg=1
+2025-04-08 12:31:41,933 - browser_adapter - INFO - Element 19: a - 'Terms...' - https://policies.google.com/terms?hl=en-IN&fg=1
+2025-04-08 12:31:42,056 - browser_adapter - WARNING - Could not get bounding box for element 20: 'NoneType' object is not subscriptable
+2025-04-08 12:31:42,056 - browser_adapter - INFO - Element 20: a - 'Search settings...' - https://www.google.com/preferences?hl=en-IN&fg=1
+2025-04-08 12:31:42,165 - browser_adapter - WARNING - Could not get bounding box for element 21: 'NoneType' object is not subscriptable
+2025-04-08 12:31:42,165 - browser_adapter - INFO - Element 21: a - 'Advanced search...' - /advanced_search?hl=en-IN&fg=1
+2025-04-08 12:31:42,277 - browser_adapter - WARNING - Could not get bounding box for element 22: 'NoneType' object is not subscriptable
+2025-04-08 12:31:42,277 - browser_adapter - INFO - Element 22: a - 'Your data in Search...' - /history/privacyadvisor/search/unauth?utm_source=googlemenu&fg=1&cctld=com
+2025-04-08 12:31:42,396 - browser_adapter - WARNING - Could not get bounding box for element 23: 'NoneType' object is not subscriptable
+2025-04-08 12:31:42,396 - browser_adapter - INFO - Element 23: a - 'Search history...' - /history/optout?hl=en-IN&fg=1
+2025-04-08 12:31:42,515 - browser_adapter - WARNING - Could not get bounding box for element 24: 'NoneType' object is not subscriptable
+2025-04-08 12:31:42,516 - browser_adapter - INFO - Element 24: a - 'Search help...' - https://support.google.com/websearch/?p=ws_results_help&hl=en-IN&fg=1
+2025-04-08 12:31:42,603 - browser_adapter - INFO - 📸 Screenshot saved: /home/rahul/enhanced_agents_with_tools/COMPONENT/screenshots/test_browser_find_elements_20250408_123142.png
+2025-04-08 12:31:42,604 - browser_adapter - INFO - browser:find_elements result: success, found 25 elements
+2025-04-08 12:31:47,829 - browser_adapter - INFO - Tool called: browser:close(browser_id=test_browser)
+2025-04-08 12:31:47,830 - browser_adapter - INFO - 🛑 Closing browser: test_browser
+2025-04-08 12:31:47,845 - browser_adapter - INFO - Closed page for browser test_browser
+2025-04-08 12:31:47,863 - browser_adapter - INFO - Closed context for browser test_browser
+2025-04-08 12:31:47,902 - browser_adapter - INFO - Closed browser instance test_browser
+2025-04-08 12:31:47,902 - browser_adapter - INFO - ✅ Browser test_browser successfully closed
+2025-04-08 12:31:47,902 - browser_adapter - INFO - browser:close result: success

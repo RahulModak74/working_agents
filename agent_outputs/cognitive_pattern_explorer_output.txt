@@ -1,0 +1,54 @@
+```json
+{
+  "status": "success",
+  "patterns": {
+    "tree_of_thoughts": {
+      "description": "A structured exploration of multiple solution paths using a tree-based approach",
+      "stages": [
+        "generate_root_approaches",
+        "select_promising_branches",
+        "explore_branches",
+        "evaluate_branches",
+        "develop_solution"
+      ],
+      "available": false
+    },
+    "metacognitive_reflection": {
+      "description": "Analysis of reasoning processes, biases, and counterfactuals to improve solutions",
+      "stages": [
+        "initial_solution",
+        "monitor_reasoning",
+        "counterfactual_exploration",
+        "bias_detection",
+        "process_optimization",
+        "solution_revision"
+      ],
+      "available": false
+    },
+    "multi_agent_debate": {
+      "description": "Structured debate between multiple perspectives to develop nuanced solutions",
+      "stages": [
+        "frame_debate",
+        "present_positions",
+        "rebuttals",
+        "critique",
+        "synthesis"
+      ],
+      "available": false
+    },
+    "adaptive_cognition": {
+      "description": "Dynamic selection and application of the most appropriate cognitive architecture",
+      "stages": [
+        "problem_framing",
+        "architecture_selection",
+        "solution_development",
+        "integration",
+        "reflection"
+      ],
+      "available": false
+    }
+  },
+  "recommendation": "Focus on implementing the 'tree_of_thoughts' pattern once it becomes available, or develop a custom adaptation inspired by it for structured SAP data analysis.",
+  "reasoning": "Among the listed patterns, 'tree_of_thoughts' best supports structured exploration of multiple solution paths, which is critical for business optimization and addressing data quality issues. While current availability is limited, its approach aligns closely with the need for systematic handling of data complexities in SAP environments."
+}
+```

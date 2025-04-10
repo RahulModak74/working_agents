@@ -1,0 +1,1765 @@
+
+
+[
+  {
+    "agent": "problem_framer",
+    "content": "Analyze the following complex problem and frame it for a multi-perspective approach: {problem_description}",
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "problem_statement": "string",
+        "key_dimensions": ["string"],
+        "success_criteria": ["string"],
+        "potential_approaches": ["string"]
+      }
+    },
+    "memory_id": "advanced_cognition"
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on the problem framing, determine which advanced cognitive approach would be most suitable: 'tree_of_thoughts', 'multi_agent_debate', or 'metacognitive_reflection'.",
+    "readFrom": ["problem_framer"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "advanced_cognition",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_approach": "string",
+        "justification": "string",
+        "expected_benefits": ["string"]
+      }
+    },
+    "actions": {
+      "tree_of_thoughts": {
+        "agent": "tot_coordinator",
+        "content": "Implement a Tree of Thoughts approach to solve the problem. Generate multiple initial solution paths, explore the most promising ones in depth, and select the optimal solution.",
+        "readFrom": ["problem_framer"],
+        "tools": ["planning:create_plan", "planning:chain_of_thought"]
+      },
+      "multi_agent_debate": {
+        "agent": "debate_coordinator",
+        "content": "Implement a Multi-Agent Debate approach to address the problem. Define key positions, conduct a structured debate, critique arguments, and synthesize a comprehensive solution.",
+        "readFrom": ["problem_framer"],
+        "tools": ["planning:create_plan", "planning:chain_of_thought"]
+      },
+      "metacognitive_reflection": {
+        "agent": "metacog_coordinator",
+        "content": "Implement a Metacognitive Reflection approach to solve the problem. Develop an initial solution, analyze the reasoning process, identify biases, explore counterfactuals, and create an improved solution.",
+        "readFrom": ["problem_framer"],
+        "tools": ["planning:create_plan", "planning:chain_of_thought"]
+      }
+    }
+  },
+  {
+    "agent": "solution_integrator",
+    "content": "Integrate the results from the selected cognitive approach into a comprehensive solution. Highlight the unique insights gained from the specialized cognitive architecture.",
+    "readFrom": ["problem_framer", "dynamic_agent", "*"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "advanced_cognition",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Problem Summary",
+        "Cognitive Approach Used",
+        "Solution Process",
+        "Comprehensive Solution",
+        "Key Insights",
+        "Implementation Strategy"
+      ]
+    }
+  },
+  {
+    "agent": "cognitive_architect",
+    "content": "Reflect on the effectiveness of the selected cognitive architecture for this problem. Suggest potential improvements to the process for future similar problems.",
+    "readFrom": ["*"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "advanced_cognition",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "architecture_effectiveness": {
+          "strengths": ["string"],
+          "limitations": ["string"],
+          "overall_rating": "number"
+        },
+        "process_improvements": ["string"],
+        "future_architecture_recommendations": ["string"]
+      }
+    }
+  }
+]
+
+[
+  {
+    "agent": "debate_moderator",
+    "content": "Frame the following topic for a structured debate: {topic_description}. Define the key positions, constraints, and evaluation criteria.",
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "topic": "string",
+        "key_questions": ["string"],
+        "positions": ["string"],
+        "rules": ["string"],
+        "evaluation_criteria": ["string"]
+      }
+    },
+    "memory_id": "debate_session"
+  },
+  {
+    "agent": "advocate_position_a",
+    "content": "Present the strongest possible arguments for position A on the topic, as framed by the moderator. Focus on evidence, reasoning, and addressing potential counterarguments.",
+    "readFrom": ["debate_moderator"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "debate_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "position": "string",
+        "key_arguments": [
+          {
+            "argument": "string",
+            "evidence": ["string"],
+            "reasoning": "string"
+          }
+        ],
+        "anticipated_counterarguments": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "advocate_position_b",
+    "content": "Present the strongest possible arguments for position B on the topic, as framed by the moderator. Focus on evidence, reasoning, and addressing potential counterarguments.",
+    "readFrom": ["debate_moderator", "advocate_position_a"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "debate_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "position": "string",
+        "key_arguments": [
+          {
+            "argument": "string",
+            "evidence": ["string"],
+            "reasoning": "string"
+          }
+        ],
+        "responses_to_position_a": [
+          {
+            "original_argument": "string",
+            "rebuttal": "string",
+            "evidence": ["string"]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "advocate_position_a_rebuttal",
+    "content": "Respond to the arguments and rebuttals presented by Position B. Strengthen your original arguments where needed and address the criticisms directly.",
+    "readFrom": ["advocate_position_a", "advocate_position_b"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "debate_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "responses_to_position_b": [
+          {
+            "original_argument": "string",
+            "rebuttal": "string",
+            "additional_evidence": ["string"]
+          }
+        ],
+        "strengthened_arguments": [
+          {
+            "original_argument": "string",
+            "strengthened_version": "string",
+            "new_evidence": ["string"]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "advocate_position_b_rebuttal",
+    "content": "Respond to the arguments and rebuttals presented by Position A. Strengthen your original arguments where needed and address the criticisms directly.",
+    "readFrom": ["advocate_position_b", "advocate_position_a_rebuttal"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "debate_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "responses_to_position_a": [
+          {
+            "original_argument": "string",
+            "rebuttal": "string",
+            "additional_evidence": ["string"]
+          }
+        ],
+        "strengthened_arguments": [
+          {
+            "original_argument": "string",
+            "strengthened_version": "string",
+            "new_evidence": ["string"]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "debate_critic",
+    "content": "Analyze the debate between Position A and Position B. Identify the strongest arguments on both sides, logical fallacies used, quality of evidence, and areas of potential agreement.",
+    "readFrom": ["advocate_position_a", "advocate_position_b", "advocate_position_a_rebuttal", "advocate_position_b_rebuttal"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "debate_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "strongest_arguments": {
+          "position_a": ["string"],
+          "position_b": ["string"]
+        },
+        "logical_fallacies": [
+          {
+            "agent": "string",
+            "argument": "string",
+            "fallacy_type": "string",
+            "explanation": "string"
+          }
+        ],
+        "evidence_quality": {
+          "position_a_score": "number",
+          "position_b_score": "number",
+          "explanation": "string"
+        },
+        "potential_synthesis": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "debate_synthesizer",
+    "content": "Create a final synthesis of the debate that acknowledges the strongest points from both sides and attempts to find a nuanced position that incorporates the best reasoning and evidence presented.",
+    "readFrom": ["debate_moderator", "advocate_position_a", "advocate_position_b", "advocate_position_a_rebuttal", "advocate_position_b_rebuttal", "debate_critic"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "debate_session",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Debate Summary",
+        "Key Points of Agreement",
+        "Fundamental Disagreements",
+        "Synthesized Position",
+        "Remaining Uncertainties",
+        "Recommendations"
+      ]
+    }
+  }
+]
+[
+  {
+    "agent": "problem_solver",
+    "content": "Analyze and solve the following problem: {problem_description}. Show all your reasoning steps explicitly.",
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "problem_understanding": "string",
+        "reasoning_steps": ["string"],
+        "solution": "string",
+        "confidence": "number"
+      }
+    },
+    "memory_id": "metacog_session"
+  },
+  {
+    "agent": "metacognitive_monitor",
+    "content": "Review the problem-solving process used by the problem_solver agent. Identify the reasoning patterns, assumptions made, potential cognitive biases, and key decision points in the solution process.",
+    "readFrom": ["problem_solver"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "metacog_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "reasoning_patterns": ["string"],
+        "explicit_assumptions": ["string"],
+        "implicit_assumptions": ["string"],
+        "potential_biases": [
+          {
+            "bias_type": "string",
+            "description": "string",
+            "evidence": "string",
+            "impact": "string"
+          }
+        ],
+        "key_decision_points": [
+          {
+            "decision": "string",
+            "alternatives_considered": ["string"],
+            "selection_rationale": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "counterfactual_explorer",
+    "content": "Explore counterfactual scenarios for the problem-solving process. What if different assumptions were made? What if different reasoning strategies were employed? How would the solution change?",
+    "readFrom": ["problem_solver", "metacognitive_monitor"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "metacog_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "counterfactual_scenarios": [
+          {
+            "altered_element": "string",
+            "alternative_approach": "string",
+            "projected_outcome": "string",
+            "comparison_to_original": "string"
+          }
+        ],
+        "most_promising_alternatives": ["string"],
+        "least_promising_alternatives": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "bias_detector",
+    "content": "Perform a detailed analysis of cognitive biases that may have influenced the solution process. For each potential bias, rate its likelihood and impact on the solution quality.",
+    "readFrom": ["problem_solver", "metacognitive_monitor"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "metacog_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "cognitive_biases": [
+          {
+            "bias_name": "string",
+            "description": "string",
+            "evidence_in_reasoning": "string",
+            "likelihood_score": "number",
+            "impact_score": "number",
+            "mitigation_strategy": "string"
+          }
+        ],
+        "overall_bias_assessment": "string"
+      }
+    }
+  },
+  {
+    "agent": "reasoning_optimizer",
+    "content": "Based on the metacognitive analysis, counterfactual exploration, and bias detection, propose an optimized reasoning process for solving this type of problem. Design a step-by-step framework that addresses the weaknesses identified.",
+    "readFrom": ["problem_solver", "metacognitive_monitor", "counterfactual_explorer", "bias_detector"],
+    "tools": ["planning:create_plan"],
+    "memory_id": "metacog_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "optimized_framework": {
+          "name": "string",
+          "purpose": "string",
+          "steps": [
+            {
+              "step_name": "string",
+              "description": "string",
+              "purpose": "string",
+              "implementation_guidance": "string"
+            }
+          ],
+          "bias_mitigation_techniques": ["string"],
+          "verification_methods": ["string"]
+        }
+      }
+    }
+  },
+  {
+    "agent": "solution_reviser",
+    "content": "Using the optimized reasoning framework, revisit the original problem and develop a revised solution. Compare this solution to the original and highlight key improvements.",
+    "readFrom": ["problem_solver", "reasoning_optimizer"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "metacog_session",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Problem Restatement",
+        "Optimized Reasoning Process",
+        "Revised Solution",
+        "Comparison to Original Solution",
+        "Key Improvements",
+        "Metacognitive Insights"
+      ]
+    }
+  }
+]
+
+
+
+
+
+[
+  {
+    "agent": "tot_root_agent",
+    "content": "Analyze the following complex problem and generate 3-5 distinct initial approaches: {problem_description}",
+    "tools": [
+      "planning:chain_of_thought"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "problem_understanding": "string",
+        "initial_approaches": [
+          {
+            "approach_id": "string",
+            "description": "string",
+            "reasoning": "string",
+            "estimated_probability": "number"
+          }
+        ]
+      }
+    },
+    "memory_id": "tot_session"
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on the initial approaches generated, select the 2 most promising branches to explore in depth. Choose branches with the highest estimated probability of success.",
+    "readFrom": [
+      "tot_root_agent"
+    ],
+    "tools": [
+      "planning:get_summary"
+    ],
+    "memory_id": "tot_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_branches": [
+          "string"
+        ],
+        "reasoning": "string"
+      }
+    },
+    "actions": {
+      "branch_1": {
+        "agent": "branch_explorer_1",
+        "content": "Explore branch {selected_branches[0]} in detail. Generate 2-3 sub-branches from this approach, evaluating their probability of success. Conduct a full depth-first exploration of this approach.",
+        "readFrom": [
+          "tot_root_agent"
+        ],
+        "tools": [
+          "planning:create_plan",
+          "planning:chain_of_thought"
+        ]
+      },
+      "branch_2": {
+        "agent": "branch_explorer_2",
+        "content": "Explore branch {selected_branches[1]} in detail. Generate 2-3 sub-branches from this approach, evaluating their probability of success. Conduct a full depth-first exploration of this approach.",
+        "readFrom": [
+          "tot_root_agent"
+        ],
+        "tools": [
+          "planning:create_plan",
+          "planning:chain_of_thought"
+        ]
+      }
+    }
+  },
+  {
+    "agent": "tot_evaluator",
+    "content": "Compare the results from both branches explored in depth. Determine which approach has the highest probability of success based on the detailed exploration. Provide a confidence score for each branch.",
+    "readFrom": [
+      "branch_explorer_1",
+      "branch_explorer_2"
+    ],
+    "tools": [
+      "planning:chain_of_thought"
+    ],
+    "memory_id": "tot_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "branch_evaluations": [
+          {
+            "branch_id": "string",
+            "confidence_score": "number",
+            "strengths": [
+              "string"
+            ],
+            "weaknesses": [
+              "string"
+            ]
+          }
+        ],
+        "recommended_branch": "string",
+        "final_confidence": "number"
+      }
+    }
+  },
+  {
+    "agent": "tot_solution_agent",
+    "content": "Based on the recommended branch and all previous explorations, develop the final detailed solution to the problem. Address any weaknesses identified in the evaluation phase.",
+    "readFrom": [
+      "tot_root_agent",
+      "branch_explorer_1",
+      "branch_explorer_2",
+      "tot_evaluator"
+    ],
+    "tools": [
+      "planning:chain_of_thought"
+    ],
+    "memory_id": "tot_session",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Problem Summary",
+        "Solution Approach",
+        "Detailed Implementation",
+        "Expected Outcomes",
+        "Potential Challenges",
+        "Mitigation Strategies"
+      ]
+    }
+  }
+][
+  {
+    "agent": "tot_root_agent",
+    "content": "Analyze the following complex problem and generate 3-5 distinct initial approaches: {problem_description}",
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "problem_understanding": "string",
+        "initial_approaches": [
+          {
+            "approach_id": "string",
+            "description": "string",
+            "reasoning": "string",
+            "estimated_probability": "number"
+          }
+        ]
+      }
+    },
+    "memory_id": "tot_session"
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on the initial approaches generated, select the 2 most promising branches to explore in depth. Choose branches with the highest estimated probability of success.",
+    "readFrom": ["tot_root_agent"],
+    "tools": ["planning:get_summary"],
+    "memory_id": "tot_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_branches": ["string"],
+        "reasoning": "string"
+      }
+    },
+    "actions": {
+      "branch_1": {
+        "agent": "branch_explorer_1",
+        "content": "Explore branch {selected_branches[0]} in detail. Generate 2-3 sub-branches from this approach, evaluating their probability of success. Conduct a full depth-first exploration of this approach.",
+        "readFrom": ["tot_root_agent"],
+        "tools": ["planning:create_plan", "planning:chain_of_thought"]
+      },
+      "branch_2": {
+        "agent": "branch_explorer_2",
+        "content": "Explore branch {selected_branches[1]} in detail. Generate 2-3 sub-branches from this approach, evaluating their probability of success. Conduct a full depth-first exploration of this approach.",
+        "readFrom": ["tot_root_agent"],
+        "tools": ["planning:create_plan", "planning:chain_of_thought"]
+      }
+    }
+  },
+  {
+    "agent": "tot_evaluator",
+    "content": "Compare the results from both branches explored in depth. Determine which approach has the highest probability of success based on the detailed exploration. Provide a confidence score for each branch.",
+    "readFrom": ["branch_explorer_1", "branch_explorer_2"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "tot_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "branch_evaluations": [
+          {
+            "branch_id": "string",
+            "confidence_score": "number",
+            "strengths": ["string"],
+            "weaknesses": ["string"]
+          }
+        ],
+        "recommended_branch": "string",
+        "final_confidence": "number"
+      }
+    }
+  },
+  {
+    "agent": "tot_solution_agent",
+    "content": "Based on the recommended branch and all previous explorations, develop the final detailed solution to the problem. Address any weaknesses identified in the evaluation phase.",
+    "readFrom": ["tot_root_agent", "branch_explorer_1", "branch_explorer_2", "tot_evaluator"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "tot_session",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Problem Summary",
+        "Solution Approach",
+        "Detailed Implementation",
+        "Expected Outcomes",
+        "Potential Challenges",
+        "Mitigation Strategies"
+      ]
+    }
+  }
+]
+[
+  {
+    "agent": "distributed_memory_architect",
+    "content": "Design a comprehensive distributed memory architecture integrating federated knowledge graphs, context-aware storage hierarchies, and cross-agent synchronization for the {application_domain}.",
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "architecture_design": {
+          "overall_structure": "string",
+          "federation_approach": "string",
+          "hierarchy_design": "string",
+          "synchronization_protocol": "string",
+          "implementation_phases": ["string"]
+        }
+      }
+    },
+    "memory_id": "master_memory"
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on the distributed memory architecture design, determine which component should be initialized first: 'federated_graph', 'hierarchy_setup', or 'sync_protocol'.",
+    "readFrom": ["distributed_memory_architect"],
+    "memory_id": "master_memory",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "initialization_decision": "string",
+        "rationale": "string"
+      }
+    },
+    "actions": {
+      "federated_graph": {
+        "agent": "knowledge_graph_initializer",
+        "content": "Initialize the federated knowledge graph system based on the architecture design.",
+        "readFrom": ["distributed_memory_architect"],
+        "tools": ["vector_db:batch_add", "planning:create_plan"]
+      },
+      "hierarchy_setup": {
+        "agent": "memory_hierarchy_architect",
+        "content": "Initialize the context-aware memory hierarchy based on the architecture design.",
+        "readFrom": ["distributed_memory_architect"],
+        "tools": ["planning:create_plan", "sql:query"]
+      },
+      "sync_protocol": {
+        "agent": "memory_sync_coordinator",
+        "content": "Initialize the cross-agent memory synchronization protocol based on the architecture design.",
+        "readFrom": ["distributed_memory_architect"],
+        "tools": ["planning:create_plan"]
+      }
+    }
+  },
+  {
+    "agent": "memory_integrator",
+    "content": "Integrate the components of the distributed memory architecture that have been initialized. Establish connections between the federated knowledge graph, memory hierarchy, and synchronization protocol.",
+    "readFrom": ["distributed_memory_architect", "dynamic_agent", "*"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "master_memory",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "integration_results": {
+          "connected_components": ["string"],
+          "integration_points": [
+            {
+              "component_a": "string",
+              "component_b": "string",
+              "interface_type": "string",
+              "data_flow": "string"
+            }
+          ],
+          "verification_results": ["string"],
+          "overall_status": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "memory_system_controller",
+    "content": "Create the operational control system for the distributed memory architecture. Implement monitoring, management interfaces, and performance optimization capabilities.",
+    "readFrom": ["distributed_memory_architect", "memory_integrator", "*"],
+    "tools": ["planning:create_plan", "sql:query"],
+    "memory_id": "master_memory",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "control_system": {
+          "monitoring_dashboard": {
+            "metrics": ["string"],
+            "alerts": ["string"],
+            "visualizations": ["string"]
+          },
+          "management_interface": {
+            "commands": ["string"],
+            "policies": ["string"],
+            "access_controls": ["string"]
+          },
+          "optimization_engine": {
+            "performance_tuners": ["string"],
+            "adaptation_mechanisms": ["string"],
+            "learning_capabilities": ["string"]
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "memory_system_tester",
+    "content": "Design and execute comprehensive tests for the distributed memory architecture. Verify functionality, performance, fault tolerance, and scalability.",
+    "readFrom": ["distributed_memory_architect", "memory_integrator", "memory_system_controller"],
+    "tools": ["planning:create_plan", "sql:query"],
+    "memory_id": "master_memory",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Test Strategy Overview",
+        "Functional Testing Results",
+        "Performance Benchmarks",
+        "Fault Tolerance Evaluation",
+        "Scalability Assessment",
+        "Security Analysis",
+        "Recommendations"
+      ]
+    }
+  }
+]
+ [ {
+    "agent": "knowledge_graph_initializer",
+    "content": "Initialize a federated knowledge graph structure for {domain_topic}. Define the core entity types, relation types, and federation boundaries.",
+    "tools": ["vector_db:batch_add", "planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "knowledge_graph_schema": {
+          "entities": [
+            {
+              "entity_type": "string",
+              "properties": ["string"],
+              "federation_location": "string"
+            }
+          ],
+          "relations": [
+            {
+              "relation_type": "string",
+              "source_entity": "string",
+              "target_entity": "string",
+              "properties": ["string"]
+            }
+          ],
+          "federation_nodes": [
+            {
+              "node_id": "string",
+              "specialization": "string",
+              "sync_protocol": "string"
+            }
+          ]
+        }
+      }
+    },
+    "memory_id": "distributed_memory"
+  },
+  {
+    "agent": "domain_knowledge_extractor",
+    "content": "Extract key domain knowledge from the provided content and add it to the federated knowledge graph. Follow the schema defined by the knowledge graph initializer.",
+    "readFrom": ["knowledge_graph_initializer"],
+    "file_param": "domain_data.csv",
+    "tools": ["sql:query", "vector_db:add"],
+    "memory_id": "distributed_memory",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "extracted_entities": [
+          {
+            "entity_id": "string",
+            "entity_type": "string",
+            "properties": {},
+            "federation_location": "string"
+          }
+        ],
+        "extracted_relations": [
+          {
+            "source_id": "string",
+            "relation_type": "string",
+            "target_id": "string",
+            "properties": {}
+          }
+        ],
+        "federation_metadata": {
+          "last_update": "string",
+          "sync_status": "string",
+          "consistency_check": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "federation_manager",
+    "content": "Manage the distribution of knowledge across federated nodes. Update routing tables, resolve conflicts, and maintain consistency across the knowledge graph.",
+    "readFrom": ["knowledge_graph_initializer", "domain_knowledge_extractor"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "distributed_memory",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "federation_status": {
+          "active_nodes": ["string"],
+          "sync_status": "string",
+          "conflict_resolution": [
+            {
+              "entity_id": "string",
+              "conflict_type": "string",
+              "resolution_strategy": "string",
+              "outcome": "string"
+            }
+          ],
+          "routing_table": [
+            {
+              "query_pattern": "string",
+              "node_assignment": "string",
+              "caching_strategy": "string"
+            }
+          ]
+        }
+      }
+    }
+  }
+]
+[
+  {
+    "agent": "memory_encoder",
+    "content": "Encode the following information into the distributed memory system under the name '{memory_name}': {content}",
+    "tools": [
+      "vector_db:add"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "encoded_information": "string",
+        "encoding_format": "string",
+        "metadata": {},
+        "storage_location": "string"
+      }
+    },
+    "memory_id": "{memory_name}"
+  },
+  {
+    "agent": "memory_organizer",
+    "content": "Organize and store the encoded information in the most appropriate memory hierarchy",
+    "readFrom": [
+      "memory_encoder"
+    ],
+    "tools": [
+      "vector_db:add"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "storage_hierarchy": {
+          "tier": "string",
+          "location": "string",
+          "access_pattern": "string",
+          "retention_policy": "string"
+        },
+        "indexing_strategy": "string",
+        "retrieval_examples": [
+          "string"
+        ]
+      }
+    },
+    "memory_id": "{memory_name}"
+  },
+  {
+    "agent": "memory_validator",
+    "content": "Validate that the information has been properly stored and can be retrieved. Create sample retrieval queries to confirm accessibility.",
+    "readFrom": [
+      "memory_encoder",
+      "memory_organizer"
+    ],
+    "tools": [
+      "vector_db:search"
+    ],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Storage Confirmation",
+        "Sample Queries",
+        "Retrieval Results",
+        "Storage Quality Assessment"
+      ]
+    },
+    "memory_id": "{memory_name}"
+  }
+][{
+    "agent": "memory_hierarchy_architect",
+    "content": "Design a context-aware memory hierarchy for the agent system. Include multiple storage tiers with different access patterns, retention policies, and context sensitivity.",
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "memory_hierarchy": {
+          "tiers": [
+            {
+              "tier_name": "string",
+              "storage_type": "string",
+              "access_pattern": "string",
+              "retention_policy": "string",
+              "context_sensitivity": "number"
+            }
+          ],
+          "promotion_criteria": [
+            {
+              "from_tier": "string",
+              "to_tier": "string",
+              "criteria": ["string"],
+              "threshold": "number"
+            }
+          ],
+          "demotion_criteria": [
+            {
+              "from_tier": "string",
+              "to_tier": "string",
+              "criteria": ["string"],
+              "threshold": "number"
+            }
+          ]
+        }
+      }
+    },
+    "memory_id": "hierarchical_memory"
+  },
+  {
+    "agent": "working_memory_manager",
+    "content": "Manage the most active tier of the memory hierarchy (working memory). Monitor context shifts, track importance metrics, and manage the limited capacity of this tier.",
+    "readFrom": ["memory_hierarchy_architect"],
+    "tools": ["sql:query", "vector_db:search"],
+    "memory_id": "hierarchical_memory",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "working_memory_state": {
+          "current_capacity": "number",
+          "maximum_capacity": "number",
+          "current_elements": [
+            {
+              "element_id": "string",
+              "importance_score": "number",
+              "recency_score": "number",
+              "context_relevance": "number",
+              "expiration_condition": "string"
+            }
+          ],
+          "recently_demoted": ["string"],
+          "attention_focus": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "context_detector",
+    "content": "Continuously monitor the conversation and task context to detect shifts that should trigger memory reorganization. Identify the current context and its key attributes.",
+    "readFrom": ["working_memory_manager"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "hierarchical_memory",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "context_analysis": {
+          "current_context": "string",
+          "context_attributes": {},
+          "context_shift_detected": "boolean",
+          "previous_context": "string",
+          "shift_magnitude": "number",
+          "relevant_memory_elements": ["string"]
+        }
+      }
+    }
+  },
+  {
+    "agent": "memory_promoter_demoter",
+    "content": "Based on the current context and memory hierarchy, promote and demote memory elements between tiers according to the defined criteria.",
+    "readFrom": ["memory_hierarchy_architect", "working_memory_manager", "context_detector"],
+    "tools": ["sql:query", "vector_db:search"],
+    "memory_id": "hierarchical_memory",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "memory_operations": {
+          "promotions": [
+            {
+              "element_id": "string",
+              "from_tier": "string",
+              "to_tier": "string",
+              "justification": "string"
+            }
+          ],
+          "demotions": [
+            {
+              "element_id": "string",
+              "from_tier": "string",
+              "to_tier": "string",
+              "justification": "string"
+            }
+          ],
+          "tier_statistics": [
+            {
+              "tier_name": "string",
+              "current_occupancy": "number",
+              "capacity": "number"
+            }
+          ]
+        }
+      }
+    }
+  }]
+[
+  {
+    "agent": "memory_sync_coordinator",
+    "content": "Design and implement a cross-agent memory synchronization protocol. Define procedures for memory sharing, conflict resolution, and consistency maintenance.",
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "sync_protocol": {
+          "protocol_name": "string",
+          "version": "string",
+          "agent_roles": [
+            {
+              "role_name": "string",
+              "memory_access": ["string"],
+              "sync_responsibilities": ["string"]
+            }
+          ],
+          "sync_operations": [
+            {
+              "operation_name": "string",
+              "trigger_conditions": ["string"],
+              "procedure": ["string"],
+              "consistency_guarantees": ["string"]
+            }
+          ],
+          "conflict_resolution": {
+            "detection_methods": ["string"],
+            "resolution_strategies": ["string"],
+            "fallback_procedures": ["string"]
+          }
+        }
+      }
+    },
+    "memory_id": "sync_system"
+  },
+  {
+    "agent": "memory_publisher",
+    "content": "Implement the publishing side of the memory synchronization protocol. Prepare memory updates for sharing, apply the appropriate consistency controls, and broadcast to subscribing agents.",
+    "readFrom": ["memory_sync_coordinator"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "sync_system",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "memory_publication": {
+          "publication_id": "string",
+          "timestamp": "string",
+          "originating_agent": "string",
+          "memory_elements": [
+            {
+              "element_id": "string",
+              "element_type": "string",
+              "content": {},
+              "consistency_token": "string",
+              "access_control": ["string"]
+            }
+          ],
+          "dependent_publications": ["string"],
+          "distribution_list": ["string"]
+        }
+      }
+    }
+  },
+  {
+    "agent": "memory_subscriber",
+    "content": "Implement the subscriber side of the memory synchronization protocol. Process incoming memory updates, validate consistency, resolve conflicts, and integrate into local memory.",
+    "readFrom": ["memory_sync_coordinator", "memory_publisher"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "sync_system",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "subscription_processing": {
+          "processed_publications": [
+            {
+              "publication_id": "string",
+              "processing_status": "string",
+              "integration_results": [
+                {
+                  "element_id": "string",
+                  "status": "string",
+                  "local_modifications": "string",
+                  "conflicts_resolved": "number"
+                }
+              ],
+              "local_memory_impact": "string"
+            }
+          ],
+          "subscription_health": {
+            "missed_publications": "number",
+            "average_processing_time": "number",
+            "conflict_rate": "number"
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "consistency_verifier",
+    "content": "Periodically verify the consistency of memory across all agents in the system. Detect discrepancies, diagnose synchronization issues, and initiate repair operations.",
+    "readFrom": ["memory_sync_coordinator", "memory_publisher", "memory_subscriber"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "sync_system",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "consistency_verification": {
+          "verification_id": "string",
+          "timestamp": "string",
+          "verification_scope": ["string"],
+          "discrepancies": [
+            {
+              "element_id": "string",
+              "agent_pairs": ["string"],
+              "discrepancy_type": "string",
+              "severity": "number",
+              "root_cause_analysis": "string"
+            }
+          ],
+          "repair_operations": [
+            {
+              "discrepancy_id": "string",
+              "repair_strategy": "string",
+              "affected_agents": ["string"],
+              "outcome": "string"
+            }
+          ],
+          "system_health": {
+            "consistency_score": "number",
+            "trend": "string",
+            "recommendations": ["string"]
+          }
+        }
+      }
+    }
+  }
+]
+
+[
+  {
+    "agent": "problem_framer",
+    "content": "Analyze the following complex problem and frame it for a multi-perspective approach: {problem_description}",
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "problem_statement": "string",
+        "key_dimensions": ["string"],
+        "success_criteria": ["string"],
+        "potential_approaches": ["string"]
+      }
+    },
+    "memory_id": "advanced_cognition"
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on the problem framing, determine which advanced cognitive approach would be most suitable: 'tree_of_thoughts', 'multi_agent_debate', or 'metacognitive_reflection'.",
+    "readFrom": ["problem_framer"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "advanced_cognition",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_approach": "string",
+        "justification": "string",
+        "expected_benefits": ["string"]
+      }
+    },
+    "actions": {
+      "tree_of_thoughts": {
+        "agent": "tot_coordinator",
+        "content": "Implement a Tree of Thoughts approach to solve the problem. Generate multiple initial solution paths, explore the most promising ones in depth, and select the optimal solution.",
+        "readFrom": ["problem_framer"],
+        "tools": ["planning:create_plan", "planning:chain_of_thought"]
+      },
+      "multi_agent_debate": {
+        "agent": "debate_coordinator",
+        "content": "Implement a Multi-Agent Debate approach to address the problem. Define key positions, conduct a structured debate, critique arguments, and synthesize a comprehensive solution.",
+        "readFrom": ["problem_framer"],
+        "tools": ["planning:create_plan", "planning:chain_of_thought"]
+      },
+      "metacognitive_reflection": {
+        "agent": "metacog_coordinator",
+        "content": "Implement a Metacognitive Reflection approach to solve the problem. Develop an initial solution, analyze the reasoning process, identify biases, explore counterfactuals, and create an improved solution.",
+        "readFrom": ["problem_framer"],
+        "tools": ["planning:create_plan", "planning:chain_of_thought"]
+      }
+    }
+  },
+  {
+    "agent": "solution_integrator",
+    "content": "Integrate the results from the selected cognitive approach into a comprehensive solution. Highlight the unique insights gained from the specialized cognitive architecture.",
+    "readFrom": ["problem_framer", "dynamic_agent", "*"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "advanced_cognition",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Problem Summary",
+        "Cognitive Approach Used",
+        "Solution Process",
+        "Comprehensive Solution",
+        "Key Insights",
+        "Implementation Strategy"
+      ]
+    }
+  },
+  {
+    "agent": "cognitive_architect",
+    "content": "Reflect on the effectiveness of the selected cognitive architecture for this problem. Suggest potential improvements to the process for future similar problems.",
+    "readFrom": ["*"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "advanced_cognition",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "architecture_effectiveness": {
+          "strengths": ["string"],
+          "limitations": ["string"],
+          "overall_rating": "number"
+        },
+        "process_improvements": ["string"],
+        "future_architecture_recommendations": ["string"]
+      }
+    }
+  }
+]
+
+
+[
+  {
+    "agent": "feedback_architect",
+    "content": "Design a hierarchical feedback system for the agent network. Define feedback types, collection methods, evaluation criteria, and propagation mechanisms across different levels of the system.",
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "feedback_framework": {
+          "feedback_levels": [
+            {
+              "level_name": "string",
+              "scope": "string",
+              "feedback_types": ["string"],
+              "collection_methods": ["string"]
+            }
+          ],
+          "feedback_flows": [
+            {
+              "source_level": "string",
+              "target_level": "string",
+              "propagation_mechanism": "string",
+              "transformation_rules": ["string"]
+            }
+          ],
+          "evaluation_criteria": [
+            {
+              "criterion_name": "string",
+              "description": "string",
+              "measurement_method": "string",
+              "weight": "number"
+            }
+          ]
+        }
+      }
+    },
+    "memory_id": "feedback_system"
+  },
+  {
+    "agent": "micro_feedback_collector",
+    "content": "Implement the collection of micro-level feedback within the system. Monitor individual agent operations, atomic tasks, and low-level performance indicators.",
+    "readFrom": ["feedback_architect"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "feedback_system",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "micro_feedback": {
+          "agent_feedback": [
+            {
+              "agent_id": "string",
+              "operation_id": "string",
+              "metrics": {},
+              "success_indicators": ["string"],
+              "failure_indicators": ["string"],
+              "timestamp": "string"
+            }
+          ],
+          "task_feedback": [
+            {
+              "task_id": "string",
+              "completion_status": "string",
+              "quality_metrics": {},
+              "efficiency_metrics": {},
+              "timestamp": "string"
+            }
+          ],
+          "aggregated_stats": {
+            "total_operations": "number",
+            "success_rate": "number",
+            "average_response_time": "number",
+            "resource_utilization": "number"
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "meso_feedback_collector",
+    "content": "Implement the collection of meso-level feedback within the system. Monitor agent interactions, workflow segments, and mid-level performance indicators.",
+    "readFrom": ["feedback_architect", "micro_feedback_collector"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "feedback_system",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "meso_feedback": {
+          "agent_interaction_feedback": [
+            {
+              "interaction_id": "string",
+              "participating_agents": ["string"],
+              "interaction_pattern": "string",
+              "effectiveness_metrics": {},
+              "collaboration_quality": "number"
+            }
+          ],
+          "workflow_segment_feedback": [
+            {
+              "segment_id": "string",
+              "segment_type": "string",
+              "input_quality": "number",
+              "output_quality": "number",
+              "processing_efficiency": "number"
+            }
+          ],
+          "propagated_micro_insights": [
+            {
+              "source_feedback_id": "string",
+              "derived_insight": "string",
+              "relevance_score": "number"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "agent": "macro_feedback_collector",
+    "content": "Implement the collection of macro-level feedback within the system. Monitor overall system performance, complete workflows, and high-level business outcomes.",
+    "readFrom": ["feedback_architect", "meso_feedback_collector"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "feedback_system",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "macro_feedback": {
+          "system_performance": {
+            "overall_success_rate": "number",
+            "system_throughput": "number",
+            "resource_efficiency": "number",
+            "scaling_performance": "number"
+          },
+          "workflow_outcomes": [
+            {
+              "workflow_id": "string",
+              "business_objectives_met": ["string"],
+              "quality_assessment": "number",
+              "time_efficiency": "number",
+              "cost_efficiency": "number"
+            }
+          ],
+          "user_satisfaction": {
+            "satisfaction_score": "number",
+            "key_positive_aspects": ["string"],
+            "key_negative_aspects": ["string"]
+          },
+          "propagated_meso_insights": [
+            {
+              "source_feedback_id": "string",
+              "derived_insight": "string",
+              "system_impact": "string"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "agent": "feedback_integrator",
+    "content": "Synthesize and integrate feedback from all levels of the hierarchy. Identify patterns, correlations, and causal relationships across micro, meso, and macro levels.",
+    "readFrom": ["micro_feedback_collector", "meso_feedback_collector", "macro_feedback_collector"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "feedback_system",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "integrated_feedback": {
+          "cross_level_patterns": [
+            {
+              "pattern_name": "string",
+              "description": "string",
+              "involved_levels": ["string"],
+              "supporting_evidence": ["string"],
+              "significance": "number"
+            }
+          ],
+          "causal_relationships": [
+            {
+              "cause_level": "string",
+              "cause_factor": "string",
+              "effect_level": "string",
+              "effect_factor": "string",
+              "relationship_strength": "number",
+              "confidence": "number"
+            }
+          ],
+          "system_insights": [
+            {
+              "insight": "string",
+              "derived_from": ["string"],
+              "actionability": "number",
+              "potential_impact": "number"
+            }
+          ]
+        }
+      }
+    }
+  }
+]
+[
+  {
+    "agent": "performance_monitor",
+    "content": "Design a comprehensive performance monitoring system for the agent network. Define key metrics, monitoring frequency, and baseline performance expectations.",
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "monitoring_framework": {
+          "system_metrics": [
+            {
+              "metric_name": "string",
+              "description": "string",
+              "measurement_method": "string",
+              "frequency": "string",
+              "baseline_value": "number",
+              "acceptable_range": {"min": "number", "max": "number"}
+            }
+          ],
+          "agent_metrics": [
+            {
+              "metric_name": "string",
+              "description": "string",
+              "measurement_method": "string",
+              "frequency": "string",
+              "baseline_value": "number",
+              "acceptable_range": {"min": "number", "max": "number"}
+            }
+          ],
+          "workflow_metrics": [
+            {
+              "metric_name": "string",
+              "description": "string",
+              "measurement_method": "string",
+              "frequency": "string",
+              "baseline_value": "number",
+              "acceptable_range": {"min": "number", "max": "number"}
+            }
+          ],
+          "alerting_thresholds": [
+            {
+              "metric": "string",
+              "warning_threshold": "number",
+              "critical_threshold": "number",
+              "alert_action": "string"
+            }
+          ]
+        }
+      }
+    },
+    "memory_id": "self_optimization"
+  },
+  {
+    "agent": "metric_collector",
+    "content": "Implement the data collection system for the performance metrics defined by the performance monitor. Collect, process, and store metrics at the specified frequencies.",
+    "readFrom": ["performance_monitor"],
+    "tools": ["sql:query"],
+    "memory_id": "self_optimization",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "metric_collection": {
+          "collection_status": "string",
+          "metrics_collected": [
+            {
+              "metric_name": "string",
+              "current_value": "number",
+              "timestamp": "string",
+              "collection_method": "string",
+              "status": "string"
+            }
+          ],
+          "collection_issues": [
+            {
+              "metric_name": "string",
+              "issue_description": "string",
+              "severity": "string",
+              "mitigation_strategy": "string"
+            }
+          ],
+          "data_storage": {
+            "location": "string",
+            "retention_policy": "string",
+            "access_method": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "anomaly_detector",
+    "content": "Analyze the collected performance metrics to identify anomalies, trends, and performance degradation. Use statistical methods and machine learning techniques for detection.",
+    "readFrom": ["performance_monitor", "metric_collector"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "self_optimization",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "anomaly_analysis": {
+          "detected_anomalies": [
+            {
+              "metric_name": "string",
+              "timestamp": "string",
+              "expected_value": "number",
+              "actual_value": "number",
+              "deviation_percentage": "number",
+              "detection_method": "string",
+              "confidence": "number",
+              "potential_causes": ["string"]
+            }
+          ],
+          "trend_analysis": [
+            {
+              "metric_name": "string",
+              "trend_direction": "string",
+              "trend_magnitude": "number",
+              "statistical_significance": "number",
+              "projected_values": [{"timestamp": "string", "value": "number"}]
+            }
+          ],
+          "system_health_assessment": {
+            "overall_health_score": "number",
+            "critical_areas": ["string"],
+            "stable_areas": ["string"]
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "root_cause_analyzer",
+    "content": "For detected anomalies and performance issues, perform root cause analysis to identify the underlying factors. Apply causal inference techniques to distinguish symptoms from causes.",
+    "readFrom": ["anomaly_detector", "metric_collector"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "self_optimization",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "root_cause_analysis": {
+          "analyzed_anomalies": [
+            {
+              "anomaly_id": "string",
+              "root_causes": [
+                {
+                  "cause": "string",
+                  "confidence": "number",
+                  "evidence": ["string"],
+                  "affected_components": ["string"]
+                }
+              ],
+              "causal_graph": "string",
+              "verification_steps": ["string"]
+            }
+          ],
+          "system_weaknesses": [
+            {
+              "weakness_type": "string",
+              "description": "string",
+              "affected_metrics": ["string"],
+              "improvement_potential": "number"
+            }
+          ]
+        }
+      }
+    }
+  }
+]
+
+[
+  {
+    "agent": "problem_solver",
+    "content": "Analyze and solve the following problem: {problem_description}. Show all your reasoning steps explicitly.",
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "problem_understanding": "string",
+        "reasoning_steps": ["string"],
+        "solution": "string",
+        "confidence": "number"
+      }
+    },
+    "memory_id": "metacog_session"
+  },
+  {
+    "agent": "metacognitive_monitor",
+    "content": "Review the problem-solving process used by the problem_solver agent. Identify the reasoning patterns, assumptions made, potential cognitive biases, and key decision points in the solution process.",
+    "readFrom": ["problem_solver"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "metacog_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "reasoning_patterns": ["string"],
+        "explicit_assumptions": ["string"],
+        "implicit_assumptions": ["string"],
+        "potential_biases": [
+          {
+            "bias_type": "string",
+            "description": "string",
+            "evidence": "string",
+            "impact": "string"
+          }
+        ],
+        "key_decision_points": [
+          {
+            "decision": "string",
+            "alternatives_considered": ["string"],
+            "selection_rationale": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "counterfactual_explorer",
+    "content": "Explore counterfactual scenarios for the problem-solving process. What if different assumptions were made? What if different reasoning strategies were employed? How would the solution change?",
+    "readFrom": ["problem_solver", "metacognitive_monitor"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "metacog_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "counterfactual_scenarios": [
+          {
+            "altered_element": "string",
+            "alternative_approach": "string",
+            "projected_outcome": "string",
+            "comparison_to_original": "string"
+          }
+        ],
+        "most_promising_alternatives": ["string"],
+        "least_promising_alternatives": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "bias_detector",
+    "content": "Perform a detailed analysis of cognitive biases that may have influenced the solution process. For each potential bias, rate its likelihood and impact on the solution quality.",
+    "readFrom": ["problem_solver", "metacognitive_monitor"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "metacog_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "cognitive_biases": [
+          {
+            "bias_name": "string",
+            "description": "string",
+            "evidence_in_reasoning": "string",
+            "likelihood_score": "number",
+            "impact_score": "number",
+            "mitigation_strategy": "string"
+          }
+        ],
+        "overall_bias_assessment": "string"
+      }
+    }
+  },
+  {
+    "agent": "reasoning_optimizer",
+    "content": "Based on the metacognitive analysis, counterfactual exploration, and bias detection, propose an optimized reasoning process for solving this type of problem. Design a step-by-step framework that addresses the weaknesses identified.",
+    "readFrom": ["problem_solver", "metacognitive_monitor", "counterfactual_explorer", "bias_detector"],
+    "tools": ["planning:create_plan"],
+    "memory_id": "metacog_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "optimized_framework": {
+          "name": "string",
+          "purpose": "string",
+          "steps": [
+            {
+              "step_name": "string",
+              "description": "string",
+              "purpose": "string",
+              "implementation_guidance": "string"
+            }
+          ],
+          "bias_mitigation_techniques": ["string"],
+          "verification_methods": ["string"]
+        }
+      }
+    }
+  },
+  {
+    "agent": "solution_reviser",
+    "content": "Using the optimized reasoning framework, revisit the original problem and develop a revised solution. Compare this solution to the original and highlight key improvements.",
+    "readFrom": ["problem_solver", "reasoning_optimizer"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "metacog_session",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Problem Restatement",
+        "Optimized Reasoning Process",
+        "Revised Solution",
+        "Comparison to Original Solution",
+        "Key Improvements",
+        "Metacognitive Insights"
+      ]
+    }
+  }
+]
+

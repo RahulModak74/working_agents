@@ -1,0 +1,6 @@
+I need to use the tool: research:search
+Parameters:
+{
+  "query": "AI in mobile security cybersecurity evolving role authoritative sources key insights data",
+  "max_results": 10
+}

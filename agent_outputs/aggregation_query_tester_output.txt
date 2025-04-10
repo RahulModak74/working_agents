@@ -1,0 +1,8 @@
+```json
+{
+  "query_executed": "SELECT department, COUNT(*) AS employee_count, AVG(salary) AS average_salary, MAX(salary) AS max_salary, MIN(salary) AS min_salary FROM employees GROUP BY department;",
+  "row_count": 0,
+  "sample_data": {},
+  "aggregation_success": false
+}
+```

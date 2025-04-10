@@ -1,0 +1,156 @@
+[
+  {
+    "agent": "data_analyzer",
+    "content": "Analyze the provided customer sales dataset. Create a comprehensive data profile including statistical summaries, correlations, and distributions of key variables. Identify potential target variables for both classification and regression tasks, and recommend features that would be most predictive for each task.",
+    "file": true,
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "data_summary": {
+          "rows": "number",
+          "columns": "number",
+          "missing_values": "object",
+          "data_types": "object"
+        },
+        "potential_targets": {
+          "classification": ["string"],
+          "regression": ["string"]
+        },
+        "recommended_features": ["string"],
+        "correlation_insights": "string",
+        "preprocessing_recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "churn_model_trainer",
+    "content": "Train a classification model to predict customer churn using the 'churn' column as the target. Try both Random Forest and Gradient Boosting algorithms, and perform hyperparameter tuning to find the best model. Use 80% of the data for training and 20% for testing. Handle missing values and categorical features appropriately.",
+    "readFrom": ["data_analyzer"],
+    "file": true,
+    "tools": ["ml:train_model", "ml:get_available_algorithms"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "model_id": "string",
+        "algorithm": "string",
+        "metrics": "object",
+        "best_params": "object",
+        "feature_importance": "object",
+        "training_summary": "string"
+      }
+    }
+  },
+  {
+    "agent": "sales_model_trainer",
+    "content": "Train a regression model to predict 'sales_amount' using the numerical and categorical features identified by the data analyzer. Try both Random Forest and Gradient Boosting regressor algorithms. Perform hyperparameter tuning to optimize for RMSE (Root Mean Squared Error).",
+    "readFrom": ["data_analyzer"],
+    "file": true,
+    "tools": ["ml:train_model", "ml:get_available_algorithms"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "model_id": "string",
+        "algorithm": "string",
+        "metrics": "object",
+        "best_params": "object",
+        "feature_importance": "object",
+        "training_summary": "string"
+      }
+    }
+  },
+  {
+    "agent": "customer_segmentation_trainer",
+    "content": "Train a classification model to predict 'customer_type' (which has three categories: standard, premium, and enterprise) using the most relevant features. Try Random Forest, Gradient Boosting, and SVC algorithms to find the best model. Account for class imbalance in your approach.",
+    "readFrom": ["data_analyzer"],
+    "file": true,
+    "tools": ["ml:train_model", "ml:get_available_algorithms"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "model_id": "string",
+        "algorithm": "string",
+        "metrics": "object",
+        "best_params": "object",
+        "feature_importance": "object",
+        "training_summary": "string"
+      }
+    }
+  },
+  {
+    "agent": "model_evaluator",
+    "content": "Evaluate all three trained models using cross-validation. For each model, provide a detailed analysis of performance, including confusion matrices for classification models and residual analysis for the regression model. Compare the models to baseline methods and suggest areas for improvement.",
+    "readFrom": ["churn_model_trainer", "sales_model_trainer", "customer_segmentation_trainer"],
+    "file": true,
+    "tools": ["ml:evaluate_model", "ml:get_model_info"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "churn_model_evaluation": {
+          "cross_validation": "object",
+          "performance_analysis": "string"
+        },
+        "sales_model_evaluation": {
+          "cross_validation": "object",
+          "performance_analysis": "string"
+        },
+        "customer_type_model_evaluation": {
+          "cross_validation": "object",
+          "performance_analysis": "string"
+        },
+        "comparative_analysis": "string",
+        "improvement_recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "prediction_demonstrator",
+    "content": "Demonstrate the use of all three models for making predictions on new data. Create sample scenarios for each model and explain how the predictions would be used in a business context. Include examples of how these models could be integrated into a customer analytics dashboard.",
+    "readFrom": ["churn_model_trainer", "sales_model_trainer", "customer_segmentation_trainer", "model_evaluator"],
+    "file": true,
+    "tools": ["ml:predict"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "churn_prediction_example": {
+          "scenario": "string",
+          "sample_input": "object",
+          "prediction": "object",
+          "interpretation": "string"
+        },
+        "sales_prediction_example": {
+          "scenario": "string",
+          "sample_input": "object",
+          "prediction": "object",
+          "interpretation": "string"
+        },
+        "customer_type_prediction_example": {
+          "scenario": "string",
+          "sample_input": "object",
+          "prediction": "object",
+          "interpretation": "string"
+        },
+        "business_applications": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "ml_insights_reporter",
+    "content": "Generate a comprehensive report on the machine learning analysis of the customer data. Synthesize all findings from the previous agents into a coherent narrative that explains the models, their performance, and their business applications. Include visualizations descriptions and actionable business recommendations.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Data Understanding",
+        "Modeling Approach",
+        "Churn Prediction Model",
+        "Sales Prediction Model",
+        "Customer Segmentation Model",
+        "Model Comparison",
+        "Business Applications",
+        "Implementation Roadmap",
+        "Conclusion and Recommendations"
+      ]
+    }
+  }
+]

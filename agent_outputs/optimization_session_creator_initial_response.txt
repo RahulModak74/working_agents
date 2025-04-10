@@ -1,0 +1,5 @@
+I need to use the tool: optimization:create_session
+Parameters:
+{
+  "pattern_id": "multi_objective"
+}

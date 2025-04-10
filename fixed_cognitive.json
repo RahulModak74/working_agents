@@ -1,0 +1,62 @@
+[
+  {
+    "agent": "cognitive_lister",
+    "content": "List all available cognitive planning patterns using the cognitive:list_patterns tool.",
+    "tools": ["cognitive:list_patterns"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "patterns": "object"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_session_creator",
+    "content": "Create a new cognitive planning session using the 'tree_of_thoughts' pattern. Be sure to explicitly pass pattern_id as the parameter name.",
+    "readFrom": ["cognitive_lister"],
+    "tools": ["cognitive:create_session"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "session_id": "string",
+        "pattern": "string",
+        "description": "string",
+        "stages": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "cognitive_status_checker",
+    "content": "Check the status of the created cognitive planning session. Use the session_id from the previous step.",
+    "readFrom": ["cognitive_session_creator"],
+    "tools": ["cognitive:get_status"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "session_id": "string",
+        "pattern": "string",
+        "status": "string",
+        "current_stage": "number",
+        "stages": ["string"],
+        "created_at": "number",
+        "results_available": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "diagnostic_summary",
+    "content": "Generate a comprehensive report on the cognitive tool testing results.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Diagnostic Summary",
+        "Tool Testing Results",
+        "Parameter Issues Identified",
+        "Recommendations"
+      ]
+    }
+  }
+]

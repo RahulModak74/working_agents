@@ -1,0 +1,167 @@
+
+[
+  {
+    "agent": "debate_moderator",
+    "content": "Frame the following topic for a structured debate: {topic_description}. Define the key positions, constraints, and evaluation criteria.",
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "topic": "string",
+        "key_questions": ["string"],
+        "positions": ["string"],
+        "rules": ["string"],
+        "evaluation_criteria": ["string"]
+      }
+    },
+    "memory_id": "debate_session"
+  },
+  {
+    "agent": "advocate_position_a",
+    "content": "Present the strongest possible arguments for position A on the topic, as framed by the moderator. Focus on evidence, reasoning, and addressing potential counterarguments.",
+    "readFrom": ["debate_moderator"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "debate_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "position": "string",
+        "key_arguments": [
+          {
+            "argument": "string",
+            "evidence": ["string"],
+            "reasoning": "string"
+          }
+        ],
+        "anticipated_counterarguments": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "advocate_position_b",
+    "content": "Present the strongest possible arguments for position B on the topic, as framed by the moderator. Focus on evidence, reasoning, and addressing potential counterarguments.",
+    "readFrom": ["debate_moderator", "advocate_position_a"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "debate_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "position": "string",
+        "key_arguments": [
+          {
+            "argument": "string",
+            "evidence": ["string"],
+            "reasoning": "string"
+          }
+        ],
+        "responses_to_position_a": [
+          {
+            "original_argument": "string",
+            "rebuttal": "string",
+            "evidence": ["string"]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "advocate_position_a_rebuttal",
+    "content": "Respond to the arguments and rebuttals presented by Position B. Strengthen your original arguments where needed and address the criticisms directly.",
+    "readFrom": ["advocate_position_a", "advocate_position_b"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "debate_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "responses_to_position_b": [
+          {
+            "original_argument": "string",
+            "rebuttal": "string",
+            "additional_evidence": ["string"]
+          }
+        ],
+        "strengthened_arguments": [
+          {
+            "original_argument": "string",
+            "strengthened_version": "string",
+            "new_evidence": ["string"]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "advocate_position_b_rebuttal",
+    "content": "Respond to the arguments and rebuttals presented by Position A. Strengthen your original arguments where needed and address the criticisms directly.",
+    "readFrom": ["advocate_position_b", "advocate_position_a_rebuttal"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "debate_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "responses_to_position_a": [
+          {
+            "original_argument": "string",
+            "rebuttal": "string",
+            "additional_evidence": ["string"]
+          }
+        ],
+        "strengthened_arguments": [
+          {
+            "original_argument": "string",
+            "strengthened_version": "string",
+            "new_evidence": ["string"]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "debate_critic",
+    "content": "Analyze the debate between Position A and Position B. Identify the strongest arguments on both sides, logical fallacies used, quality of evidence, and areas of potential agreement.",
+    "readFrom": ["advocate_position_a", "advocate_position_b", "advocate_position_a_rebuttal", "advocate_position_b_rebuttal"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "debate_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "strongest_arguments": {
+          "position_a": ["string"],
+          "position_b": ["string"]
+        },
+        "logical_fallacies": [
+          {
+            "agent": "string",
+            "argument": "string",
+            "fallacy_type": "string",
+            "explanation": "string"
+          }
+        ],
+        "evidence_quality": {
+          "position_a_score": "number",
+          "position_b_score": "number",
+          "explanation": "string"
+        },
+        "potential_synthesis": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "debate_synthesizer",
+    "content": "Create a final synthesis of the debate that acknowledges the strongest points from both sides and attempts to find a nuanced position that incorporates the best reasoning and evidence presented.",
+    "readFrom": ["debate_moderator", "advocate_position_a", "advocate_position_b", "advocate_position_a_rebuttal", "advocate_position_b_rebuttal", "debate_critic"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "debate_session",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Debate Summary",
+        "Key Points of Agreement",
+        "Fundamental Disagreements",
+        "Synthesized Position",
+        "Remaining Uncertainties",
+        "Recommendations"
+      ]
+    }
+  }
+]

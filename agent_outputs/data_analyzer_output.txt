@@ -1,0 +1,78 @@
+```json
+{
+  "data_summary": {
+    "rows": "approx. several thousand; preview shows ~30",
+    "columns": "26",
+    "missing_values": {
+      "region": "some missing",
+      "feature_0 to feature_14": "sporadic missing entries",
+      "purchase_quarter": "occasional missing",
+      "purchase_day_of_week": "few missing",
+      "product_category": "some missing",
+      "payment_method": "some missing"
+    },
+    "data_types": {
+      "customer_id": "string",
+      "purchase_date": "datetime",
+      "purchase_month": "float",
+      "purchase_quarter": "float",
+      "purchase_day_of_week": "float",
+      "product_category": "string",
+      "region": "string",
+      "payment_method": "string",
+      "feature_0 to feature_14": "float",
+      "customer_type": "string",
+      "churn": "string (yes/no)",
+      "sales_amount": "float"
+    }
+  },
+  "potential_targets": {
+    "classification": [
+      "churn",
+      "customer_type",
+      "product_category",
+      "payment_method",
+      "region"
+    ],
+    "regression": [
+      "sales_amount"
+    ]
+  },
+  "recommended_features": [
+    "purchase_month",
+    "purchase_quarter",
+    "purchase_day_of_week",
+    "product_category",
+    "region",
+    "payment_method",
+    "feature_0",
+    "feature_1",
+    "feature_2",
+    "feature_3",
+    "feature_4",
+    "feature_5",
+    "feature_6",
+    "feature_7",
+    "feature_8",
+    "feature_9",
+    "feature_10",
+    "feature_11",
+    "feature_12",
+    "feature_13",
+    "feature_14",
+    "customer_type"
+  ],
+  "correlation_insights": "Features feature_0 through feature_14 show varied scales and distributions, with some exhibiting strong linear relationships with sales_amount, indicating their utility in regression modeling. Churn correlates with several numerical features, regional and categorical differences, and likely temporal patterns (purchase_month/quarter). Categorical variables like product_category, region, and payment_method may influence customer behavior and sales. Some clusters of features may be collinear, as seen with negative and positive values in features sharing similar scales. Overall, sales_amount likely correlates most strongly with engineered numerical features; churn with categorical and numerical predictors combined.",
+  "preprocessing_recommendations": [
+    "Impute missing categorical values using mode or a new category 'unknown'.",
+    "Impute missing numerical features with mean/median or advanced multivariate methods.",
+    "Encode categorical variables via one-hot or target encoding based on modeling task.",
+    "Normalize or standardize numerical features since they contain outliers and varying scales.",
+    "Derive additional time-based features from purchase_date such as seasonality indicators.",
+    "Handle collinearity by removing or combining highly correlated feature pairs.",
+    "Balance classes if target variables like churn are imbalanced.",
+    "Consider feature selection or dimensionality reduction to reduce high feature count.",
+    "Convert churn from string to binary label for classification tasks."
+  ]
+}
+```

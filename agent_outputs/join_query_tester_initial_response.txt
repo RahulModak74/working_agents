@@ -1,0 +1,5 @@
+I need to use the tool: sql:query
+Parameters:
+{
+  "query": "SELECT * FROM information_schema.tables WHERE table_schema = 'public';"
+}

@@ -1,0 +1,7 @@
+I need to use the tool: cognitive:create_session
+Parameters:
+{
+  "topic": "Cyber security evolving role with AI",
+  "context": "Exploring the integration, challenges, opportunities, and future directions of AI in cybersecurity",
+  "approach_pattern": "multidimensional exploration with iterative hypothesis generation and validation"
+}

@@ -1,0 +1,28 @@
+
+==== API CALL AT 2025-04-10 16:22:57 ====
+PROMPT:
+List all available cognitive planning patterns to identify the optimal approach for analyzing our SAP data. Focus on patterns that allow for structured exploration of multiple solution paths, especially those suited for business optimization in the context of data quality challenges.
+
+### Response Format Instructions:
+You MUST respond with a valid JSON object exactly matching this schema:
+```json
+{
+  "status": "string",
+  "patterns": "object",
+  "recommendation": "string",
+  "reasoning": "string"
+}
+```
+
+Returning properly formatted JSON is CRITICAL. Do not include any explanations or text outside the JSON object.
+
+You have access to these tools: cognitive:list_patterns
+
+==== API RESPONSE ====
+I need to use the tool: cognitive:list_patterns
+Parameters:
+{
+  "focus": "cognitive planning patterns",
+  "criteria": "structured exploration, multiple solution paths, business optimization, SAP data analysis, data quality challenges"
+}
+

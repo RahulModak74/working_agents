@@ -1,0 +1,7 @@
+```json
+{
+  "status": "error",
+  "message": "Cannot submit test result due to missing session_id and agent_name from previous steps.",
+  "session_status": "invalid"
+}
+```

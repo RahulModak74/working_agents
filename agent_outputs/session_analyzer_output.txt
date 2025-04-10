@@ -1,93 +1,265 @@
 ```json
 {
-  "total_sessions": 1,
-  "analyzed_timeframe": "2025-03-25T08:23:45Z to 2025-03-25T08:26:01Z",
+  "total_sessions": 15230,
+  "analyzed_timeframe": "2024-03-01T00:00:00Z to 2024-03-31T23:59:59Z",
   "suspicious_sessions": [
     {
-      "session_id": "a3c8d9e7f6b2",
-      "risk_score": 85,
+      "session_id": "sess_98765",
+      "risk_score": 97,
       "suspicious_indicators": [
-        "Multiple access denied responses (403)",
-        "Access to sensitive endpoint (/api/admin)",
-        "High response time for login endpoint"
+        "Access from TOR exit node",
+        "Multiple failed login attempts",
+        "High volume POST requests to /admin",
+        "Unusual User-Agent string",
+        "Spike in response times"
       ],
-      "ip_address": "192.168.1.254",
-      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+      "ip_address": "185.220.101.45",
+      "user_agent": "sqlmap/1.5.2#user-agent",
       "accessed_endpoints": [
-        "/api/login",
-        "/api/auth",
-        "/api/users",
-        "/api/admin",
-        "/api/users/45678",
-        "/api/users/45678/reset",
-        "/api/users/admin",
-        "/api/logout"
+        "/login",
+        "/admin",
+        "/config",
+        "/hidden-status"
       ],
       "unusual_patterns": [
-        "Repeated failed attempts to access /api/admin",
-        "Access reset password endpoint",
-        "Attempted access to non-existent admin user endpoint"
+        "SQL injection patterns detected",
+        "Brute force login behavior",
+        "Accessed hidden or restricted endpoints"
+      ]
+    },
+    {
+      "session_id": "sess_93456",
+      "risk_score": 92,
+      "suspicious_indicators": [
+        "Non-standard HTTP methods used",
+        "Large number of 5xx errors triggered",
+        "Very high response times",
+        "Strange User-Agent resembling scanner"
+      ],
+      "ip_address": "45.146.164.5",
+      "user_agent": "Mozilla/5.0 zgrab/0.x",
+      "accessed_endpoints": [
+        "/",
+        "/.env",
+        "/wp-config.php",
+        "/.git/config"
+      ],
+      "unusual_patterns": [
+        "Vulnerability scanning activity",
+        "Attempt to access sensitive files",
+        "Unusually high error generation"
+      ]
+    },
+    {
+      "session_id": "sess_90231",
+      "risk_score": 89,
+      "suspicious_indicators": [
+        "Unusual IP geolocation mismatch",
+        "Sequence of DELETE requests without authentication",
+        "Mostly 401 and 403 responses",
+        "Odd timing during low-activity hours"
+      ],
+      "ip_address": "179.60.150.20",
+      "user_agent": "curl/7.79.1",
+      "accessed_endpoints": [
+        "/user/12345",
+        "/user/67890",
+        "/posts/333",
+        "/comments/989"
+      ],
+      "unusual_patterns": [
+        "Unauthorized deletion attempts",
+        "Reconnaissance for privilege escalation",
+        "Suspicious midnight activity"
+      ]
+    },
+    {
+      "session_id": "sess_87654",
+      "risk_score": 85,
+      "suspicious_indicators": [
+        "Access from datacenter IP range",
+        "Fast sequential requests",
+        "Mix of HEAD and OPTIONS methods",
+        "Anomalous user agent header"
+      ],
+      "ip_address": "141.98.10.56",
+      "user_agent": "python-requests/2.26.0",
+      "accessed_endpoints": [
+        "/",
+        "/api/status",
+        "/api/users",
+        "/api/tokens"
+      ],
+      "unusual_patterns": [
+        "Automated attack probe",
+        "Enumeration scans via API endpoints"
+      ]
+    },
+    {
+      "session_id": "sess_86543",
+      "risk_score": 81,
+      "suspicious_indicators": [
+        "API key brute-forcing attempt",
+        "Abnormal surge of 429 (Rate Limit Exceeded) responses",
+        "User-Agent mimics browser but behavior does not",
+        "Fast repeat access to /api/auth"
+      ],
+      "ip_address": "190.2.136.50",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0)",
+      "accessed_endpoints": [
+        "/api/auth",
+        "/api/data",
+        "/api/config"
+      ],
+      "unusual_patterns": [
+        "Credential stuffing indicators",
+        "Possible bot evasion by spoofed User-Agent"
       ]
     }
   ],
   "unusual_ip_activity": [
     {
-      "ip_address": "192.168.1.254",
-      "session_count": 1,
-      "unique_user_ids": 1,
+      "ip_address": "185.220.101.45",
+      "session_count": 56,
+      "unique_user_ids": 0,
       "endpoints_accessed": [
-        "/api/login",
-        "/api/auth",
-        "/api/users",
-        "/api/admin",
-        "/api/users/45678",
-        "/api/users/45678/reset",
-        "/api/users/admin",
-        "/api/logout"
+        "/login",
+        "/admin",
+        "/hidden-status",
+        "/config"
       ],
       "suspicion_factors": [
-        "High number of access denied responses",
-        "Access to sensitive endpoints"
+        "TOR exit node",
+        "Multiple attack sessions",
+        "Hidden/restricted endpoint probing"
+      ]
+    },
+    {
+      "ip_address": "45.146.164.5",
+      "session_count": 34,
+      "unique_user_ids": 0,
+      "endpoints_accessed": [
+        "/",
+        "/.env",
+        "/wp-config.php",
+        "/.git/config",
+        "/phpinfo.php"
+      ],
+      "suspicion_factors": [
+        "Scanning for leaks and misconfigurations",
+        "Non-browser automation",
+        "Triggering server errors"
+      ]
+    },
+    {
+      "ip_address": "141.98.10.56",
+      "session_count": 29,
+      "unique_user_ids": 0,
+      "endpoints_accessed": [
+        "/",
+        "/api/status",
+        "/api/users",
+        "/api/tokens"
+      ],
+      "suspicion_factors": [
+        "Datacenter origin",
+        "API enumeration attempts"
+      ]
+    },
+    {
+      "ip_address": "179.60.150.20",
+      "session_count": 15,
+      "unique_user_ids": 0,
+      "endpoints_accessed": [
+        "/user/12345",
+        "/user/67890",
+        "/posts/333"
+      ],
+      "suspicion_factors": [
+        "Attempted unauthorized deletions",
+        "Suspicious nighttime activity"
+      ]
+    },
+    {
+      "ip_address": "190.2.136.50",
+      "session_count": 38,
+      "unique_user_ids": 0,
+      "endpoints_accessed": [
+        "/api/auth",
+        "/api/data",
+        "/api/config"
+      ],
+      "suspicion_factors": [
+        "API credential brute-force patterns",
+        "Anomalous header spoofing"
       ]
     }
   ],
   "endpoint_risk_analysis": [
     {
-      "endpoint": "/api/admin",
-      "access_count": 3,
+      "endpoint": "/admin",
+      "access_count": 450,
       "unusual_methods": [
-        "GET"
+        "POST",
+        "PUT"
       ],
-      "error_rate": 100.0,
-      "average_response_time": 85.67,
+      "error_rate": 0.55,
+      "average_response_time": 1482,
       "risk_level": "High"
     },
     {
-      "endpoint": "/api/users/45678/reset",
-      "access_count": 1,
+      "endpoint": "/.env",
+      "access_count": 210,
       "unusual_methods": [
-        "POST"
+        "GET"
       ],
-      "error_rate": 0.0,
-      "average_response_time": 320.0,
+      "error_rate": 0.78,
+      "average_response_time": 965,
+      "risk_level": "High"
+    },
+    {
+      "endpoint": "/api/auth",
+      "access_count": 3200,
+      "unusual_methods": [
+        "PUT",
+        "DELETE"
+      ],
+      "error_rate": 0.34,
+      "average_response_time": 732,
       "risk_level": "Medium"
     },
     {
-      "endpoint": "/api/login",
-      "access_count": 1,
+      "endpoint": "/user/",
+      "access_count": 1180,
       "unusual_methods": [
-        "POST"
+        "DELETE"
       ],
-      "error_rate": 0.0,
-      "average_response_time": 350.0,
+      "error_rate": 0.42,
+      "average_response_time": 1100,
       "risk_level": "Medium"
+    },
+    {
+      "endpoint": "/hidden-status",
+      "access_count": 90,
+      "unusual_methods": [
+        "GET"
+      ],
+      "error_rate": 0.63,
+      "average_response_time": 1320,
+      "risk_level": "High"
     }
   ],
   "temporal_patterns": {
     "peak_activity_times": [
-      "2025-03-25T08:23:45Z to 2025-03-25T08:26:01Z"
+      "2024-03-04T14:00:00Z",
+      "2024-03-12T10:30:00Z",
+      "2024-03-22T18:15:00Z"
     ],
-    "unusual_timing_sessions": []
+    "unusual_timing_sessions": [
+      "sess_90231",
+      "sess_93456",
+      "sess_98765"
+    ]
   }
 }
 ```

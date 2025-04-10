@@ -1,0 +1,7 @@
+```json
+{
+  "status": "error",
+  "database_path": "",
+  "message": "Failed to create database due to incorrect tool usage: missing required argument 'code'."
+}
+```

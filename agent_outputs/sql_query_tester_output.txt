@@ -1,0 +1,9 @@
+```json
+{
+  "status": "error",
+  "query_executed": "SELECT * FROM users",
+  "row_count": 0,
+  "results": [],
+  "test_result": "Query failed due to database connection issue: 'Not connected to a database'. Unable to retrieve data from the users table."
+}
+```

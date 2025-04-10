@@ -1,0 +1,395 @@
+[
+  {
+    "agent": "cognitive_pattern_explorer",
+    "content": "List all available cognitive planning patterns to identify the optimal approach for this task.",
+    "tools": ["cognitive:list_patterns"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "patterns": "object",
+        "recommendation": "string",
+        "reasoning": "string"
+      }
+    }
+  },
+  {
+    "agent": "optimization_pattern_explorer",
+    "content": "List all available optimization patterns to enhance our workflow efficiency.",
+    "tools": ["optimization:list_patterns"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "patterns": "object",
+        "recommendation": "string",
+        "reasoning": "string"
+      }
+    }
+  },
+  {
+    "agent": "memory_pattern_explorer",
+    "content": "List all available memory system patterns to determine how to structure our information storage.",
+    "tools": ["memory:list_patterns"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "patterns": "object",
+        "recommendation": "string",
+        "reasoning": "string"
+      }
+    }
+  },
+  {
+    "agent": "system_architect",
+    "content": "Design a comprehensive system architecture for this task by selecting the optimal cognitive, optimization, and memory patterns based on the previous explorations.",
+    "readFrom": ["cognitive_pattern_explorer", "optimization_pattern_explorer", "memory_pattern_explorer"],
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "architecture": {
+          "cognitive_pattern": {
+            "selected": "string",
+            "justification": "string"
+          },
+          "optimization_pattern": {
+            "selected": "string",
+            "justification": "string"
+          },
+          "memory_pattern": {
+            "selected": "string",
+            "justification": "string"
+          },
+          "integration_approach": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "database_explorer",
+    "content": "Explore the available database tables to understand what data we have access to for our analysis.",
+    "tools": ["sql:tables"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "database_name": "string",
+        "available_tables": ["string"],
+        "suggested_tables_for_analysis": ["string"],
+        "analysis_approach": "string"
+      }
+    }
+  },
+  {
+    "agent": "schema_analyzer",
+    "content": "Analyze the schema of the most relevant tables to understand their structure and relationships.",
+    "readFrom": ["database_explorer"],
+    "tools": ["sql:schema"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "tables": [
+          {
+            "table_name": "string",
+            "columns": ["string"],
+            "data_types": "object",
+            "primary_keys": ["string"],
+            "foreign_keys": ["string"]
+          }
+        ],
+        "relationships": ["string"],
+        "data_insights": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "sql_data_retriever",
+    "content": "Execute SQL queries to retrieve the necessary data based on our understanding of the database schema.",
+    "readFrom": ["schema_analyzer"],
+    "tools": ["sql:query"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "queries_executed": ["string"],
+        "record_counts": "object",
+        "data_summary": "string",
+        "sample_results": "object"
+      }
+    }
+  },
+  {
+    "agent": "data_profiler",
+    "content": "Analyze any provided CSV data file to understand its structure, quality, and key statistics. Identify columns, data types, missing values, and potential issues.",
+    "file": "data.csv",
+    "tools": ["repl"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "columns": ["string"],
+        "row_count": "number",
+        "data_types": "object",
+        "missing_values": "object",
+        "summary_statistics": "object",
+        "data_quality_issues": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "integrated_data_analyzer",
+    "content": "Integrate and analyze data from both SQL database sources and CSV files. Combine insights to provide a comprehensive understanding of the data landscape.",
+    "readFrom": ["sql_data_retriever", "data_profiler"],
+    "tools": ["repl", "planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "integrated_data_approach": "string",
+        "key_metrics": "object",
+        "patterns": ["string"],
+        "correlations": ["object"],
+        "segments": ["object"],
+        "insights": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "data_visualizer",
+    "content": "Create data visualizations based on the analysis results. Generate charts and plots to illustrate key patterns and relationships in the data.",
+    "readFrom": ["integrated_data_analyzer"],
+    "tools": ["repl"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "visualizations": ["object"],
+        "interpretation": ["string"],
+        "key_visual_insights": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "cognitive_session_creator",
+    "content": "Create a cognitive planning session using the pattern selected in the architecture. Use pattern_id parameter explicitly.",
+    "readFrom": ["system_architect"],
+    "tools": ["cognitive:create_session"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "session_id": "string",
+        "pattern": "string",
+        "description": "string",
+        "stages": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "optimization_session_creator",
+    "content": "Create an optimization session using the pattern selected in the architecture. Use pattern_id parameter explicitly.",
+    "readFrom": ["system_architect"],
+    "tools": ["optimization:create_session"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "session_id": "string",
+        "pattern": "string",
+        "description": "string",
+        "stages": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "memory_system_creator",
+    "content": "Create a memory system using the pattern selected in the architecture. Use pattern_id parameter explicitly.",
+    "readFrom": ["system_architect"],
+    "tools": ["memory:create_system"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "system_id": "string",
+        "pattern": "string",
+        "description": "string",
+        "stages": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "sql_advanced_analyzer",
+    "content": "Perform advanced analytical SQL queries to extract deeper insights based on our initial data exploration. Use complex joins, aggregations, and window functions as needed.",
+    "readFrom": ["schema_analyzer", "sql_data_retriever"],
+    "tools": ["sql:query"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "advanced_queries": ["string"],
+        "analytical_results": "object",
+        "temporal_patterns": ["string"],
+        "statistical_insights": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "data_insights_generator",
+    "content": "Generate data-driven insights based on all analysis and visualization results. Identify key findings, trends, and actionable recommendations.",
+    "readFrom": ["integrated_data_analyzer", "data_visualizer", "sql_advanced_analyzer"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "key_findings": ["string"],
+        "trends": ["string"],
+        "anomalies": ["string"],
+        "recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "web_researcher",
+    "content": "Research relevant information using browser tools and store findings in our memory system.",
+    "readFrom": ["memory_system_creator", "data_insights_generator"],
+    "tools": ["browser:create", "browser:navigate", "browser:get_content", "memory:store_operation"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "research_summary": "string",
+        "key_findings": ["string"],
+        "sources": ["string"],
+        "memory_storage_status": "string"
+      }
+    }
+  },
+  {
+    "agent": "web_processor",
+    "content": "Process web content to extract structured information and insights.",
+    "readFrom": ["web_researcher"],
+    "tools": ["research:analyze_content"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "analysis_results": "object",
+        "key_concepts": ["string"],
+        "insights": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "citation_manager",
+    "content": "Create proper citations for all sources used in the research.",
+    "readFrom": ["web_researcher", "web_processor"],
+    "tools": ["research:cite_sources"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "citations": ["string"],
+        "bibliography": "string"
+      }
+    }
+  },
+  {
+    "agent": "data_exporter",
+    "content": "Export processed analytical results back to the database for persistence and future use.",
+    "readFrom": ["integrated_data_analyzer", "data_insights_generator"],
+    "tools": ["sql:query", "repl"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "export_queries": ["string"],
+        "exported_tables": ["string"],
+        "record_counts": "object",
+        "persistence_status": "string"
+      }
+    }
+  },
+  {
+    "agent": "dynamic_workflow_planner",
+    "type": "dynamic",
+    "initial_prompt": "Based on the data analysis and research so far, determine which specialized analysis should be performed next: 'predictive_modeling', 'segmentation_analysis', 'anomaly_investigation', or 'database_reporting'.",
+    "readFrom": ["data_insights_generator", "web_processor", "sql_advanced_analyzer"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_approach": "string",
+        "justification": "string"
+      }
+    },
+    "actions": {
+      "predictive_modeling": {
+        "agent": "predictive_modeler",
+        "content": "Develop predictive models based on the analyzed data to forecast future trends and outcomes.",
+        "readFrom": ["integrated_data_analyzer", "data_insights_generator", "sql_advanced_analyzer"],
+        "tools": ["repl", "planning:chain_of_thought"]
+      },
+      "segmentation_analysis": {
+        "agent": "segmentation_analyst",
+        "content": "Perform detailed segmentation analysis to identify distinct groups and patterns within the data.",
+        "readFrom": ["integrated_data_analyzer", "data_insights_generator", "sql_advanced_analyzer"],
+        "tools": ["repl", "planning:chain_of_thought", "sql:query"]
+      },
+      "anomaly_investigation": {
+        "agent": "anomaly_investigator",
+        "content": "Investigate anomalies and outliers detected in the data to understand their causes and implications.",
+        "readFrom": ["integrated_data_analyzer", "data_insights_generator", "sql_advanced_analyzer"],
+        "tools": ["repl", "planning:chain_of_thought", "sql:query"]
+      },
+      "database_reporting": {
+        "agent": "database_reporter",
+        "content": "Create comprehensive database reports with key metrics, trends, and insights for stakeholders.",
+        "readFrom": ["integrated_data_analyzer", "data_insights_generator", "sql_advanced_analyzer"],
+        "tools": ["sql:query", "repl", "planning:chain_of_thought"]
+      }
+    }
+  },
+  {
+    "agent": "cognitive_insights_generator",
+    "content": "Generate insights using our cognitive session and all gathered information.",
+    "readFrom": ["cognitive_session_creator", "data_insights_generator", "web_processor", "dynamic_workflow_planner"],
+    "tools": ["cognitive:get_results", "cognitive:transform_for_research"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "insights": ["string"],
+        "connections": ["string"],
+        "recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "optimization_results_analyzer",
+    "content": "Analyze optimization results to identify process improvements.",
+    "readFrom": ["optimization_session_creator", "data_insights_generator", "web_processor"],
+    "tools": ["optimization:get_results"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "optimization_insights": "object",
+        "efficiency_gains": ["string"],
+        "bottlenecks": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "comprehensive_report_creator",
+    "content": "Create a comprehensive report that integrates all findings, insights, and recommendations from both data analysis, SQL database operations, and research.",
+    "readFrom": ["*"],
+    "tools": ["research:format_citations", "planning:chain_of_thought"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Introduction",
+        "Methodology",
+        "Database Structure and Data Overview",
+        "Data Analysis Findings",
+        "Research Findings",
+        "Integrated Insights",
+        "Recommendations",
+        "Database Optimization Opportunities",
+        "Conclusion",
+        "Appendix: Data Visualizations",
+        "References"
+      ]
+    }
+  }
+]

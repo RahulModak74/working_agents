@@ -1,0 +1,199 @@
+[
+  {
+    "agent": "feedback_architect",
+    "content": "Design a hierarchical feedback system for the agent network. Define feedback types, collection methods, evaluation criteria, and propagation mechanisms across different levels of the system.",
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "feedback_framework": {
+          "feedback_levels": [
+            {
+              "level_name": "string",
+              "scope": "string",
+              "feedback_types": ["string"],
+              "collection_methods": ["string"]
+            }
+          ],
+          "feedback_flows": [
+            {
+              "source_level": "string",
+              "target_level": "string",
+              "propagation_mechanism": "string",
+              "transformation_rules": ["string"]
+            }
+          ],
+          "evaluation_criteria": [
+            {
+              "criterion_name": "string",
+              "description": "string",
+              "measurement_method": "string",
+              "weight": "number"
+            }
+          ]
+        }
+      }
+    },
+    "memory_id": "feedback_system"
+  },
+  {
+    "agent": "micro_feedback_collector",
+    "content": "Implement the collection of micro-level feedback within the system. Monitor individual agent operations, atomic tasks, and low-level performance indicators.",
+    "readFrom": ["feedback_architect"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "feedback_system",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "micro_feedback": {
+          "agent_feedback": [
+            {
+              "agent_id": "string",
+              "operation_id": "string",
+              "metrics": {},
+              "success_indicators": ["string"],
+              "failure_indicators": ["string"],
+              "timestamp": "string"
+            }
+          ],
+          "task_feedback": [
+            {
+              "task_id": "string",
+              "completion_status": "string",
+              "quality_metrics": {},
+              "efficiency_metrics": {},
+              "timestamp": "string"
+            }
+          ],
+          "aggregated_stats": {
+            "total_operations": "number",
+            "success_rate": "number",
+            "average_response_time": "number",
+            "resource_utilization": "number"
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "meso_feedback_collector",
+    "content": "Implement the collection of meso-level feedback within the system. Monitor agent interactions, workflow segments, and mid-level performance indicators.",
+    "readFrom": ["feedback_architect", "micro_feedback_collector"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "feedback_system",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "meso_feedback": {
+          "agent_interaction_feedback": [
+            {
+              "interaction_id": "string",
+              "participating_agents": ["string"],
+              "interaction_pattern": "string",
+              "effectiveness_metrics": {},
+              "collaboration_quality": "number"
+            }
+          ],
+          "workflow_segment_feedback": [
+            {
+              "segment_id": "string",
+              "segment_type": "string",
+              "input_quality": "number",
+              "output_quality": "number",
+              "processing_efficiency": "number"
+            }
+          ],
+          "propagated_micro_insights": [
+            {
+              "source_feedback_id": "string",
+              "derived_insight": "string",
+              "relevance_score": "number"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "agent": "macro_feedback_collector",
+    "content": "Implement the collection of macro-level feedback within the system. Monitor overall system performance, complete workflows, and high-level business outcomes.",
+    "readFrom": ["feedback_architect", "meso_feedback_collector"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "feedback_system",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "macro_feedback": {
+          "system_performance": {
+            "overall_success_rate": "number",
+            "system_throughput": "number",
+            "resource_efficiency": "number",
+            "scaling_performance": "number"
+          },
+          "workflow_outcomes": [
+            {
+              "workflow_id": "string",
+              "business_objectives_met": ["string"],
+              "quality_assessment": "number",
+              "time_efficiency": "number",
+              "cost_efficiency": "number"
+            }
+          ],
+          "user_satisfaction": {
+            "satisfaction_score": "number",
+            "key_positive_aspects": ["string"],
+            "key_negative_aspects": ["string"]
+          },
+          "propagated_meso_insights": [
+            {
+              "source_feedback_id": "string",
+              "derived_insight": "string",
+              "system_impact": "string"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "agent": "feedback_integrator",
+    "content": "Synthesize and integrate feedback from all levels of the hierarchy. Identify patterns, correlations, and causal relationships across micro, meso, and macro levels.",
+    "readFrom": ["micro_feedback_collector", "meso_feedback_collector", "macro_feedback_collector"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "feedback_system",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "integrated_feedback": {
+          "cross_level_patterns": [
+            {
+              "pattern_name": "string",
+              "description": "string",
+              "involved_levels": ["string"],
+              "supporting_evidence": ["string"],
+              "significance": "number"
+            }
+          ],
+          "causal_relationships": [
+            {
+              "cause_level": "string",
+              "cause_factor": "string",
+              "effect_level": "string",
+              "effect_factor": "string",
+              "relationship_strength": "number",
+              "confidence": "number"
+            }
+          ],
+          "system_insights": [
+            {
+              "insight": "string",
+              "derived_from": ["string"],
+              "actionability": "number",
+              "potential_impact": "number"
+            }
+          ]
+        }
+      }
+    }
+  }
+]

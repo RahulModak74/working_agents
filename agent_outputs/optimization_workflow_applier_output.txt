@@ -1,0 +1,6 @@
+```json
+{
+  "status": "error",
+  "changes": {}
+}
+```

@@ -1,0 +1,6 @@
+I need to use the tool: react:create_session
+Parameters:
+{
+  "pattern_id": "sap_business_challenge_pattern_v1",
+  "problem_description": "Our SAP data analysis indicates multiple business challenges, notably influenced by limitations in data quality such as incomplete transaction records and inconsistent master data entries. It is crucial our plan acknowledges these factors. Furthermore, any proposed actions should be measured against industry benchmarks to ensure competitive alignment and realistic goal-setting within the manufacturing sector."
+}

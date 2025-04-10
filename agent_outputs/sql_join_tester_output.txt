@@ -1,0 +1,9 @@
+```json
+{
+  "status": "error",
+  "query_executed": "SELECT users.id AS user_id, users.name AS user_name, orders.id AS order_id, orders.product_id, orders.quantity FROM users INNER JOIN orders ON users.id = orders.user_id",
+  "row_count": 0,
+  "results": [],
+  "test_result": "Query failed due to database connection issue: 'Not connected to a database'. Unable to retrieve data from the users and orders tables."
+}
+```

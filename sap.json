@@ -1,0 +1,145 @@
+[
+  {
+    "agent": "agent1",
+    "content": "Please analyze the SalesOrders section of the sap_data.csv file. Focus only on sales order header data. Look for patterns, anomalies, and important metrics. Identify fields like SALESORDERID, CREATEDBY, CREATEDAT, PARTNERID, GROSSAMOUNT, NETAMOUNT, etc.",
+    "file": "sap_data.csv",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "order_count": "number",
+        "key_insights": "string"
+      }
+    },
+    "memory_id": "sap_analysis"
+  },
+  {
+    "agent": "agent2",
+    "content": "Please analyze the SalesOrderItems section of the sap_data.csv file. Focus only on sales order line item data. Identify relationships with the sales orders data from agent1. Look for fields like SALESORDERID, SALESORDERITEM, PRODUCTID, GROSSAMOUNT, NETAMOUNT, QUANTITY, etc.",
+    "file": "sap_data.csv",
+    "readFrom": ["agent1"],
+    "memory_id": "sap_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "item_count": "number",
+        "key_insights": "string"
+      }
+    }
+  },
+  {
+    "agent": "agent3",
+    "content": "Please analyze the BusinessPartners section of the sap_data.csv file. Focus only on business partner data. Identify how these partners relate to sales data analyzed previously. Look for fields like PARTNERID, PARTNERROLE, EMAILADDRESS, COMPANYNAME, etc.",
+    "file": "sap_data.csv",
+    "readFrom": ["agent1", "agent2"],
+    "memory_id": "sap_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "partner_count": "number",
+        "key_insights": "string"
+      }
+    }
+  },
+  {
+    "agent": "agent4",
+    "content": "Please analyze the Car_SupplyChainManagement section of the sap_data.csv file. Focus only on supply chain data. Identify connections to previously analyzed data. Look for fields like SupplierID, ProductID, CarMaker, CarModel, CustomerID, OrderID, ShipDate, etc.",
+    "file": "sap_data.csv",
+    "readFrom": ["agent1", "agent2", "agent3"],
+    "memory_id": "sap_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "record_count": "number",
+        "key_insights": "string"
+      }
+    }
+  },
+  {
+    "agent": "agent5",
+    "content": "Please analyze any remaining sections of the sap_data.csv file that might contain additional data (like 'final sap order items'). Compare this with the other data analyzed earlier and identify differences or additional insights.",
+    "file": "sap_data.csv",
+    "readFrom": ["agent1", "agent2", "agent3", "agent4"],
+    "memory_id": "sap_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "item_count": "number",
+        "key_insights": "string"
+      }
+    }
+  },
+  {
+    "agent": "agent6",
+    "content": "Please analyze the Sales Reports.docx document and identify which SAP reports would be most useful for analyzing the datasets we've reviewed so far from sap_data.csv.",
+    "file": "Sales Reports.docx",
+    "readFrom": ["agent1", "agent2", "agent3", "agent4", "agent5"],
+    "memory_id": "sap_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "useful_reports": ["string"],
+        "key_insights": "string"
+      }
+    }
+  },
+  {
+    "agent": "data_structure_analyzer",
+    "content": "Based on all analyses so far, provide a clear explanation of how the different data sections in sap_data.csv relate to each other. Identify key relationships, foreign keys, and data flow across the different data types.",
+    "readFrom": ["agent1", "agent2", "agent3", "agent4", "agent5"],
+    "memory_id": "sap_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "data_relationships": ["string"],
+        "key_fields": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on all data analyzed so far from sap_data.csv, determine which business area requires the most attention. Choose from: 'sales_optimization', 'customer_management', 'supply_chain', or 'order_processing'.",
+    "readFrom": ["agent1", "agent2", "agent3", "agent4", "agent5", "agent6", "data_structure_analyzer"],
+    "memory_id": "sap_analysis",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "action": "string",
+        "reasoning": "string",
+        "next_agent": "string"
+      }
+    },
+    "actions": {
+      "sales_optimization": {
+        "agent": "sales_analyst",
+        "content": "Provide 3 specific recommendations for optimizing sales processes based on the analyzed SAP data.",
+        "readFrom": ["agent1", "agent2", "agent5", "agent6", "data_structure_analyzer"]
+      },
+      "customer_management": {
+        "agent": "customer_analyst",
+        "content": "Provide 3 specific recommendations for improving customer relationships based on the analyzed SAP data.",
+        "readFrom": ["agent1", "agent3", "agent6", "data_structure_analyzer"]
+      },
+      "supply_chain": {
+        "agent": "supply_chain_analyst",
+        "content": "Provide 3 specific recommendations for enhancing supply chain efficiency based on the analyzed SAP data.",
+        "readFrom": ["agent2", "agent4", "agent5", "agent6", "data_structure_analyzer"]
+      },
+      "order_processing": {
+        "agent": "order_analyst",
+        "content": "Provide 3 specific recommendations for streamlining order processing based on the analyzed SAP data.",
+        "readFrom": ["agent1", "agent2", "agent5", "agent6", "data_structure_analyzer"]
+      }
+    }
+  },
+  {
+    "agent": "final_reporter",
+    "content": "Synthesize all previous analyses into a final SAP data report. Include key findings from each section of sap_data.csv, the priority business area identified, and consolidated recommendations.",
+    "readFrom": ["agent1", "agent2", "agent3", "agent4", "agent5", "agent6", "data_structure_analyzer", "dynamic_agent", "*"],
+    "memory_id": "sap_analysis",
+    "output_format": {
+      "type": "markdown",
+      "sections": ["Executive Summary", "Data Overview", "Key Findings", "Data Relationships", "Priority Area", "Recommendations", "Next Steps"]
+    }
+  }
+]

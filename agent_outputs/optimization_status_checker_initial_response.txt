@@ -1,0 +1,5 @@
+I need to use the tool: optimization:get_status
+Parameters:
+{
+  "session_id": "multi_objective_1744112619_6200"
+}

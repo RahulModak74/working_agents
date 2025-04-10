@@ -1,0 +1,8 @@
+```json
+{
+  "webpage_title": "Google",
+  "content_found": true,
+  "links_count": 25,
+  "browser_closed": true
+}
+```

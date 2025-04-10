@@ -1,0 +1,101 @@
+[
+  {
+    "agent": "data_preprocessor",
+    "content": "Analyze the provided dataset and return a summary of its structure, statistical properties, and recommended preprocessing steps for machine learning. Pay special attention to identifying potential target columns and features that would be most relevant for prediction.",
+    "file": true,
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "data_summary": {
+          "rows": "number",
+          "columns": "number",
+          "missing_values": "object",
+          "column_types": "object"
+        },
+        "potential_targets": ["string"],
+        "recommended_features": ["string"],
+        "preprocessing_recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "model_trainer",
+    "content": "Based on the data analysis, train both a classification and regression model. For classification, predict {classification_target} using the recommended features. For regression, predict {regression_target}. Use Random Forest for both tasks and perform hyperparameter tuning.",
+    "readFrom": ["data_preprocessor"],
+    "file": true,
+    "tools": ["ml:train_model", "ml:get_available_algorithms"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "classification_model": {
+          "model_id": "string",
+          "metrics": "object",
+          "best_params": "object"
+        },
+        "regression_model": {
+          "model_id": "string",
+          "metrics": "object",
+          "best_params": "object"
+        },
+        "training_summary": "string"
+      }
+    }
+  },
+  {
+    "agent": "model_evaluator",
+    "content": "Evaluate both trained models using cross-validation. Provide a detailed analysis of model performance, feature importance, and recommendations for improvement.",
+    "readFrom": ["model_trainer", "data_preprocessor"],
+    "file": true,
+    "tools": ["ml:evaluate_model", "ml:get_model_info"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "classification_evaluation": {
+          "cross_validation": "object",
+          "performance_analysis": "string"
+        },
+        "regression_evaluation": {
+          "cross_validation": "object",
+          "performance_analysis": "string"
+        },
+        "improvement_recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "prediction_agent",
+    "content": "Use the trained models to make predictions on the test data. Provide a sample of predictions and explanation of the results.",
+    "readFrom": ["model_trainer", "model_evaluator"],
+    "file": true,
+    "tools": ["ml:predict"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "classification_predictions": {
+          "sample": "object",
+          "analysis": "string"
+        },
+        "regression_predictions": {
+          "sample": "object",
+          "analysis": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "ml_report_generator",
+    "content": "Generate a comprehensive report on the machine learning analysis, including data summary, model selection, training results, evaluation metrics, and prediction insights.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Data Analysis",
+        "Model Training",
+        "Model Evaluation",
+        "Predictions",
+        "Recommendations"
+      ]
+    }
+  }
+]

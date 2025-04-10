@@ -1,0 +1,7 @@
+I need to use the tool: research:combined_search
+Parameters:
+{
+  "query": "Cybersecurity evolving role with AI, agentic AI, key concepts, main researchers, current state of development, emerging trends",
+  "num_results": 20,
+  "sources": ["academic_journals", "industry_reports", "preprints", "news", "expert_blogs"]
+}

@@ -1,0 +1,5 @@
+I need to use the tool: repl:execute
+Parameters:
+{
+  "command": "sqlite3 test_database.db '.databases'"
+}

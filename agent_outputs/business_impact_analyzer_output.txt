@@ -2,62 +2,78 @@
 {
   "impact_assessment": {
     "financial_impact": {
-      "estimated_range": "High: $1M - $5M",
-      "confidence": 85,
+      "estimated_range": "$500,000 - $5,000,000",
+      "confidence": 0.9,
       "contributing_factors": [
         "Potential data breach leading to regulatory fines",
-        "Loss of customer trust impacting revenue",
-        "Cost of incident response and mitigation"
+        "Loss of customer trust and possible churn",
+        "Incident response and remediation expenses",
+        "Operational downtime affecting revenue streams",
+        "Legal costs related to breach notifications and lawsuits"
       ]
     },
     "operational_impact": {
       "affected_systems": [
+        "Authentication servers",
+        "Administrative portals",
         "API endpoints",
-        "User management system"
+        "Database backends",
+        "Web application firewalls"
       ],
-      "estimated_downtime": "Up to 24 hours",
-      "service_degradation": "Significant degradation during mitigation"
+      "estimated_downtime": "6-24 hours in worst-case compromise scenario",
+      "service_degradation": "Severe performance degradation and intermittent service unavailability during and post-attack containment"
     },
     "reputational_impact": {
       "severity": "High",
       "affected_stakeholders": [
         "Customers",
         "Partners",
-        "Investors"
+        "Investors",
+        "Regulators",
+        "Media outlets"
       ],
-      "potential_media_exposure": "Likely, especially if data breach occurs"
+      "potential_media_exposure": "Widespread, with headlines of security breach and customer data compromise"
     },
     "compliance_impact": {
       "regulations_affected": [
         "GDPR",
-        "CCPA"
+        "CCPA",
+        "PCI DSS",
+        "SOX"
       ],
       "reporting_requirements": [
-        "Notification of breach to regulatory bodies",
-        "Disclosure to affected individuals"
+        "Breach notifications to data protection authorities within 72 hours",
+        "Customer notifications for data compromise",
+        "Disclosure in financial reports if material impact",
+        "Submission of incident details to payment processors (PCI compliance)"
       ],
-      "potential_penalties": "Up to 4% of global annual turnover or €20M, whichever is higher"
+      "potential_penalties": "Fines ranging from 2-4% of annual revenue, potential license or certification revocations"
     }
   },
   "risk_assessment": {
-    "inherent_risk": 85,
-    "residual_risk_with_action": 25,
-    "risk_reduction_percentage": 70
+    "inherent_risk": 0.9,
+    "residual_risk_with_action": 0.2,
+    "risk_reduction_percentage": 77.8
   },
   "cost_benefit_analysis": {
-    "implementation_costs": "$100K - $200K",
-    "risk_reduction_value": "$1M - $5M",
-    "roi_assessment": "Positive: High risk reduction relative to cost"
+    "implementation_costs": "Low to moderate (blocking malicious traffic via existing infrastructure with minimal overhead)",
+    "risk_reduction_value": "Avoidance of millions in direct losses, regulatory fines, and reputational damage",
+    "roi_assessment": "Highly favorable – immediate action significantly lowers risk at a fraction of potential loss cost"
   },
   "action_justification": {
-    "primary_justification": "Preventing unauthorized access to sensitive endpoints is critical to avoid potential financial, operational, reputational, and compliance impacts",
+    "primary_justification": "Coordinated, automated, multi-vector attacks with high confidence present an imminent and material threat; blocking malicious/unauthenticated automated traffic immediately is the most effective means to prevent unauthorized access, data breach, and operational disruptions.",
     "alternatives_considered": [
-      "Monitoring traffic without blocking"
+      "Passive monitoring and delay enforcement to collect more intelligence",
+      "Manual review of suspicious sessions prior to enforcement",
+      "Gradually escalating response (rate-limiting before blocking)"
     ],
     "decision_factors": [
-      "High confidence in identified threats",
-      "High severity and urgency of the threats",
-      "Significant risk reduction with blocking traffic"
+      "Critical severity and high confidence in threat origins",
+      "Exposure of sensitive files and endpoints with proven exploit patterns",
+      "Potential for rapid privilege escalation compromising core assets",
+      "Immediate blocking imposes minimal service impact for legitimate users",
+      "Urgency to comply with breach containment best practices",
+      "Cost-effectiveness of automated enforcement relative to potential damages"
     ]
   }
 }

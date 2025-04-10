@@ -2,73 +2,228 @@
 {
   "http_method_anomalies": [
     {
-      "endpoint": "/api/admin",
-      "expected_methods": [
-        "POST"
-      ],
-      "unusual_methods": [
-        "GET"
-      ],
-      "sessions_involved": [
-        "a3c8d9e7f6b2"
-      ],
-      "potential_concerns": "Attempted unauthorized access to sensitive endpoint"
+      "endpoint": "/admin",
+      "expected_methods": ["GET"],
+      "unusual_methods": ["POST", "PUT"],
+      "sessions_involved": ["sess_98765"],
+      "potential_concerns": "Attempted unauthorized modifications or privilege escalation targeting admin functionalities."
+    },
+    {
+      "endpoint": "/api/auth",
+      "expected_methods": ["POST"],
+      "unusual_methods": ["PUT", "DELETE"],
+      "sessions_involved": ["sess_86543"],
+      "potential_concerns": "API key brute-force, token manipulation, or unauthorized deletion attempts."
+    },
+    {
+      "endpoint": "/user/",
+      "expected_methods": ["GET", "POST"],
+      "unusual_methods": ["DELETE"],
+      "sessions_involved": ["sess_90231"],
+      "potential_concerns": "Unauthorized deletion of user data indicative of privilege escalation or sabotage attempt."
+    },
+    {
+      "endpoint": "/.env",
+      "expected_methods": [],
+      "unusual_methods": ["GET"],
+      "sessions_involved": ["sess_93456"],
+      "potential_concerns": "Attempt to disclose sensitive configuration or environment variables."
+    },
+    {
+      "endpoint": "/hidden-status",
+      "expected_methods": [],
+      "unusual_methods": ["GET"],
+      "sessions_involved": ["sess_98765"],
+      "potential_concerns": "Discovery or probing of hidden or restricted resources possibly to aid exploitation."
     }
   ],
   "status_code_patterns": [
     {
+      "status_code": 401,
+      "frequency": 600,
+      "associated_endpoints": ["/admin", "/user/", "/api/auth"],
+      "associated_sessions": ["sess_98765", "sess_90231", "sess_86543"],
+      "security_implication": "Multiple unauthorized access attempts suggesting brute-force or privilege escalation."
+    },
+    {
       "status_code": 403,
-      "frequency": 3,
-      "associated_endpoints": [
-        "/api/admin"
-      ],
-      "associated_sessions": [
-        "a3c8d9e7f6b2"
-      ],
-      "security_implication": "Multiple access denied responses indicating potential probing or unauthorized access attempts"
+      "frequency": 500,
+      "associated_endpoints": ["/admin", "/.env", "/hidden-status"],
+      "associated_sessions": ["sess_98765", "sess_93456"],
+      "security_implication": "Forbidden responses potentially from access control evasion probes."
+    },
+    {
+      "status_code": 404,
+      "frequency": 850,
+      "associated_endpoints": ["/.env", "/wp-config.php", "/.git/config", "/phpinfo.php"],
+      "associated_sessions": ["sess_93456"],
+      "security_implication": "Scanning for hidden files or misconfigurations as part of reconnaissance."
+    },
+    {
+      "status_code": 429,
+      "frequency": 300,
+      "associated_endpoints": ["/api/auth"],
+      "associated_sessions": ["sess_86543"],
+      "security_implication": "Rate limiting triggered due to possible credential stuffing or brute-force attack."
+    },
+    {
+      "status_code": 500,
+      "frequency": 250,
+      "associated_endpoints": ["/", "/admin", "/.env"],
+      "associated_sessions": ["sess_93456"],
+      "security_implication": "Potentially induced errors during fuzzing or exploitation attempts."
     }
   ],
   "timing_analysis": {
     "average_response_times": {
-      "overall": 252.22,
+      "overall": 950,
       "by_endpoint": [
         {
-          "endpoint": "/api/admin",
-          "avg_time": 85.67
+          "endpoint": "/admin",
+          "avg_time": 1482
         },
         {
-          "endpoint": "/api/users/45678/reset",
-          "avg_time": 320.0
+          "endpoint": "/.env",
+          "avg_time": 965
         },
         {
-          "endpoint": "/api/login",
-          "avg_time": 350.0
+          "endpoint": "/api/auth",
+          "avg_time": 732
+        },
+        {
+          "endpoint": "/user/",
+          "avg_time": 1100
+        },
+        {
+          "endpoint": "/hidden-status",
+          "avg_time": 1320
         }
       ]
     },
     "timing_anomalies": [
       {
-        "session_id": "a3c8d9e7f6b2",
-        "endpoint": "/api/login",
-        "response_time": 350.0,
-        "deviation_factor": 1.39,
-        "potential_cause": "High response time may indicate a potential brute force attack or server load issue"
+        "session_id": "sess_98765",
+        "endpoint": "/admin",
+        "response_time": 3000,
+        "deviation_factor": 2.0,
+        "potential_cause": "Backend resource exhaustion or attack-induced latency, possibly through complex payloads."
+      },
+      {
+        "session_id": "sess_93456",
+        "endpoint": "/.env",
+        "response_time": 2200,
+        "deviation_factor": 2.28,
+        "potential_cause": "File access attempts causing server strain, likely linked to scanning or exploitation."
+      },
+      {
+        "session_id": "sess_90231",
+        "endpoint": "/user/12345",
+        "response_time": 2500,
+        "deviation_factor": 2.27,
+        "potential_cause": "Unauthorized deletion or enumeration attempts overwhelming endpoint processing."
       }
     ]
   },
-  "data_transfer_analysis": [],
+  "data_transfer_analysis": [
+    {
+      "endpoint": "/admin",
+      "avg_bytes": 2048,
+      "unusual_transfers": [
+        {
+          "session_id": "sess_98765",
+          "bytes_sent": 5120,
+          "deviation_factor": 2.5
+        }
+      ],
+      "security_concern": "Large responses could indicate retrieval of sensitive data due to successful exploitation or information leakage."
+    },
+    {
+      "endpoint": "/.env",
+      "avg_bytes": 1024,
+      "unusual_transfers": [
+        {
+          "session_id": "sess_93456",
+          "bytes_sent": 3072,
+          "deviation_factor": 3.0
+        }
+      ],
+      "security_concern": "Potential exposure of environment variables or secrets via misconfigured file access."
+    },
+    {
+      "endpoint": "/api/auth",
+      "avg_bytes": 900,
+      "unusual_transfers": [],
+      "security_concern": "Higher-than-average transfers here may warrant monitoring for token leaks or verbose errors."
+    },
+    {
+      "endpoint": "/user/",
+      "avg_bytes": 1500,
+      "unusual_transfers": [],
+      "security_concern": "Standard data volumes; anomalies may indicate data exfiltration or unauthorized exports."
+    },
+    {
+      "endpoint": "/hidden-status",
+      "avg_bytes": 1200,
+      "unusual_transfers": [],
+      "security_concern": "Hidden status disclosure risks leaking internal state or debugging information."
+    }
+  ],
   "potential_attack_patterns": [
     {
-      "pattern_type": "Probing",
-      "matching_sessions": [
-        "a3c8d9e7f6b2"
-      ],
+      "pattern_type": "SQL Injection & Admin Brute Force",
+      "matching_sessions": ["sess_98765"],
       "indicators": [
-        "Multiple access denied responses (403)",
-        "Access to sensitive endpoint (/api/admin)",
-        "High response time for login endpoint"
+        "SQL injection patterns detected",
+        "High volume POSTs to /admin",
+        "TOR exit node origin",
+        "Multiple failed logins",
+        "Accessed restricted endpoints"
       ],
-      "confidence": 85
+      "confidence": 0.95
+    },
+    {
+      "pattern_type": "Automated Vulnerability Scanning",
+      "matching_sessions": ["sess_93456"],
+      "indicators": [
+        "Non-standard HTTP methods",
+        "Access to /.env and config files",
+        "Large number of 5xx errors",
+        "zgrab scanner user-agent",
+        "Induced high latency"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "pattern_type": "Unauthorized Data Manipulation & Privilege Escalation",
+      "matching_sessions": ["sess_90231"],
+      "indicators": [
+        "Unusual DELETE requests",
+        "Midnight timing anomalies",
+        "401 and 403 status codes",
+        "Recon for privilege bypass"
+      ],
+      "confidence": 0.85
+    },
+    {
+      "pattern_type": "API Key Brute-Force/Credential Stuffing",
+      "matching_sessions": ["sess_86543"],
+      "indicators": [
+        "API brute-force detection",
+        "429 responses spike",
+        "Spoofed browser User-Agent",
+        "Fast repeated API access"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "pattern_type": "Automated API Enumeration",
+      "matching_sessions": ["sess_87654"],
+      "indicators": [
+        "Fast sequential requests",
+        "HEAD and OPTIONS usage",
+        "Datacenter IP origin"
+      ],
+      "confidence": 0.8
     }
   ]
 }

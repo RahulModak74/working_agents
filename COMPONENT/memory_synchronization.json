@@ -1,0 +1,138 @@
+[
+  {
+    "agent": "memory_sync_coordinator",
+    "content": "Design and implement a cross-agent memory synchronization protocol. Define procedures for memory sharing, conflict resolution, and consistency maintenance.",
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "sync_protocol": {
+          "protocol_name": "string",
+          "version": "string",
+          "agent_roles": [
+            {
+              "role_name": "string",
+              "memory_access": ["string"],
+              "sync_responsibilities": ["string"]
+            }
+          ],
+          "sync_operations": [
+            {
+              "operation_name": "string",
+              "trigger_conditions": ["string"],
+              "procedure": ["string"],
+              "consistency_guarantees": ["string"]
+            }
+          ],
+          "conflict_resolution": {
+            "detection_methods": ["string"],
+            "resolution_strategies": ["string"],
+            "fallback_procedures": ["string"]
+          }
+        }
+      }
+    },
+    "memory_id": "sync_system"
+  },
+  {
+    "agent": "memory_publisher",
+    "content": "Implement the publishing side of the memory synchronization protocol. Prepare memory updates for sharing, apply the appropriate consistency controls, and broadcast to subscribing agents.",
+    "readFrom": ["memory_sync_coordinator"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "sync_system",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "memory_publication": {
+          "publication_id": "string",
+          "timestamp": "string",
+          "originating_agent": "string",
+          "memory_elements": [
+            {
+              "element_id": "string",
+              "element_type": "string",
+              "content": {},
+              "consistency_token": "string",
+              "access_control": ["string"]
+            }
+          ],
+          "dependent_publications": ["string"],
+          "distribution_list": ["string"]
+        }
+      }
+    }
+  },
+  {
+    "agent": "memory_subscriber",
+    "content": "Implement the subscriber side of the memory synchronization protocol. Process incoming memory updates, validate consistency, resolve conflicts, and integrate into local memory.",
+    "readFrom": ["memory_sync_coordinator", "memory_publisher"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "sync_system",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "subscription_processing": {
+          "processed_publications": [
+            {
+              "publication_id": "string",
+              "processing_status": "string",
+              "integration_results": [
+                {
+                  "element_id": "string",
+                  "status": "string",
+                  "local_modifications": "string",
+                  "conflicts_resolved": "number"
+                }
+              ],
+              "local_memory_impact": "string"
+            }
+          ],
+          "subscription_health": {
+            "missed_publications": "number",
+            "average_processing_time": "number",
+            "conflict_rate": "number"
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "consistency_verifier",
+    "content": "Periodically verify the consistency of memory across all agents in the system. Detect discrepancies, diagnose synchronization issues, and initiate repair operations.",
+    "readFrom": ["memory_sync_coordinator", "memory_publisher", "memory_subscriber"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "sync_system",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "consistency_verification": {
+          "verification_id": "string",
+          "timestamp": "string",
+          "verification_scope": ["string"],
+          "discrepancies": [
+            {
+              "element_id": "string",
+              "agent_pairs": ["string"],
+              "discrepancy_type": "string",
+              "severity": "number",
+              "root_cause_analysis": "string"
+            }
+          ],
+          "repair_operations": [
+            {
+              "discrepancy_id": "string",
+              "repair_strategy": "string",
+              "affected_agents": ["string"],
+              "outcome": "string"
+            }
+          ],
+          "system_health": {
+            "consistency_score": "number",
+            "trend": "string",
+            "recommendations": ["string"]
+          }
+        }
+      }
+    }
+  }
+]

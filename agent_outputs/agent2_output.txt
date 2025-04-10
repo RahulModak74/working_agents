@@ -1,0 +1,9 @@
+```json
+{
+  "risk_patterns": [
+    "Multiple failed authentication attempts which can indicate brute-force attempts typical of automated scripts",
+    "Access from an unusual geographic location inconsistent with prior user behavior, suggesting possible session hijacking or use of anonymization services"
+  ],
+  "confidence": 0.85
+}
+```

@@ -1,0 +1,16 @@
+```json
+{
+  "tables_test": {
+    "query": "SELECT name FROM sqlite_master WHERE type='table';",
+    "description": "List all tables in the SQLite database to confirm 'test' table exists."
+  },
+  "query_test": {
+    "query": "SELECT * FROM test;",
+    "description": "Fetch all records from the 'test' table."
+  },
+  "schema_test": {
+    "query": "PRAGMA table_info(test);",
+    "description": "Retrieve the schema of the 'test' table including its columns and data types."
+  }
+}
+```

@@ -1,0 +1,5 @@
+I need to use the tool: cognitive:get_results
+Parameters:
+{
+  "session_id": ""
+}

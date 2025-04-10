@@ -1,0 +1,22 @@
+### Recommendations to Enhance Supply Chain Efficiency Based on SAP Data Analysis
+
+1. **Improve Data Granularity and Integration for End-to-End Visibility**  
+   Refine the current mixed, partially flattened dataset by systematically separating and linking order headers, explicit line items, supplier details, and partner master data. This can be achieved by:  
+   - Parsing and restructuring CSV data into normalized tables (reflecting SALESORDERID, SALESORDERITEM, SUPPLIER, PRODUCT, CUSTOMER entities).  
+   - Utilizing key fields like OrderID, CustomerID, SupplierID, and ProductID to enable precise traceability from procurement (supplier/product level) through fulfillment (sales/order level).  
+   - Leveraging integrated SAP reports (e.g., VBAK/VBAP extracts, ME2L, ME80FN, BP) for continuous synchronization.  
+   **Impact:** Enhanced transparency of supply and sales stages improves responsiveness, root cause analysis, and agility in supply chain decisions.
+
+2. **Optimize Pricing and Discount Strategies through Analytics**  
+   The presence of very high discounts (up to 83–90%) significantly affecting net revenue calls for refined profitability analysis. Steps include:  
+   - Using KE24 (Profitability Analysis Line Items) alongside VK13 (pricing conditions) to assess the impact of discounting on margins at the order item and supplier level.  
+   - Segmenting customers and products with MC+E / MC+A reports to identify where high discounts might not yield expected volume gains or profitability.  
+   - Collaborating with suppliers linked via SupplierID and ProductID to negotiate better terms or adjust volume incentives accordingly.  
+   **Impact:** Data-driven discount management will increase margin realization, reduce revenue leakage, and foster supplier relationship alignment.
+
+3. **Enhance Order Fulfillment and Supplier Collaboration through Segmented Supply Insights**  
+   Leverage the detailed Car_SupplyChainManagement data, which connects suppliers, products, customers, and sales orders at a granular level, by:  
+   - Segmenting supply chain flows by OEM, model, year, and supplier to identify bottlenecks or delays using OrderDate, ShipDate, ShipMode analysis.  
+   - Integrating purchasing data (ME2L, ME80FN) to forecast potential supplier constraints or lead times variations.  
+   - Coordinating targeted interventions such as alternative sourcing or adjusted shipment modes (Standard, First Class, etc.) based on real-time insights.  
+   **Impact:** Enhances delivery reliability, reduces lead times, and improves collaboration with critical suppliers for more resilient supply chains.

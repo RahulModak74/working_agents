@@ -1,0 +1,8 @@
+```json
+{
+  "query_executed": "",
+  "row_count": 0,
+  "sample_data": {},
+  "join_success": false
+}
+```

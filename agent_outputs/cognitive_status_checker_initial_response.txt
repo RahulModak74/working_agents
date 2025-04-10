@@ -1,0 +1,5 @@
+I need to use the tool: cognitive:get_status
+Parameters:
+{
+  "session_id": "tree_of_thoughts_1744112720_5934"
+}

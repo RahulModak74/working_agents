@@ -1,0 +1,6 @@
+I need to use the tool: repl:execute
+Parameters:
+{
+  "language": "python",
+  "code": "\nimport sqlite3\n\nconn = sqlite3.connect('test_sqlite.db')\ncursor = conn.cursor()\n\n# Create sample tables\ntables = [\n    '''CREATE TABLE users (\n        id INTEGER PRIMARY KEY AUTOINCREMENT,\n        username TEXT NOT NULL,\n        email TEXT NOT NULL\n    )''',\n    '''CREATE TABLE orders (\n        id INTEGER PRIMARY KEY AUTOINCREMENT,\n        user_id INTEGER,\n        product TEXT NOT NULL,\n        amount REAL,\n        FOREIGN KEY(user_id) REFERENCES users(id)\n    )''',\n    '''CREATE TABLE products (\n        id INTEGER PRIMARY KEY AUTOINCREMENT,\n        name TEXT NOT NULL,\n        price REAL\n    )'''\n]\n\nfor table_sql in tables:\n    cursor.execute(table_sql)\n\n# Insert sample data\ncursor.executemany(\"INSERT INTO users (username, email) VALUES (?, ?)\", [\n    ('alice', 'alice@example.com'),\n    ('bob', 'bob@example.com')\n])\n\ncursor.executemany(\"INSERT INTO products (name, price) VALUES (?, ?)\", [\n    ('Widget', 19.99),\n    ('Gadget', 29.99)\n])\n\ncursor.executemany(\"INSERT INTO orders (user_id, product, amount) VALUES (?, ?, ?)\", [\n    (1, 'Widget', 3),\n    (2, 'Gadget', 5)\n])\n\nconn.commit()\nconn.close()\nprint('Database created successfully')\n"
+}

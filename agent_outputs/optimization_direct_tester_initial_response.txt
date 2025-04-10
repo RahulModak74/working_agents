@@ -1,0 +1,5 @@
+I need to use the tool: repl:execute
+Parameters:
+{
+  "code": "from optimization import adapter\nresult = adapter.list_patterns()\nprint(result)"
+}

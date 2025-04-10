@@ -1,0 +1,5 @@
+I need to use the tool: sql:query
+Parameters:
+{
+  "query": "UPDATE employees SET salary = salary * 1.1 WHERE department = 'Sales';"
+}

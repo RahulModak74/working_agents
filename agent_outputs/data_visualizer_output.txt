@@ -1,0 +1,100 @@
+```json
+{
+  "visualizations": [
+    {
+      "title": "Discount Distribution across Sales Orders and Items",
+      "type": "Histogram",
+      "description": "Histogram displaying the distribution of average discount rates applied on sales order items, where discounts average around 65% with notable variability.",
+      "data_source": "sales_order_items_analyzer, supply_chain_analyzer",
+      "key_insights": [
+        "Majority of high-value transactions receive substantial discounts (~65%), indicative of bulk or enterprise negotiations.",
+        "Discount rates show significant variation, affecting individual order profitability.",
+        "The consistent high discounts suggest widespread promotional or negotiation-driven pricing strategies."
+      ]
+    },
+    {
+      "title": "Sales Patterns by Currency",
+      "type": "Stacked Bar Chart",
+      "description": "Stacked bar chart illustrating total sales volume by currency across both order headers and line items.",
+      "data_source": "sales_orders_analyzer, sales_order_items_analyzer, supply_chain_analyzer",
+      "key_insights": [
+        "USD dominates transaction counts, covering half of all orders and items.",
+        "EUR and AUD represent notable secondary markets, confirming international reach.",
+        "Presence of CAD in some orders/items highlights niche but significant North American sales beyond USD."
+      ]
+    },
+    {
+      "title": "Order Gross Amount Range",
+      "type": "Box Plot",
+      "description": "Box plot showing the spread of gross order amounts across all sales orders.",
+      "data_source": "sales_orders_analyzer",
+      "key_insights": [
+        "Order amounts cluster between approximately $745k and $968k, reflecting enterprise-scale transactions.",
+        "No extreme outliers detected indicates mature, consistent order size profiles.",
+        "Supports high-value, possibly capital goods or bulk product deals."
+      ]
+    },
+    {
+      "title": "Top Order Creators and Business Partner Creators",
+      "type": "Pareto Chart",
+      "description": "Pareto chart ranking most active user IDs responsible for order creation and business partner registrations.",
+      "data_source": "sales_orders_analyzer, business_partners_analyzer",
+      "key_insights": [
+        "A small subset of creator IDs (notably 10.00, 13.00, 14.00) dominate both order and partner data entry.",
+        "Concentration suggests key account or regional managers control bulk of activity.",
+        "May pinpoint training, auditing, or workflow improvement opportunities focused on these users."
+      ]
+    },
+    {
+      "title": "Partner Role and Geographic Distribution",
+      "type": "Pie Charts",
+      "description": "Two pie charts: one showing split between customers and suppliers; the other depicting their preferred transaction currencies.",
+      "data_source": "business_partners_analyzer",
+      "key_insights": [
+        "Approximately 60% customers, 40% suppliers, indicating a balanced network supporting both demand and supply.",
+        "EUR dominates partner currencies, followed by USD and regional currencies (INR, AED), showing strong global engagement.",
+        "Diverse currencies suggest multiple regional markets rather than mono-currency dependence."
+      ]
+    },
+    {
+      "title": "Supply Chain Transaction Timeline",
+      "type": "Timeline / Line Chart",
+      "description": "Timeline chart plotting supply chain records over shipment dates from January to March 2019.",
+      "data_source": "supply_chain_analyzer",
+      "key_insights": [
+        "Transactions are clustered within a three-month window, possibly aligning to quarterly sales cycles.",
+        "No significant gaps imply stable supply flow during this period.",
+        "Temporal concentration can inform capacity, forecasting, or promotional planning."
+      ]
+    },
+    {
+      "title": "Product Frequency in Orders",
+      "type": "Bar Chart",
+      "description": "Bar chart ranking top appearing product IDs across sales order items and supply chain entries.",
+      "data_source": "sales_order_items_analyzer, supply_chain_analyzer",
+      "key_insights": [
+        "Premium models like Product 8905 and 9444 appear most frequently, cementing their status as top-sellers.",
+        "Product diversity remains moderate (~10 unique products), suggesting a focus on a select high-value range.",
+        "Aligns with transaction values and discount policies indicative of large volume deals in select lines."
+      ]
+    }
+  ],
+  "interpretation": [
+    "Visualizations consistently highlight a multinational, enterprise-scale business centered on high-value machinery or vehicle sales.",
+    "Steep average discounts around 65% paired with large gross amounts suggest negotiated deals with considerable price flexibility to close key contracts.",
+    "A few key users drive most activity, underscoring the influence of lead sales and partner managers.",
+    "Currency and partner diversity confirms global operations, yet transactional control remains centralized.",
+    "Product focus is tight, with frequent transactions among a select group of premium models.",
+    "Supply chain timing points towards periodic, likely quarterly, fulfillment cycles.",
+    "Data quality limits fine-grained partner-to-sale linkages, but aggregate trends reveal a robust, international sales apparatus driven by high discount, high-value transactions."
+  ],
+  "executive_summary_visuals": [
+    "Discount distribution reveals widespread deep discounts (~65%), integral to deal closures in this enterprise market.",
+    "Currency and partner role charts confirm multinational engagement across both suppliers and customers.",
+    "Sales consistently feature high transaction values between $745k and $968k, indicative of premium asset sales.",
+    "Key user concentration in both orders and partner management reflects centralized commercial control.",
+    "Product charts spotlight a select set of top-tier goods driving the majority of revenue.",
+    "Supply timelines suggest stable, cyclical fulfillment syncs aligned with quarterly business rhythms."
+  ]
+}
+```

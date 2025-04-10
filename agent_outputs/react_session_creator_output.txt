@@ -1,0 +1,12 @@
+```json
+{
+  "status": "failed",
+  "session_id": "",
+  "pattern": "",
+  "description": "Failed to create planning session because the provided pattern_id 'sap_business_challenge_pattern_v1' is not recognized. Please verify the pattern_id or define the pattern before proceeding.",
+  "initial_reasoning": {
+    "issue": "Unknown React pattern_id",
+    "next_steps": "Check for the correct pattern identifier or create the appropriate React pattern related to SAP business challenges. Once a valid pattern_id is available, a new planning session can be initiated."
+  }
+}
+```

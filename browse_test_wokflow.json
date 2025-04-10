@@ -1,0 +1,18 @@
+[{
+  "agent": "browser_test_agent",
+  "content": "Visit 'https://www.openai.com' and retrieve the main page content. Then search for links on the page.",
+  "tools": [
+    "browser:create",
+    "browser:navigate",
+    "browser:get_content",
+    "browser:find_elements"
+  ],
+  "output_format": {
+    "type": "json",
+    "schema": {
+      "page_title": "string",
+      "content_summary": "string",
+      "links_found": "number"
+    }
+  }
+}]

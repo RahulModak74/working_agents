@@ -1,0 +1,6 @@
+I need to use the tool: cognitive:list_patterns
+Parameters:
+{
+  "focus": "cognitive planning patterns",
+  "criteria": "structured exploration, multiple solution paths, business optimization, SAP data analysis, data quality challenges"
+}

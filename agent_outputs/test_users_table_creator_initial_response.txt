@@ -1,0 +1,6 @@
+I need to use the tool: sql:query
+Parameters:
+{
+  "database": "test_sqlite.db",
+  "query": "CREATE TABLE IF NOT EXISTS test_users (id INTEGER PRIMARY KEY, name TEXT NOT NULL, email TEXT UNIQUE, age INTEGER, registration_date TEXT);"
+}

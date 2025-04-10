@@ -1,0 +1,20 @@
+```json
+{
+  "data_relationships": [
+    "The sap_data.csv combines multiple data sections — Sales Order Headers, inferred Sales Order Items, Business Partners, Car Supply Chain transactions, and detailed Final SAP Order Items — in a single partially flattened export.",
+    "Sales Order Headers and Items relate through the common OrderID, representing SALESORDERID, where headers summarize order info and items detail products and pricing per order.",
+    "BusinessPartners data links to Sales Orders via CustomerID fields, which correspond to PARTNERID, enriching transactional data with partner role, company, and contact information.",
+    "The Car_SupplyChainManagement section embeds procurement-side supplier details (SupplierID, SupplierName) and product attributes (ProductID, CarMaker, CarModel, etc.), connected directly to sales customers and order data through CustomerID and OrderID, bridging the upstream supply chain to sales and fulfillment.",
+    "Final SAP Order Items further atomize this by providing explicit item-level records fully linking supplier, product, customer, and transactional sales info for precise line-item tracing.",
+    "Overall, BusinessPartners is a master reference linked to CustomerIDs; Sales Order headers aggregate orders; inferred/mixed Sales Order Items provide partial item lines; Car Supply Chain and Final SAP Order Items add granular supplier-product-item data tied to CustomerID and OrderID, mapping end-to-end procurement through sales fulfillment."
+  ],
+  "key_fields": [
+    "OrderID (primary foreign key linking sales order headers and items, corresponds to SALESORDERID)",
+    "CustomerID (foreign key linking order data to BusinessPartners.PARTNERID)",
+    "SupplierID and ProductID (keys within the Car_SupplyChainManagement and Final SAP Order Items sections connecting suppliers and products to order items)",
+    "PARTNERID (BusinessPartners master key linked from CustomerID in order data)",
+    "OrderDate, ShipDate, ShipMode (transaction attributes shared across sections)",
+    "Sales, Quantity, Discount (financial metrics repeated at header and item levels)"
+  ]
+}
+```

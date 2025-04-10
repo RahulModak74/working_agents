@@ -1,0 +1,245 @@
+[
+  {
+    "agent": "enterprise_architecture_designer",
+    "content": "Design a comprehensive research architecture for investigating 'SAP HANA enterprise trends with AI'. Determine optimal cognitive patterns, optimization approaches, and memory systems to create an intelligent, adaptive research framework.",
+    "tools": [
+      "cognitive:list_patterns",
+      "optimization:list_patterns",
+      "memory:list_patterns",
+      "planning:create_plan"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "research_architecture": {
+          "cognitive_approach": {
+            "selected_pattern": "string",
+            "justification": "string"
+          },
+          "optimization_approach": {
+            "selected_pattern": "string",
+            "justification": "string"
+          },
+          "memory_system": {
+            "selected_pattern": "string",
+            "justification": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "preliminary_exploration_agent",
+    "content": "Conduct initial comprehensive exploration of SAP HANA enterprise trends, focusing on AI integration, emerging technologies, and strategic innovations. Map out key research dimensions and initial hypotheses.",
+    "tools": [
+      "research:combined_search",
+      "memory:store_operation"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "initial_findings": {
+          "key_trends": ["string"],
+          "emerging_technologies": ["string"],
+          "strategic_focus_areas": ["string"]
+        }
+      }
+    }
+  },
+  {
+    "agent": "trend_dimension_selector",
+    "content": "Select and prioritize key research dimensions for deep exploration of SAP HANA enterprise trends with AI. Focus on actionable, forward-looking dimensions that showcase transformative potential.",
+    "readFrom": ["preliminary_exploration_agent"],
+    "tools": [
+      "planning:chain_of_thought",
+      "memory:store_operation"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_dimensions": [
+          {
+            "name": "string",
+            "priority_rationale": "string",
+            "expected_impact": "string"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "agent": "dynamic_research_agent",
+    "type": "dynamic",
+    "initial_prompt": "We will explore key SAP HANA enterprise AI trends across these dimensions. Choose the first dimension to investigate: 'Intelligent Data Processing', 'AI-Driven Analytics', 'Cloud and Hybrid Architectures', 'Enterprise Workflow Automation'.",
+    "readFrom": ["trend_dimension_selector"],
+    "tools": [
+      "planning:chain_of_thought"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "action": "string",
+        "reasoning": "string",
+        "investigation_strategy": "string"
+      }
+    },
+    "actions": {
+      "Intelligent Data Processing": {
+        "agent": "data_processing_researcher",
+        "content": "Deep dive into AI-enhanced data processing capabilities in SAP HANA, exploring advanced techniques, performance improvements, and architectural innovations.",
+        "tools": [
+          "research:search",
+          "research:cite_sources",
+          "memory:store_operation"
+        ],
+        "output_format": {
+          "type": "json",
+          "schema": {
+            "key_insights": ["string"],
+            "technical_details": "string",
+            "future_potential": ["string"]
+          }
+        }
+      },
+      "AI-Driven Analytics": {
+        "agent": "analytics_researcher",
+        "content": "Investigate AI-powered analytics capabilities, including predictive modeling, real-time insights, and advanced statistical techniques in SAP HANA.",
+        "tools": [
+          "research:search",
+          "research:cite_sources",
+          "memory:store_operation"
+        ],
+        "output_format": {
+          "type": "json",
+          "schema": {
+            "key_insights": ["string"],
+            "analytical_capabilities": ["string"],
+            "competitive_advantages": ["string"]
+          }
+        }
+      },
+      "Cloud and Hybrid Architectures": {
+        "agent": "cloud_architecture_researcher",
+        "content": "Research SAP HANA cloud and hybrid deployment architectures, focusing on scaling strategies, multi-cloud integration, and containerization approaches.",
+        "tools": [
+          "research:search",
+          "research:cite_sources",
+          "memory:store_operation"
+        ],
+        "output_format": {
+          "type": "json",
+          "schema": {
+            "key_insights": ["string"],
+            "architecture_innovations": ["string"],
+            "deployment_trends": ["string"]
+          }
+        }
+      },
+      "Enterprise Workflow Automation": {
+        "agent": "workflow_automation_researcher",
+        "content": "Examine how AI is enhancing enterprise workflow automation in SAP HANA environments, including process optimization, intelligent routing, and RPA integration.",
+        "tools": [
+          "research:search",
+          "research:cite_sources",
+          "memory:store_operation"
+        ],
+        "output_format": {
+          "type": "json",
+          "schema": {
+            "key_insights": ["string"],
+            "automation_advances": ["string"],
+            "business_impact": ["string"]
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "cross_dimensional_analyzer",
+    "content": "Synthesize insights across researched dimensions, identifying interconnections, emerging patterns, and holistic trends in SAP HANA's AI enterprise strategy.",
+    "readFrom": ["*"],
+    "tools": [
+      "planning:chain_of_thought",
+      "memory:retrieve_all"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "cross_dimensional_insights": [
+          {
+            "connection_type": "string",
+            "integrated_observations": "string",
+            "strategic_implications": "string"
+          }
+        ],
+        "emerging_meta_trends": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "trend_impact_assessor",
+    "content": "Evaluate the potential business and technological impact of identified SAP HANA AI trends. Develop forward-looking scenarios and strategic recommendations.",
+    "readFrom": [
+      "cross_dimensional_analyzer",
+      "dynamic_research_agent"
+    ],
+    "tools": [
+      "planning:chain_of_thought",
+      "memory:retrieve_all"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "impact_scenarios": [
+          {
+            "dimension": "string",
+            "potential_impact": "string",
+            "strategic_recommendations": ["string"]
+          }
+        ],
+        "transformative_potential_rating": "number"
+      }
+    }
+  },
+  {
+    "agent": "comprehensive_report_generator",
+    "content": "Compile a comprehensive report on SAP HANA enterprise trends with AI, integrating technical insights, cross-dimensional analysis, and strategic recommendations.",
+    "readFrom": ["*"],
+    "tools": [
+      "research:generate_summary",
+      "memory:retrieve_all"
+    ],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Research Methodology",
+        "Intelligent Data Processing Trends",
+        "AI-Driven Analytics Capabilities",
+        "Cloud and Hybrid Architecture Innovations",
+        "Enterprise Workflow Automation",
+        "Cross-Dimensional Insights",
+        "Strategic Recommendations",
+        "Future Outlook",
+        "References"
+      ]
+    }
+  },
+  {
+    "agent": "expert_validation_agent",
+    "content": "Conduct final review and validation of the comprehensive report, ensuring technical accuracy, strategic relevance, and comprehensive coverage of SAP HANA AI enterprise trends.",
+    "readFrom": ["comprehensive_report_generator"],
+    "tools": [
+      "planning:chain_of_thought",
+      "memory:retrieve_all"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "validation_status": "string",
+        "recommended_refinements": ["string"],
+        "confidence_level": "number"
+      }
+    }
+  }
+]

@@ -1,0 +1,6 @@
+2025-04-09 11:50:16,983 - browser_adapter - INFO - ==================================================
+2025-04-09 11:50:16,983 - browser_adapter - INFO - BROWSER ADAPTER INITIALIZED
+2025-04-09 11:50:16,983 - browser_adapter - INFO - Logging to: /home/rahul/enhanced_agents_with_tools/COMPONENT/browser_logs/browser_20250409_115016.log
+2025-04-09 11:50:16,983 - browser_adapter - INFO - ==================================================
+2025-04-09 11:50:16,998 - browser_adapter - INFO - ✅ Playwright successfully imported
+2025-04-09 11:50:16,998 - browser_adapter - INFO - Screenshot directory: /home/rahul/enhanced_agents_with_tools/COMPONENT/screenshots

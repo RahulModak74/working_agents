@@ -1,0 +1,5 @@
+I need to use the tool: planning:chain_of_thought
+Parameters:
+{
+  "input": "Review the SAP implementation plan details specified, identify technical accuracy and completeness issues. Check the alignment of modules, transaction codes, configuration steps, and technical requirements with SAP best practices. Determine if there are any missing or inconsistent elements. Summarize clearly what is accurate, what issues exist, and suggest corrections where necessary."
+}

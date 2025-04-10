@@ -1,0 +1,9 @@
+```json
+{
+  "status": "success",
+  "database_path": "./test_sqlite.db",
+  "tables_created": [
+    "test"
+  ]
+}
+```

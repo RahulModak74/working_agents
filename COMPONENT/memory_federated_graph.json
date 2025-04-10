@@ -1,0 +1,101 @@
+ [ {
+    "agent": "knowledge_graph_initializer",
+    "content": "Initialize a federated knowledge graph structure for {domain_topic}. Define the core entity types, relation types, and federation boundaries.",
+    "tools": ["vector_db:batch_add", "planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "knowledge_graph_schema": {
+          "entities": [
+            {
+              "entity_type": "string",
+              "properties": ["string"],
+              "federation_location": "string"
+            }
+          ],
+          "relations": [
+            {
+              "relation_type": "string",
+              "source_entity": "string",
+              "target_entity": "string",
+              "properties": ["string"]
+            }
+          ],
+          "federation_nodes": [
+            {
+              "node_id": "string",
+              "specialization": "string",
+              "sync_protocol": "string"
+            }
+          ]
+        }
+      }
+    },
+    "memory_id": "distributed_memory"
+  },
+  {
+    "agent": "domain_knowledge_extractor",
+    "content": "Extract key domain knowledge from the provided content and add it to the federated knowledge graph. Follow the schema defined by the knowledge graph initializer.",
+    "readFrom": ["knowledge_graph_initializer"],
+    "file_param": "domain_data.csv",
+    "tools": ["sql:query", "vector_db:add"],
+    "memory_id": "distributed_memory",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "extracted_entities": [
+          {
+            "entity_id": "string",
+            "entity_type": "string",
+            "properties": {},
+            "federation_location": "string"
+          }
+        ],
+        "extracted_relations": [
+          {
+            "source_id": "string",
+            "relation_type": "string",
+            "target_id": "string",
+            "properties": {}
+          }
+        ],
+        "federation_metadata": {
+          "last_update": "string",
+          "sync_status": "string",
+          "consistency_check": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "federation_manager",
+    "content": "Manage the distribution of knowledge across federated nodes. Update routing tables, resolve conflicts, and maintain consistency across the knowledge graph.",
+    "readFrom": ["knowledge_graph_initializer", "domain_knowledge_extractor"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "distributed_memory",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "federation_status": {
+          "active_nodes": ["string"],
+          "sync_status": "string",
+          "conflict_resolution": [
+            {
+              "entity_id": "string",
+              "conflict_type": "string",
+              "resolution_strategy": "string",
+              "outcome": "string"
+            }
+          ],
+          "routing_table": [
+            {
+              "query_pattern": "string",
+              "node_assignment": "string",
+              "caching_strategy": "string"
+            }
+          ]
+        }
+      }
+    }
+  }
+]

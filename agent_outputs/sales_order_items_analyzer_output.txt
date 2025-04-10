@@ -1,0 +1,42 @@
+```json
+{
+  "item_count": 10,
+  "key_metrics": {
+    "total_sales_amount": 8502935.81,
+    "average_item_sales": 850293.58,
+    "currency_context": "Predominantly USD in transactions, with EUR, GBP, AUD, INR, AED, CAD currencies in partner info; transactional currencies largely aligned with USD equivalents",
+    "quantity_stats": {
+      "min_quantity": 1,
+      "max_quantity": 2,
+      "average_quantity": 1.4
+    },
+    "discount_stats": {
+      "min_discount": 0.28,
+      "max_discount": 0.9,
+      "average_discount": 0.655
+    },
+    "product_distribution": {
+      "Toyota": 2,
+      "GMC": 1,
+      "Volkswagen": 1,
+      "Mercury": 1,
+      "Mitsubishi": 1,
+      "BMW": 1,
+      "Dodge": 1,
+      "Subaru": 1,
+      "Others": 1
+    },
+    "order_relationships": {
+      "distinct_orders": 10,
+      "items_per_order": {
+        "min": 1,
+        "max": 2,
+        "average": 1.4
+      }
+    },
+    "order_date_range": "2018/06/30 to 2019/03/16"
+  },
+  "insights": "Each sales order item contains detailed vehicle product info linked by OrderID to headers, with mostly one to two items per header. High-ticket vehicle sales yield large transaction values, skewing average sales amount per item to over $850K. Diverse product mix suggests cross-brand and cross-model sales activity within orders. Discount rates vary substantially, with many high (>0.75) implying special discounts or data errors. Since key identifier fields like OrderID and CustomerID exist on both order headers and items, relational integrity is crucial but partly compromised by mixed ID formats. Period coverage of roughly 9 months shows consistent sales activity primarily in USD despite regional partner diversity.",
+  "quality_adjusted_analysis": "Data issues significantly impact item-level reliability. Inconsistent ID formats (decimals, strings) risk broken references between items and headers, possibly causing orphan or mislinked items. Extreme discount values up to 90% raise concerns about outliers distorting revenue calculations at item level. Potential duplicate customer names/emails may inflate item counts or obscure customer-level analysis. Mixed date formats hinder accurate item aging or timeline analytics. Quantities appear mostly consistent, yet validation is needed to ensure realistic order sizing. Overall, before high-stakes decisions, the data requires standardizing identifiers as strings, flagging or filtering extreme discounts, harmonizing dates, and deduplicating customer records to restore confidence in line-item and aggregate analyses."
+}
+```

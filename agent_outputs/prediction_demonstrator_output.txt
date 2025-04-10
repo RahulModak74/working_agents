@@ -1,0 +1,100 @@
+```json
+{
+  "churn_prediction_example": {
+    "scenario": "Predict whether a newly acquired premium customer who recently purchased Electronics in December with a high engagement score is at risk of churning to inform targeted retention offers.",
+    "sample_input": {
+      "purchase_month": 12,
+      "purchase_quarter": 4,
+      "purchase_day_of_week": 5,
+      "product_category": "Electronics",
+      "region": "North",
+      "payment_method": "Credit Card",
+      "feature_0": 1.2,
+      "feature_1": -0.5,
+      "feature_2": 0.8,
+      "feature_3": 3.5,
+      "feature_4": -1.0,
+      "feature_5": 0.3,
+      "feature_6": 0.1,
+      "feature_7": 1.0,
+      "feature_8": -0.2,
+      "feature_9": 0.5,
+      "feature_10": 2.0,
+      "feature_11": -0.4,
+      "feature_12": 1.1,
+      "feature_13": 0.6,
+      "customer_type_premium": 1,
+      "customer_type_standard": 0
+    },
+    "prediction": {
+      "churn_risk": "Low",
+      "probability_no": 0.85,
+      "probability_yes": 0.15
+    },
+    "interpretation": "This premium customer has an 85% probability of not churning and represents low churn risk. The business could maintain current engagement but need not prioritize aggressive retention incentives."
+  },
+  "sales_prediction_example": {
+    "scenario": "Forecast the expected sales amount for an existing customer during a holiday promotion based on recent temporal features and purchase behavior to optimize inventory planning.",
+    "sample_input": {
+      "purchase_month": 12,
+      "purchase_quarter": 4,
+      "purchase_day_of_week": 5,
+      "product_category": "Electronics",
+      "region": "North",
+      "payment_method": "Credit Card",
+      "feature_0": 1.2,
+      "feature_1": -0.5,
+      "feature_2": 0.8,
+      "feature_3": 3.5,
+      "feature_4": -1.0,
+      "feature_5": 0.3,
+      "feature_6": 0.1,
+      "feature_7": 1.0,
+      "feature_8": -0.2,
+      "feature_9": 0.5,
+      "feature_10": 2.0,
+      "feature_11": -0.4,
+      "feature_12": 1.1,
+      "feature_13": 0.6
+    },
+    "prediction": {
+      "forecasted_sales": 11850.0
+    },
+    "interpretation": "Estimated sales for this customer during the holiday period are around $11,850. This helps the business plan promotion-specific inventory and revenue targets."
+  },
+  "customer_type_prediction_example": {
+    "scenario": "Identify whether a recent signup is a 'standard,' 'premium,' or 'enterprise' customer based on early interactions and demographics to customize onboarding paths.",
+    "sample_input": {
+      "purchase_month": 12,
+      "purchase_quarter": 4,
+      "purchase_day_of_week": 5,
+      "product_category": "Electronics",
+      "region": "North",
+      "payment_method": "Credit Card",
+      "feature_0": 1.2,
+      "feature_2": 0.8,
+      "feature_3": 3.5,
+      "feature_4": -1.0,
+      "feature_6": 0.1,
+      "feature_7": 1.0,
+      "feature_9": 0.5
+    },
+    "prediction": {
+      "customer_type": "premium",
+      "probabilities": {
+        "standard": 0.20,
+        "premium": 0.65,
+        "enterprise": 0.15
+      }
+    },
+    "interpretation": "This customer is most likely a 'premium' segment customer with 65% probability. The company can offer premium-specific support, services, and upsell opportunities during onboarding."
+  },
+  "business_applications": [
+    "Integrate churn probabilities into the customer analytics dashboard to prioritize retention actions on high-risk segments and track how churn risk evolves over time.",
+    "Display forecasted customer-level sales figures alongside actual sales for sales reps and supply chain planners to adjust resource allocation dynamically.",
+    "Incorporate predicted customer segments into the dashboard filters to tailor marketing campaigns, personalize experiences, and monitor segment growth.",
+    "Combine all three model outputs for each customer profile pane to identify potential churners among premium segments with high revenue forecast for proactive engagement.",
+    "Use feature importance insights to explain predictions in the dashboard, building user trust and guiding strategic actions based on the top drivers."
+  ]
+}
+```

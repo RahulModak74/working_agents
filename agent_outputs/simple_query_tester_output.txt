@@ -1,0 +1,8 @@
+```json
+{
+  "query_executed": "SELECT * FROM test_users LIMIT 5;",
+  "row_count": 0,
+  "sample_data": {},
+  "query_success": false
+}
+```

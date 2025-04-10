@@ -1,0 +1,6 @@
+I need to use the tool: research:search
+Parameters:
+{
+  "query": "Role of AI in cybersecurity red teaming comprehensive survey",
+  "top_k": 10
+}

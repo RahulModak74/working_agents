@@ -1,0 +1,6 @@
+I need to use the tool: sql:query
+Parameters:
+{
+  "database_path": "test_sqlite.db",
+  "query": "SELECT users.id AS user_id, users.name AS user_name, orders.id AS order_id, orders.product_id, orders.quantity FROM users INNER JOIN orders ON users.id = orders.user_id"
+}

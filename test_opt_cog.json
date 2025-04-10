@@ -1,0 +1,69 @@
+[
+  {
+    "agent": "optimization_lister",
+    "content": "List the available optimization patterns using the optimization:list_patterns tool. This is a simple operation that should work if the tool is properly registered and functional.",
+    "tools": ["optimization:list_patterns"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "patterns": "object"
+      }
+    }
+  },
+  {
+    "agent": "optimization_session_creator",
+    "content": "Create a new optimization session using the 'multi_objective' pattern. Provide all required parameters.",
+    "readFrom": ["optimization_lister"],
+    "tools": ["optimization:create_session"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "session_id": "string",
+        "pattern": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_lister",
+    "content": "List the available cognitive patterns using the cognitive:list_patterns tool. This is a simple operation that should work if the tool is properly registered and functional.",
+    "tools": ["cognitive:list_patterns"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "patterns": "object"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_session_creator",
+    "content": "Create a new cognitive planning session using the 'tree_of_thoughts' pattern. Provide all required parameters.",
+    "readFrom": ["cognitive_lister"],
+    "tools": ["cognitive:create_session"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "session_id": "string",
+        "pattern": "string"
+      }
+    }
+  },
+  {
+    "agent": "diagnostic_summary",
+    "content": "Generate a comprehensive report summarizing the diagnostic findings and providing concrete recommendations to fix the issues.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Diagnostic Summary",
+        "Tool Registration Status",
+        "Execution Issues",
+        "Root Cause Analysis",
+        "Recommended Fixes"
+      ]
+    }
+  }
+]

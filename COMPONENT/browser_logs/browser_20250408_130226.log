@@ -1,0 +1,35 @@
+2025-04-08 13:02:26,744 - browser_adapter - INFO - ==================================================
+2025-04-08 13:02:26,744 - browser_adapter - INFO - BROWSER ADAPTER INITIALIZED
+2025-04-08 13:02:26,744 - browser_adapter - INFO - Logging to: /home/rahul/enhanced_agents_with_tools/COMPONENT/browser_logs/browser_20250408_130226.log
+2025-04-08 13:02:26,744 - browser_adapter - INFO - ==================================================
+2025-04-08 13:02:26,760 - browser_adapter - INFO - ✅ Playwright successfully imported
+2025-04-08 13:02:26,761 - browser_adapter - INFO - Screenshot directory: /home/rahul/enhanced_agents_with_tools/COMPONENT/screenshots
+2025-04-08 13:02:26,899 - browser_adapter - INFO - 🚀 Playwright started successfully
+2025-04-08 13:02:26,899 - browser_adapter - INFO - ================================================================================
+2025-04-08 13:02:26,899 - browser_adapter - INFO - ✅ Browser automation tools registered successfully
+2025-04-08 13:02:26,899 - browser_adapter - INFO - Available browser tools: browser:click, browser:close, browser:create, browser:find_elements, browser:get_content, browser:navigate, browser:stats
+2025-04-08 13:02:26,900 - browser_adapter - INFO - Logs will be written to: /home/rahul/enhanced_agents_with_tools/COMPONENT/browser_logs/browser_20250408_130226.log
+2025-04-08 13:02:26,900 - browser_adapter - INFO - Screenshots will be saved to: /home/rahul/enhanced_agents_with_tools/COMPONENT/screenshots
+2025-04-08 13:02:26,900 - browser_adapter - INFO - ================================================================================
+2025-04-08 13:03:14,284 - browser_adapter - INFO - Tool called: browser:create(browser_id=None, browser_type=chromium, headless=True)
+2025-04-08 13:03:14,284 - browser_adapter - INFO - 🔧 Creating browser: type=chromium, headless=True, id=default
+2025-04-08 13:03:14,284 - browser_adapter - INFO - Selected Chromium browser
+2025-04-08 13:03:14,336 - browser_adapter - INFO - Browser launched successfully: chromium
+2025-04-08 13:03:14,348 - browser_adapter - INFO - Browser context created
+2025-04-08 13:03:16,269 - browser_adapter - INFO - Page created in browser
+2025-04-08 13:03:16,269 - browser_adapter - INFO - ✅ Browser created successfully with ID: default
+2025-04-08 13:03:16,269 - browser_adapter - INFO - browser:create result: success
+2025-04-08 13:04:36,093 - browser_adapter - INFO - Tool called: browser:create(browser_id=None, browser_type=chromium, headless=True)
+2025-04-08 13:04:36,093 - browser_adapter - INFO - 🔧 Creating browser: type=chromium, headless=True, id=default
+2025-04-08 13:04:36,093 - browser_adapter - INFO - Closing existing browser with ID: default
+2025-04-08 13:04:36,093 - browser_adapter - INFO - 🛑 Closing browser: default
+2025-04-08 13:04:36,107 - browser_adapter - INFO - Closed page for browser default
+2025-04-08 13:04:36,118 - browser_adapter - INFO - Closed context for browser default
+2025-04-08 13:04:36,136 - browser_adapter - INFO - Closed browser instance default
+2025-04-08 13:04:36,136 - browser_adapter - INFO - ✅ Browser default successfully closed
+2025-04-08 13:04:36,136 - browser_adapter - INFO - Selected Chromium browser
+2025-04-08 13:04:36,179 - browser_adapter - INFO - Browser launched successfully: chromium
+2025-04-08 13:04:36,189 - browser_adapter - INFO - Browser context created
+2025-04-08 13:04:38,114 - browser_adapter - INFO - Page created in browser
+2025-04-08 13:04:38,114 - browser_adapter - INFO - ✅ Browser created successfully with ID: default
+2025-04-08 13:04:38,114 - browser_adapter - INFO - browser:create result: success

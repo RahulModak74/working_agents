@@ -1,0 +1,7 @@
+```json
+{
+  "table_name": "test_users",
+  "columns": [],
+  "schema_verification": "No schema information was found for the test_users table. It may not exist or there was an error retrieving its schema."
+}
+```

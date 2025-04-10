@@ -1,0 +1,92 @@
+
+
+[
+  {
+    "agent": "problem_framer",
+    "content": "Analyze the following complex problem and frame it for a multi-perspective approach: {problem_description}",
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "problem_statement": "string",
+        "key_dimensions": ["string"],
+        "success_criteria": ["string"],
+        "potential_approaches": ["string"]
+      }
+    },
+    "memory_id": "advanced_cognition"
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on the problem framing, determine which advanced cognitive approach would be most suitable: 'tree_of_thoughts', 'multi_agent_debate', or 'metacognitive_reflection'.",
+    "readFrom": ["problem_framer"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "advanced_cognition",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_approach": "string",
+        "justification": "string",
+        "expected_benefits": ["string"]
+      }
+    },
+    "actions": {
+      "tree_of_thoughts": {
+        "agent": "tot_coordinator",
+        "content": "Implement a Tree of Thoughts approach to solve the problem. Generate multiple initial solution paths, explore the most promising ones in depth, and select the optimal solution.",
+        "readFrom": ["problem_framer"],
+        "tools": ["planning:create_plan", "planning:chain_of_thought"]
+      },
+      "multi_agent_debate": {
+        "agent": "debate_coordinator",
+        "content": "Implement a Multi-Agent Debate approach to address the problem. Define key positions, conduct a structured debate, critique arguments, and synthesize a comprehensive solution.",
+        "readFrom": ["problem_framer"],
+        "tools": ["planning:create_plan", "planning:chain_of_thought"]
+      },
+      "metacognitive_reflection": {
+        "agent": "metacog_coordinator",
+        "content": "Implement a Metacognitive Reflection approach to solve the problem. Develop an initial solution, analyze the reasoning process, identify biases, explore counterfactuals, and create an improved solution.",
+        "readFrom": ["problem_framer"],
+        "tools": ["planning:create_plan", "planning:chain_of_thought"]
+      }
+    }
+  },
+  {
+    "agent": "solution_integrator",
+    "content": "Integrate the results from the selected cognitive approach into a comprehensive solution. Highlight the unique insights gained from the specialized cognitive architecture.",
+    "readFrom": ["problem_framer", "dynamic_agent", "*"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "advanced_cognition",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Problem Summary",
+        "Cognitive Approach Used",
+        "Solution Process",
+        "Comprehensive Solution",
+        "Key Insights",
+        "Implementation Strategy"
+      ]
+    }
+  },
+  {
+    "agent": "cognitive_architect",
+    "content": "Reflect on the effectiveness of the selected cognitive architecture for this problem. Suggest potential improvements to the process for future similar problems.",
+    "readFrom": ["*"],
+    "tools": ["planning:chain_of_thought"],
+    "memory_id": "advanced_cognition",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "architecture_effectiveness": {
+          "strengths": ["string"],
+          "limitations": ["string"],
+          "overall_rating": "number"
+        },
+        "process_improvements": ["string"],
+        "future_architecture_recommendations": ["string"]
+      }
+    }
+  }
+]

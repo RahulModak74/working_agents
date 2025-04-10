@@ -1,0 +1,15 @@
+I need to use the tool: memory:create_system
+Parameters:
+{
+  "name": "SAP Data Analysis Hierarchical Memory",
+  "description": "A multi-layered memory system to store, categorize, and cross-reference key findings throughout SAP data analysis stages, such as data extraction, cleansing, transformation, visualization, and interpretation.",
+  "pattern": "Hierarchical with stages as top-level nodes and key insights, anomalies, transformation rules, and visual summaries nested within each stage",
+  "capabilities": [
+    "Organize findings by analysis stage",
+    "Enable efficient cross-referencing between stages",
+    "Store relationships between data anomalies and cleansing steps",
+    "Link transformation rules to source insights",
+    "Maintain context-rich visualization summaries",
+    "Support incremental updates and traceability of insights"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "risk_patterns": [
+    "Multiple attempts to access unauthorized endpoints",
+    "Accessing '/api/admin' with repeated 403 status code",
+    "Trying to access '/api/users/admin' with a 404 status code"
+  ],
+  "confidence": 8
+}

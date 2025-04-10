@@ -1,0 +1,96 @@
+[
+  {
+    "agent": "data_profiler",
+    "content": "Analyze the customer journey data. Identify key metrics, anomalies, and overall data quality issues. Return a comprehensive profile of the dataset.",
+    "file": "customer_journey.csv",
+    "tools": ["repl:execute"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "total_customers": "number",
+        "journey_stages": ["string"],
+        "conversion_rate": "number",
+        "avg_session_duration": "number",
+        "anomalies": ["string"],
+        "data_quality_issues": ["string"],
+        "key_segments": ["object"]
+      }
+    }
+  },
+  {
+    "agent": "optimization_initializer",
+    "content": "Initialize an optimization workflow to enhance our customer journey analysis. List the available optimization patterns.",
+    "readFrom": ["data_profiler"],
+    "tools": ["optimization:list_patterns"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "patterns": "object",
+        "selected_pattern": "string",
+        "justification": "string"
+      }
+    }
+  },
+  {
+    "agent": "optimization_session_creator",
+    "content": "Create an optimization session using the 'feedback_loop' pattern to enhance our customer journey analysis.",
+    "readFrom": ["optimization_initializer", "data_profiler"],
+    "tools": ["optimization:create_session"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "session_id": "string",
+        "pattern": "string",
+        "description": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_initializer",
+    "content": "Initialize a cognitive planning workflow to develop insights from our customer journey analysis. List the available cognitive patterns.",
+    "readFrom": ["data_profiler"],
+    "tools": ["cognitive:list_patterns"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "patterns": "object",
+        "selected_pattern": "string",
+        "justification": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_session_creator",
+    "content": "Create a cognitive planning session using the 'multi_agent_debate' pattern to analyze differing perspectives on our customer journey data.",
+    "readFrom": ["cognitive_initializer", "data_profiler"],
+    "tools": ["cognitive:create_session"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "session_id": "string",
+        "pattern": "string",
+        "description": "string"
+      }
+    }
+  },
+  {
+    "agent": "test_reporter",
+    "content": "Generate a comprehensive report on the tool testing results with customer journey data.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Customer Journey Analysis with Tool Testing Summary",
+        "Data Profile Results",
+        "Optimization Tools Verification",
+        "Cognitive Planning Tools Verification",
+        "Integration Insights",
+        "Recommendations"
+      ]
+    }
+  }
+]

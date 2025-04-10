@@ -1,0 +1,7 @@
+```json
+{
+  "status": "error",
+  "step_id": 0,
+  "agent_name": ""
+}
+```

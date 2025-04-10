@@ -1,0 +1,43 @@
+[
+  {
+    "agent": "registry_debugger",
+    "content": "Debug the tool registry to understand why tools are registered but not executing correctly.",
+    "tools": ["repl:debug_registry"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "registry_found": "boolean",
+        "total_tools": "number",
+        "filtered_tools": ["string"],
+        "test_result": "object"
+      }
+    }
+  },
+  {
+    "agent": "optimization_direct_tester",
+    "content": "Test the optimization:list_patterns function by executing code that directly accesses the adapter module.",
+    "tools": ["repl:execute"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "result": "string"
+      }
+    }
+  },
+  {
+    "agent": "findings_reporter",
+    "content": "Generate a comprehensive report on what's happening with the tools.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Diagnostic Summary",
+        "Registry Status",
+        "Tool Execution Analysis",
+        "Recommended Fixes"
+      ]
+    }
+  }
+]

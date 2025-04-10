@@ -1,0 +1,5 @@
+I need to use the tool: sql:tables
+Parameters:
+{
+  "database": "test_sqlite.db"
+}

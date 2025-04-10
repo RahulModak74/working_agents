@@ -1,0 +1,7 @@
+I need to use the tool: research:search
+Parameters:
+{
+  "query": "Artificial Intelligence in Cloud Security role cybersecurity evolving",
+  "max_results": 10,
+  "type": "academic, industry, expert analysis, authoritative sources"
+}

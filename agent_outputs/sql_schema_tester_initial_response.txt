@@ -1,0 +1,6 @@
+I need to use the tool: sql:schema
+Parameters:
+{
+  "database": "test_sqlite.db",
+  "table": "users"
+}

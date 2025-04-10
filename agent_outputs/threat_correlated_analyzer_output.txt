@@ -2,73 +2,235 @@
 {
   "identified_threats": [
     {
-      "threat_type": "Unauthorized Access Attempt",
+      "threat_type": "SQL Injection and Admin Brute-Force Attack",
       "sessions_involved": [
-        "a3c8d9e7f6b2"
+        "sess_98765"
       ],
       "users_affected": [
-        "45678"
+        "anonymous_unknown"
       ],
       "technical_indicators": [
-        "Multiple access denied responses (403)",
-        "Access to sensitive endpoint (/api/admin)",
-        "High response time for login endpoint"
+        "SQL injection patterns detected",
+        "Access from TOR exit node",
+        "Multiple failed login attempts",
+        "High volume POST requests to /admin",
+        "Unusual HTTP methods on /admin",
+        "Spike in response times",
+        "Large data transfer (>2x avg) from /admin"
       ],
       "behavioral_indicators": [
-        "Repeated failed attempts to access /api/admin",
-        "Access reset password endpoint",
-        "Attempted access to non-existent admin user endpoint"
+        "Brute force login attempts",
+        "Unusual access of hidden endpoints",
+        "Off-hours activity anomalies"
       ],
-      "severity": 85,
-      "confidence": 85
+      "severity": 9,
+      "confidence": 0.95
+    },
+    {
+      "threat_type": "Automated Vulnerability Scanning",
+      "sessions_involved": [
+        "sess_93456"
+      ],
+      "users_affected": [
+        "anonymous_unknown"
+      ],
+      "technical_indicators": [
+        "Non-standard HTTP methods",
+        "Scanning for /.env and misconfig files",
+        "Triggering large number of 5xx errors",
+        "Strange scanner user-agent",
+        "Elevated response times",
+        "Large file access attempts"
+      ],
+      "behavioral_indicators": [
+        "Access to hidden or sensitive files without authentication",
+        "Unusual session progression bypassing normal navigation flows",
+        "Off-hours multi-endpoint probes"
+      ],
+      "severity": 8,
+      "confidence": 0.9
+    },
+    {
+      "threat_type": "Unauthorized Data Manipulation Attempts",
+      "sessions_involved": [
+        "sess_90231"
+      ],
+      "users_affected": [
+        "anonymous_unknown"
+      ],
+      "technical_indicators": [
+        "Unusual DELETE requests without auth",
+        "Frequent 401 and 403 status codes",
+        "Elevated endpoint response times",
+        "Timing anomalies (overnight activity)"
+      ],
+      "behavioral_indicators": [
+        "Attempted unauthorized resource deletions",
+        "Reconnaissance for privilege escalation",
+        "Abnormal session progression with destructive requests first"
+      ],
+      "severity": 7,
+      "confidence": 0.85
+    },
+    {
+      "threat_type": "Credential Stuffing and API Key Brute-Force",
+      "sessions_involved": [
+        "sess_86543"
+      ],
+      "users_affected": [
+        "anonymous_unknown"
+      ],
+      "technical_indicators": [
+        "Abnormal PUT and DELETE on /api/auth",
+        "High spike in 429 errors",
+        "Spoofed user-agent usage",
+        "Rapid repeated calls to API endpoints"
+      ],
+      "behavioral_indicators": [
+        "Multiple failed login attempts",
+        "Fast repetitive API credential attempts",
+        "Deviation from normal API usage patterns"
+      ],
+      "severity": 8,
+      "confidence": 0.9
+    },
+    {
+      "threat_type": "Automated API Enumeration",
+      "sessions_involved": [
+        "sess_87654"
+      ],
+      "users_affected": [
+        "anonymous_unknown"
+      ],
+      "technical_indicators": [
+        "Mix of HEAD and OPTIONS requests",
+        "Originating from datacenter IP",
+        "Fast sequential API endpoint probing"
+      ],
+      "behavioral_indicators": [
+        "Non-interactive automated request pattern",
+        "No authentication flow but extensive API access"
+      ],
+      "severity": 6,
+      "confidence": 0.8
     }
   ],
   "potential_campaigns": [
     {
-      "campaign_id": "Probing Campaign",
+      "campaign_id": "camp_sql_bruteforce_001",
       "related_sessions": [
-        "a3c8d9e7f6b2"
+        "sess_98765",
+        "sess_86543"
       ],
       "common_characteristics": [
-        "Multiple access denied responses (403)",
-        "Access to sensitive endpoint (/api/admin)",
-        "High response time for login endpoint"
+        "Brute force login attempts",
+        "Credential stuffing indicators",
+        "Access to restricted or admin endpoints",
+        "Bypassing authentication with anomaly HTTP methods",
+        "Fast sequential requests"
       ],
-      "timeline": "2025-03-25T08:23:45Z to 2025-03-25T08:26:01Z",
-      "probable_intent": "Gain unauthorized access to sensitive endpoints",
-      "sophistication_level": "Moderate"
+      "timeline": "2024-03-01T00:00:00Z to 2024-03-31T23:59:59Z",
+      "probable_intent": "Account compromise and privilege escalation",
+      "sophistication_level": "Medium-High"
+    },
+    {
+      "campaign_id": "camp_scanning_recon_001",
+      "related_sessions": [
+        "sess_93456",
+        "sess_87654"
+      ],
+      "common_characteristics": [
+        "Automated scanner fingerprints",
+        "Access attempts to hidden, configuration, version control files",
+        "Use of non-standard methods",
+        "Generation of server errors",
+        "Fast multi-endpoint sequential probing"
+      ],
+      "timeline": "2024-03-01T00:00:00Z to 2024-03-31T23:59:59Z",
+      "probable_intent": "Reconnaissance for vulnerabilities and misconfigurations",
+      "sophistication_level": "Medium"
+    },
+    {
+      "campaign_id": "camp_data_manip_delete_001",
+      "related_sessions": [
+        "sess_90231"
+      ],
+      "common_characteristics": [
+        "Unauthorized DELETE requests",
+        "Timing anomalies during low activity hours",
+        "Recon on user and post endpoints",
+        "Privilege escalation attempts without proper auth"
+      ],
+      "timeline": "2024-03-01T00:00:00Z to 2024-03-31T23:59:59Z",
+      "probable_intent": "Sabotage or unauthorized data modification/deletion",
+      "sophistication_level": "Medium"
     }
   ],
   "security_weaknesses_identified": [
     {
-      "weakness": "Inadequate Access Control",
+      "weakness": "Exposure of Hidden or Sensitive Files (e.g., .env, hidden-status)",
       "evidence": [
-        "Multiple access denied responses (403)",
-        "Access to sensitive endpoint (/api/admin)"
+        "Repeated GET requests to /.env and /hidden-status",
+        "Elevated data transfer on /.env",
+        "Frequent 403s and 404s indicating presence awareness by attackers"
       ],
-      "exploitability": 75,
+      "exploitability": 0.9,
       "recommended_controls": [
-        "Implement stricter access control policies",
-        "Monitor and alert on repeated access denied responses"
+        "Restrict access to sensitive files with web server rules",
+        "Harden endpoint permissions",
+        "Audit internal file exposure regularly"
       ]
     },
     {
-      "weakness": "Potential Brute Force Vulnerability",
+      "weakness": "Insufficient Authentication Enforcement on Sensitive Endpoints",
       "evidence": [
-        "High response time for login endpoint",
-        "Access reset password endpoint"
+        "Unauthorized POST, PUT, DELETE attempts on /admin and /api/auth",
+        "401 and 403 responses consistently triggered",
+        "Brute-force indicators without effective lockout"
       ],
-      "exploitability": 65,
+      "exploitability": 0.85,
       "recommended_controls": [
-        "Implement rate limiting on login attempts",
-        "Enforce strong password policies"
+        "Implement strict authentication and authorization checks",
+        "Add rate limiting and lockout mechanisms",
+        "Use multi-factor authentication for admin/API access"
+      ]
+    },
+    {
+      "weakness": "Susceptibility to Automated Enumeration and Scanning",
+      "evidence": [
+        "Automated HEAD/OPTIONS scanning of API endpoints",
+        "Fast sequential probes from datacenter IPs",
+        "Presence of excessive error codes triggered by scans"
+      ],
+      "exploitability": 0.8,
+      "recommended_controls": [
+        "Deploy WAF/IP reputation filtering",
+        "Use anomaly detection on high request rate IPs",
+        "Implement stealth ban/slowdown tactics for suspected bots"
+      ]
+    },
+    {
+      "weakness": "Potential for SQL Injection Exploitation",
+      "evidence": [
+        "Detected SQL injection payloads via unusual input patterns",
+        "Large response delays and increased data transfer in critical endpoints",
+        "Use of scanner tools (e.g., sqlmap signatures)"
+      ],
+      "exploitability": 0.9,
+      "recommended_controls": [
+        "Perform server-side input validation and sanitization",
+        "Implement prepared statements/parameterized queries",
+        "Monitor and block suspicious payload patterns with WAF"
       ]
     }
   ],
   "false_positive_assessment": {
-    "likely_false_positives": [],
-    "confidence": 95,
-    "justification": "The observed patterns strongly indicate malicious intent with no plausible benign explanation."
+    "likely_false_positives": [
+      "Some high response times during legitimate server load peaks",
+      "Isolated 5xx errors potentially caused by server misconfiguration rather than attacks"
+    ],
+    "confidence": 0.2,
+    "justification": "Most anomalies correlate with attack behaviors across multiple sessions and tools, and align with off-hours spikes and automation signatures; minimal evidence supports benign causes."
   }
 }
 ```

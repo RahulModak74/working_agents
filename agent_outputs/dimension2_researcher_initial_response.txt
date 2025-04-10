@@ -1,0 +1,6 @@
+I need to use the tool: research:search
+Parameters:
+{
+  "query": "AI integration in Security Operations Center SOC 2023 authoritative reports insights use cases",
+  "num_results": 10
+}

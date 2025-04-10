@@ -1,0 +1,6 @@
+I need to use the tool: research:search
+Parameters:
+{
+  "query": "AI applications in Blue Team cybersecurity defense",
+  "limit": 10
+}

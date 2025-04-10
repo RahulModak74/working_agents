@@ -1,0 +1,6 @@
+I need to use the tool: research:search
+Parameters:
+{
+  "query": "Artificial Intelligence in web penetration testing cybersecurity role evolution authoritative sources",
+  "limit": 10
+}

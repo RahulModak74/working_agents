@@ -1,0 +1,7 @@
+```json
+{
+  "query_executed": "",
+  "status": "failure",
+  "error_message": "Cannot create test_orders: dependency test_users table does not exist due to prior failure"
+}
+```

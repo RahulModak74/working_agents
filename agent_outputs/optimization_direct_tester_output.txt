@@ -1,0 +1,6 @@
+```json
+{
+  "status": "error",
+  "result": "Module 'optimization' not found. Unable to test the list_patterns function."
+}
+```

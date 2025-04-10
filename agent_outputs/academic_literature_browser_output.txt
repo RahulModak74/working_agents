@@ -1,0 +1,6 @@
+I need to use the tool: browser:navigate
+Parameters:
+{
+  "browser_id": "default",
+  "url": "https://scholar.google.com"
+}

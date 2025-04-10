@@ -1,0 +1,18 @@
+```json
+{
+  "session_id": "multi_objective_1744112619_6200",
+  "pattern": "multi_objective",
+  "status": "created",
+  "current_stage": 0,
+  "stages": [
+    "initial_solution",
+    "metacognitive_analysis",
+    "counterfactual_exploration",
+    "bias_detection",
+    "reasoning_optimization",
+    "solution_revision"
+  ],
+  "created_at": 1744112619.9246848,
+  "results_available": []
+}
+```

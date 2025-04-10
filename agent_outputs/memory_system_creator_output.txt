@@ -1,0 +1,9 @@
+```json
+{
+  "status": "error",
+  "system_id": "",
+  "pattern": "",
+  "description": "Tool execution failed due to missing required parameter 'pattern_id' in memory:create_system call.",
+  "capabilities": []
+}
+```

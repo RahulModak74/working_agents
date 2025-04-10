@@ -1,0 +1,6 @@
+I need to use the tool: research:search
+Parameters:
+{
+  "query": "AI in cybersecurity incident reporting automation benefits challenges",
+  "num_results": 10
+}

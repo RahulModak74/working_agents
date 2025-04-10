@@ -1,0 +1,24 @@
+```json
+{
+  "verified_relationships": [
+    "PARTNERID values are consistently unique and appear well-formed as potential primary keys within the BusinessPartners section",
+    "CustomerID appears consistently within SalesOrders/SalesOrderItems, indicating linkage from order entries to customer entities",
+    "Each order in SalesOrders has associated product transaction entries in SalesOrderItems via common OrderID fields visible in sample",
+    "Overlapping partner email addresses in partners and transactional data suggest linkage across entities, although not primary-key enforced"
+  ],
+  "integrity_violations": [
+    "SALESORDERID (or equivalent OrderID) values in SalesOrderItems sometimes do not clearly reference unique or existing SalesOrder IDs within truncated preview",
+    "CustomerID values in sales transactions show formats unlike the PARTNERID field, implying a missing/unclear foreign key constraint between customers and partners",
+    "The BusinessPartners PARTNERID format includes decimals (e.g., 100000000.00), risking key misinterpretation or mismatches in lookups from transactional tables expecting integer IDs",
+    "Potential for unmatched or dangling SalesOrderEntries due to inconsistent or duplicated OrderID formats across sections, exacerbated by mixed date styles complicating order lifecycle linking"
+  ],
+  "data_consistency_issues": [
+    "Multiple formats for IDs (decimals vs text) could lead to parsing mismatches and broken join conditions",
+    "No evidence of enforced referential constraints − e.g., in previewed transaction rows, CustomerID is in string format inconsistent with PARTNERID decimals",
+    "Presence of duplicate or near-duplicate customer names and emails in transaction data increasing risk of ambiguous partner references",
+    "Mixed date formats across order and partner info complicate matching based on temporal attributes",
+    "Unusual discount values (up to 90%) may reveal data entry errors impacting item-to-order price rollups and financial linkages"
+  ],
+  "impact_on_analysis": "Due to inconsistent key formats, mixed identifier data types, and lack of enforced referential integrity, analyses combining partner master data with transactional order data may yield incomplete joins or mismatched records. This can distort sales metrics, customer segmentation, or supplier performance insights, necessitating thorough data standardization, cleansing of keys, and schema enforcement to ensure trustworthy relational analytics."
+}
+```

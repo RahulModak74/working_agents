@@ -1,0 +1,127 @@
+[
+  {
+    "agent": "distributed_memory_architect",
+    "content": "Design a comprehensive distributed memory architecture integrating federated knowledge graphs, context-aware storage hierarchies, and cross-agent synchronization for the {application_domain}.",
+    "tools": ["planning:create_plan"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "architecture_design": {
+          "overall_structure": "string",
+          "federation_approach": "string",
+          "hierarchy_design": "string",
+          "synchronization_protocol": "string",
+          "implementation_phases": ["string"]
+        }
+      }
+    },
+    "memory_id": "master_memory"
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on the distributed memory architecture design, determine which component should be initialized first: 'federated_graph', 'hierarchy_setup', or 'sync_protocol'.",
+    "readFrom": ["distributed_memory_architect"],
+    "memory_id": "master_memory",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "initialization_decision": "string",
+        "rationale": "string"
+      }
+    },
+    "actions": {
+      "federated_graph": {
+        "agent": "knowledge_graph_initializer",
+        "content": "Initialize the federated knowledge graph system based on the architecture design.",
+        "readFrom": ["distributed_memory_architect"],
+        "tools": ["vector_db:batch_add", "planning:create_plan"]
+      },
+      "hierarchy_setup": {
+        "agent": "memory_hierarchy_architect",
+        "content": "Initialize the context-aware memory hierarchy based on the architecture design.",
+        "readFrom": ["distributed_memory_architect"],
+        "tools": ["planning:create_plan", "sql:query"]
+      },
+      "sync_protocol": {
+        "agent": "memory_sync_coordinator",
+        "content": "Initialize the cross-agent memory synchronization protocol based on the architecture design.",
+        "readFrom": ["distributed_memory_architect"],
+        "tools": ["planning:create_plan"]
+      }
+    }
+  },
+  {
+    "agent": "memory_integrator",
+    "content": "Integrate the components of the distributed memory architecture that have been initialized. Establish connections between the federated knowledge graph, memory hierarchy, and synchronization protocol.",
+    "readFrom": ["distributed_memory_architect", "dynamic_agent", "*"],
+    "tools": ["planning:chain_of_thought", "sql:query"],
+    "memory_id": "master_memory",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "integration_results": {
+          "connected_components": ["string"],
+          "integration_points": [
+            {
+              "component_a": "string",
+              "component_b": "string",
+              "interface_type": "string",
+              "data_flow": "string"
+            }
+          ],
+          "verification_results": ["string"],
+          "overall_status": "string"
+        }
+      }
+    }
+  },
+  {
+    "agent": "memory_system_controller",
+    "content": "Create the operational control system for the distributed memory architecture. Implement monitoring, management interfaces, and performance optimization capabilities.",
+    "readFrom": ["distributed_memory_architect", "memory_integrator", "*"],
+    "tools": ["planning:create_plan", "sql:query"],
+    "memory_id": "master_memory",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "control_system": {
+          "monitoring_dashboard": {
+            "metrics": ["string"],
+            "alerts": ["string"],
+            "visualizations": ["string"]
+          },
+          "management_interface": {
+            "commands": ["string"],
+            "policies": ["string"],
+            "access_controls": ["string"]
+          },
+          "optimization_engine": {
+            "performance_tuners": ["string"],
+            "adaptation_mechanisms": ["string"],
+            "learning_capabilities": ["string"]
+          }
+        }
+      }
+    }
+  },
+  {
+    "agent": "memory_system_tester",
+    "content": "Design and execute comprehensive tests for the distributed memory architecture. Verify functionality, performance, fault tolerance, and scalability.",
+    "readFrom": ["distributed_memory_architect", "memory_integrator", "memory_system_controller"],
+    "tools": ["planning:create_plan", "sql:query"],
+    "memory_id": "master_memory",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Test Strategy Overview",
+        "Functional Testing Results",
+        "Performance Benchmarks",
+        "Fault Tolerance Evaluation",
+        "Scalability Assessment",
+        "Security Analysis",
+        "Recommendations"
+      ]
+    }
+  }
+]

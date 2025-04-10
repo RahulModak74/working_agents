@@ -1,0 +1,416 @@
+[
+  {
+    "agent": "data_inventory_agent",
+    "content": "Create an inventory of what we can expect to find in the sap_data.csv file based on the column names provided. Identify the different sections (SalesOrders, SalesOrderItems, BusinessPartners, etc.) and key fields in each section.",
+    "file": "sap_data.csv",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "data_sections": ["string"],
+        "key_fields": ["string"],
+        "analysis_approach": "string"
+      }
+    }
+  },
+  {
+    "agent": "data_quality_validator",
+    "content": "Perform a comprehensive data quality assessment on the sap_data.csv file. Analyze completeness, accuracy, consistency, and timeliness of the data. Identify missing values, duplicates, outliers, and any other data quality issues that could impact analysis.",
+    "file": "sap_data.csv",
+    "readFrom": ["data_inventory_agent"],
+    "tools": ["planning:tree_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "quality_metrics": {
+          "completeness": "number",
+          "accuracy": "number",
+          "consistency": "number",
+          "timeliness": "number"
+        },
+        "data_issues": ["string"],
+        "critical_gaps": ["string"],
+        "recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "data_integrity_checker",
+    "content": "Analyze referential integrity across different sections of the sap_data.csv file. Verify that foreign key relationships (like SALESORDERID between orders and items, or PARTNERID between orders and business partners) are maintained. Identify any integrity violations or data inconsistencies.",
+    "file": "sap_data.csv",
+    "readFrom": ["data_inventory_agent", "data_quality_validator"],
+    "tools": ["planning:tree_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "verified_relationships": ["string"],
+        "integrity_violations": ["string"],
+        "data_consistency_issues": ["string"],
+        "impact_on_analysis": "string"
+      }
+    }
+  },
+  {
+    "agent": "sales_orders_analyzer",
+    "content": "Analyze the sales orders data in the sap_data.csv file. Focus on order headers including fields like SALESORDERID, CREATEDBY, PARTNERID, GROSSAMOUNT, etc. Provide a summary of key metrics and patterns. Consider the data quality issues identified previously in your analysis.",
+    "file": "sap_data.csv",
+    "readFrom": ["data_inventory_agent", "data_quality_validator", "data_integrity_checker"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "order_count": "number",
+        "key_metrics": "object",
+        "insights": "string",
+        "quality_adjusted_analysis": "string"
+      }
+    }
+  },
+  {
+    "agent": "sales_order_items_analyzer",
+    "content": "Analyze the sales order items data in the sap_data.csv file. Focus on line items including fields like SALESORDERID, SALESORDERITEM, PRODUCTID, QUANTITY, etc. Identify relationships with order headers. Adjust your analysis based on the previously identified data quality issues.",
+    "file": "sap_data.csv",
+    "readFrom": ["data_inventory_agent", "sales_orders_analyzer", "data_quality_validator", "data_integrity_checker"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "item_count": "number",
+        "key_metrics": "object",
+        "insights": "string",
+        "quality_adjusted_analysis": "string"
+      }
+    }
+  },
+  {
+    "agent": "business_partners_analyzer",
+    "content": "Analyze the business partners data in the sap_data.csv file. Focus on partner information including fields like PARTNERID, PARTNERROLE, COMPANYNAME, etc. Identify relationships with sales orders. Consider data quality limitations in your analysis.",
+    "file": "sap_data.csv",
+    "readFrom": ["data_inventory_agent", "sales_orders_analyzer", "data_quality_validator", "data_integrity_checker"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "partner_count": "number",
+        "key_metrics": "object",
+        "insights": "string",
+        "quality_adjusted_analysis": "string"
+      }
+    }
+  },
+  {
+    "agent": "supply_chain_analyzer",
+    "content": "Analyze the supply chain data in the sap_data.csv file. Focus on relevant fields like SupplierID, ProductID, CustomerID, ShipDate, etc. Identify connections to sales data. Adjust analysis based on known data quality issues.",
+    "file": "sap_data.csv",
+    "readFrom": ["data_inventory_agent", "sales_orders_analyzer", "sales_order_items_analyzer", "data_quality_validator", "data_integrity_checker"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "record_count": "number",
+        "key_metrics": "object",
+        "insights": "string",
+        "quality_adjusted_analysis": "string"
+      }
+    }
+  },
+  {
+    "agent": "industry_benchmark_researcher",
+    "content": "Research industry benchmarks and standards for key SAP business metrics including order processing efficiency, supply chain performance, customer relationship management, and sales performance. Contextualizing our findings against industry standards will provide valuable perspective.",
+    "tools": ["planning:tree_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "sales_benchmarks": "object",
+        "order_processing_benchmarks": "object",
+        "supply_chain_benchmarks": "object",
+        "partner_management_benchmarks": "object",
+        "data_quality_benchmarks": "object",
+        "benchmark_sources": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "benchmarked_analysis_integrator",
+    "content": "Integrate the industry benchmarks with our SAP data analysis to contextualize findings. Compare our metrics against industry standards and identify areas where performance is above or below expectations. This contextual analysis will enhance the value of our insights.",
+    "readFrom": ["industry_benchmark_researcher", "sales_orders_analyzer", "sales_order_items_analyzer", "business_partners_analyzer", "supply_chain_analyzer"],
+    "tools": ["planning:tree_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "contextualized_metrics": "object",
+        "performance_gaps": ["string"],
+        "competitive_advantages": ["string"],
+        "industry_position": "string"
+      }
+    }
+  },
+  {
+    "agent": "reports_document_analyzer",
+    "content": "Analyze the Sales Reports.docx document to identify relevant SAP reports for our data. Match report types to the data we've analyzed so far and determine which standard SAP reports would best address the identified performance gaps.",
+    "file": "Sales Reports.docx",
+    "readFrom": ["sales_orders_analyzer", "sales_order_items_analyzer", "business_partners_analyzer", "supply_chain_analyzer", "benchmarked_analysis_integrator"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "available_reports": ["string"],
+        "recommended_reports": ["string"],
+        "gap_addressing_reports": ["string"],
+        "insights": "string"
+      }
+    }
+  },
+  {
+    "agent": "business_challenge_framer",
+    "content": "Based on all the SAP data analyzed so far, frame the key business challenges and opportunities that need to be addressed. This will serve as input to our cognitive planning process. Incorporate both data quality limitations and industry benchmark comparisons in your assessment.",
+    "readFrom": ["sales_orders_analyzer", "sales_order_items_analyzer", "business_partners_analyzer", "supply_chain_analyzer", "reports_document_analyzer", "data_quality_validator", "benchmarked_analysis_integrator"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "key_challenges": ["string"],
+        "opportunities": ["string"],
+        "priority_areas": ["string"],
+        "data_limitations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "cognitive_pattern_explorer",
+    "content": "List all available cognitive planning patterns to identify the optimal approach for analyzing our SAP data. Focus on patterns that allow for structured exploration of multiple solution paths, especially those suited for business optimization in the context of data quality challenges.",
+    "tools": ["cognitive:list_patterns"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "patterns": "object",
+        "recommendation": "string",
+        "reasoning": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_session_creator",
+    "content": "Create a cognitive planning session using the Tree of Thoughts pattern to address the business challenges identified from our SAP data analysis. Use pattern_id parameter explicitly. Ensure the problem description includes awareness of data quality limitations and industry benchmarking context.",
+    "readFrom": ["cognitive_pattern_explorer", "business_challenge_framer"],
+    "tools": ["cognitive:create_session"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "session_id": "string",
+        "pattern": "string",
+        "description": "string",
+        "stages": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "tot_workflow_navigator",
+    "content": "Navigate through the Tree of Thoughts cognitive planning workflow to identify optimal business improvement approaches for the analyzed SAP data. Use the get_next_step, select_action, and submit_result functions to progress through the process. Ensure that data quality limitations are factored into the decision-making process.",
+    "readFrom": ["cognitive_session_creator", "data_quality_validator"],
+    "tools": ["cognitive:get_next_step", "cognitive:select_action", "cognitive:submit_result"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "session_id": "string",
+        "completed_steps": ["string"],
+        "key_decisions": ["string"],
+        "final_status": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_results_transformer",
+    "content": "Transform the completed Tree of Thoughts cognitive planning session into a structured business optimization plan for the SAP data. Extract specific recommendations and implementation approaches. Factor in data quality considerations and industry benchmarks to ensure recommendations are practical and impactful.",
+    "readFrom": ["tot_workflow_navigator", "data_quality_validator", "benchmarked_analysis_integrator"],
+    "tools": ["cognitive:get_results", "cognitive:transform_for_research"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "business_focus": "string",
+        "optimization_plan": {
+          "goal": "string",
+          "key_approaches": ["string"],
+          "implementation_steps": ["string"]
+        },
+        "expected_benefits": ["string"],
+        "data_quality_dependencies": ["string"],
+        "cognitive_pattern_used": "string"
+      }
+    }
+  },
+  {
+    "agent": "cost_benefit_analyzer",
+    "content": "Conduct a comprehensive cost-benefit analysis for each of the potential improvement areas identified in the cognitive planning process. Estimate implementation costs (technology, process change, training), projected benefits (revenue increase, cost reduction, efficiency gains), and calculate ROI and payback periods to prioritize recommendations.",
+    "readFrom": ["cognitive_results_transformer", "benchmarked_analysis_integrator"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "improvement_areas": [
+          {
+            "area": "string",
+            "estimated_costs": "object",
+            "projected_benefits": "object",
+            "roi": "number",
+            "payback_period": "string",
+            "risk_factors": ["string"]
+          }
+        ],
+        "prioritized_recommendations": ["string"],
+        "financial_impact_summary": "string"
+      }
+    }
+  },
+  {
+    "agent": "sap_implementation_specialist",
+    "content": "Provide detailed SAP-specific implementation guidance for the prioritized recommendations. Include SAP module configurations, transaction codes, tables, BAPIs, and other SAP-specific technical elements required for implementation. Ensure recommendations align with SAP best practices and standard SAP functionality.",
+    "readFrom": ["cognitive_results_transformer", "cost_benefit_analyzer", "reports_document_analyzer"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "implementation_plans": [
+          {
+            "recommendation": "string",
+            "sap_modules": ["string"],
+            "transaction_codes": ["string"],
+            "configuration_steps": ["string"],
+            "technical_requirements": ["string"],
+            "testing_approaches": ["string"]
+          }
+        ],
+        "implementation_timeline": "object",
+        "resource_requirements": "object",
+        "critical_success_factors": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "data_quality_remediation_planner",
+    "content": "Develop a detailed plan to address the data quality issues identified during the analysis. Focus on improving data completeness, accuracy, consistency, and timeliness to support successful implementation of the business improvement recommendations.",
+    "readFrom": ["data_quality_validator", "data_integrity_checker", "cognitive_results_transformer", "sap_implementation_specialist"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "data_quality_objectives": ["string"],
+        "remediation_steps": ["string"],
+        "data_governance_recommendations": ["string"],
+        "validation_procedures": ["string"],
+        "impact_on_business_improvements": "string"
+      }
+    }
+  },
+  {
+    "agent": "implementation_risk_analyzer",
+    "content": "Analyze potential risks and challenges for implementing the recommended SAP improvements, especially considering the identified data quality issues. Provide mitigation strategies to ensure successful implementation.",
+    "readFrom": ["cognitive_results_transformer", "cost_benefit_analyzer", "sap_implementation_specialist", "data_quality_remediation_planner"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "implementation_risks": [
+          {
+            "risk": "string",
+            "probability": "number",
+            "impact": "number",
+            "mitigation_strategy": "string"
+          }
+        ],
+        "critical_dependencies": ["string"],
+        "risk_adjusted_timeline": "object",
+        "contingency_recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "dynamic_implementation_selector",
+    "type": "dynamic",
+    "initial_prompt": "Based on all SAP data analysis, industry benchmarking, cost-benefit analysis, and the Tree of Thoughts optimization planning, determine which business area requires most urgent implementation focus. Choose from: 'sales_optimization', 'customer_management', 'supply_chain_efficiency', or 'order_processing_improvement'. Consider both business impact and implementation feasibility in your selection.",
+    "readFrom": ["sales_orders_analyzer", "sales_order_items_analyzer", "business_partners_analyzer", "supply_chain_analyzer", "cognitive_results_transformer", "cost_benefit_analyzer", "sap_implementation_specialist", "implementation_risk_analyzer"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_approach": "string",
+        "justification": "string",
+        "expected_impact": "string",
+        "implementation_complexity": "string"
+      }
+    },
+    "actions": {
+      "sales_optimization": {
+        "agent": "sales_optimization_planner",
+        "content": "Develop a detailed implementation plan for sales optimization based on the Tree of Thoughts analysis and SAP data insights. Include specific actionable recommendations with timelines, expected outcomes, SAP-specific implementation steps, and data quality dependencies.",
+        "readFrom": ["sales_orders_analyzer", "sales_order_items_analyzer", "cognitive_results_transformer", "cost_benefit_analyzer", "sap_implementation_specialist", "data_quality_remediation_planner"]
+      },
+      "customer_management": {
+        "agent": "customer_management_planner",
+        "content": "Develop a detailed implementation plan for customer relationship management based on the Tree of Thoughts analysis and SAP data insights. Include specific actionable recommendations with timelines, expected outcomes, SAP-specific implementation steps, and data quality dependencies.",
+        "readFrom": ["business_partners_analyzer", "sales_orders_analyzer", "cognitive_results_transformer", "cost_benefit_analyzer", "sap_implementation_specialist", "data_quality_remediation_planner"]
+      },
+      "supply_chain_efficiency": {
+        "agent": "supply_chain_planner",
+        "content": "Develop a detailed implementation plan for supply chain efficiency improvements based on the Tree of Thoughts analysis and SAP data insights. Include specific actionable recommendations with timelines, expected outcomes, SAP-specific implementation steps, and data quality dependencies.",
+        "readFrom": ["supply_chain_analyzer", "sales_order_items_analyzer", "cognitive_results_transformer", "cost_benefit_analyzer", "sap_implementation_specialist", "data_quality_remediation_planner"]
+      },
+      "order_processing_improvement": {
+        "agent": "order_processing_planner",
+        "content": "Develop a detailed implementation plan for order processing improvements based on the Tree of Thoughts analysis and SAP data insights. Include specific actionable recommendations with timelines, expected outcomes, SAP-specific implementation steps, and data quality dependencies.",
+        "readFrom": ["sales_orders_analyzer", "sales_order_items_analyzer", "cognitive_results_transformer", "cost_benefit_analyzer", "sap_implementation_specialist", "data_quality_remediation_planner"]
+      }
+    }
+  },
+  {
+    "agent": "implementation_reliability_tester",
+    "content": "Design test scenarios and validation approaches to ensure reliable execution of the implementation plan. Identify potential execution bottlenecks and develop failsafe mechanisms to maintain implementation continuity.",
+    "readFrom": ["dynamic_implementation_selector", "sap_implementation_specialist", "implementation_risk_analyzer"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "test_scenarios": ["string"],
+        "validation_criteria": ["string"],
+        "performance_metrics": ["string"],
+        "reliability_recommendations": ["string"],
+        "contingency_procedures": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "implementation_validator",
+    "content": "Validate the selected implementation plan against the original SAP data analysis, Tree of Thoughts cognitive results, industry benchmarks, and cost-benefit analysis. Identify any gaps, conflicts, or enhancement opportunities. Confirm that data quality dependencies are properly addressed.",
+    "readFrom": ["dynamic_implementation_selector", "cognitive_results_transformer", "sales_orders_analyzer", "sales_order_items_analyzer", "business_partners_analyzer", "supply_chain_analyzer", "benchmarked_analysis_integrator", "cost_benefit_analyzer", "data_quality_remediation_planner"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "validation_status": "string",
+        "alignment_score": "number",
+        "gaps_identified": ["string"],
+        "enhancement_opportunities": ["string"],
+        "data_dependency_validation": "string"
+      }
+    }
+  },
+  {
+    "agent": "comprehensive_report_creator",
+    "content": "Create a comprehensive report that integrates all findings from the SAP data analysis, data quality assessment, industry benchmarking, Tree of Thoughts cognitive planning, cost-benefit analysis, and implementation planning. Provide a clear roadmap for business optimization with SAP-specific implementation details.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "SAP Data Analysis Overview",
+        "Data Quality Assessment",
+        "Industry Benchmark Comparison",
+        "Business Challenges & Opportunities",
+        "Tree of Thoughts Cognitive Analysis",
+        "Strategic Optimization Plan",
+        "Cost-Benefit Analysis",
+        "SAP-Specific Implementation Details",
+        "Implementation Roadmap",
+        "Data Quality Remediation Plan",
+        "Risk Management",
+        "Expected Business Outcomes",
+        "Key Performance Indicators",
+        "Next Steps",
+        "Appendix: Detailed SAP Reports"
+      ]
+    }
+  }
+]

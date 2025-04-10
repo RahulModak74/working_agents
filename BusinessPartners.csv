@@ -1,0 +1,41 @@
+PARTNERID,PARTNERROLE,EMAILADDRESS,PHONENUMBER,FAXNUMBER,WEBADDRESS,ADDRESSID,COMPANYNAME,LEGALFORM,CREATEDBY,CREATEDAT,CHANGEDBY,CHANGEDAT,CURRENCY
+100000000.00,2.00,maria.brown@all4bikes.com,622734567.00,,http://www.all4bikes.com,1000000034.00,All For Bikes,Inc.,10.00,20181003.00,10.00,20181003.00,USD
+100000001.00,2.00,bob.buyer@amazebikes.com,3088530.00,,http://www.amazebikes.com,1000000035.00,Amaze Bikes Inc,Inc.,13.00,20181003.00,13.00,20181003.00,USD
+100000002.00,2.00,victor.sanchez@arenasportusa.com,3023352668.00,,http://www.arenasportusa.com,1000000036.00,Arena Sports Inc,Inc.,14.00,20181003.00,14.00,20181003.00,USD
+100000003.00,2.00,franklin.jones@atlantausa.com,511403266.00,,http://www.atlantausa.com,1000000037.00,Atlanta Corp Inc,Inc.,10.00,20181003.00,10.00,20181003.00,USD
+100000004.00,2.00,robert_brown@bikeworlds.com,2244668800.00,,http://www.bikeworlds.com,1000000038.00,Bike World Inc,Inc.,4.00,20181003.00,4.00,20181003.00,USD
+100000005.00,1.00,bart.koenig@alphabikes.de,2511415.00,,http://www.alphabikes.de,1000000039.00,Alpha AG,AG,6.00,20181003.00,6.00,20181003.00,EUR
+100000006.00,1.00,sarah.schwind@buchungkreis-gmbh.de,9078563412.00,,http://www.buchungkreis-gmbh.de,1000000040.00,BuchungsKreis 1010,GmbH,1.00,20181003.00,1.00,20181003.00,EUR
+100000007.00,1.00,mirjam.schmidt@trekcycle-berlin.de,149744423.00,,http://www.trekcycle-berlin.de,1000000041.00,Trek Cycle AG,AG,8.00,20181003.00,8.00,20181003.00,EUR
+100000008.00,2.00,saskia.sommer@tonabikes-ag.de,7257716.00,,http://www.tonabikes-ag.de,1000000042.00,Tona Bikes AG,AG,8.00,20181003.00,8.00,20181003.00,EUR
+100000009.00,2.00,dagmar.schulze@meinebicyclebayern.de,1133557799.00,,http://www.meinebicyclebayern.de,1000000043.00,Meine Bicycle,GmbH,13.00,20181003.00,13.00,20181003.00,EUR
+100000010.00,1.00,jorgemontalban@avantegrande.co.uk,6789012345.00,,http://www.avantegrande.co.uk,1000000044.00,Avante Grande Bikes,Ltd.,10.00,20181003.00,10.00,20181003.00,GBP
+100000011.00,2.00,johanna.esther@bikeon.co.uk,6623612804.00,,http://www.bikeon.co.uk,1000000045.00,Bike On,Ltd.,13.00,20181003.00,13.00,20181003.00,GBP
+100000012.00,1.00,miguel.luengo@carefreecycles.com,2589436180.00,,http://www.carefreecycles.com,1000000046.00,Carefree Cycles,Ltd.,1.00,20181003.00,1.00,20181003.00,GBP
+100000013.00,1.00,isabel.nemours@gnmbikes.co.uk,4507867136.00,,http://www.gnmbikes.co.uk/,1000000047.00,G&M Bicycle,Ltd.,8.00,20181003.00,8.00,20181003.00,GBP
+100000014.00,2.00,igor.tarassow@keepcycling-london.co.uk,5850428367.00,,http://www.keepcycling-london.co.uk,1000000048.00,Keep Cycling,Ltd.,6.00,20181003.00,6.00,20181003.00,GBP
+100000015.00,2.00,alexis.harper@icareaussie.com.au,7609448173.00,,http://www.icareaussie.com.au,1000000049.00,iCare Australia,Inc.,14.00,20181003.00,14.00,20181003.00,AUD
+100000016.00,2.00,c.alfaro@ccsport.com.au,6879342945.00,,http://www.ccsport.com.au,1000000050.00,CC SportWorld,Inc.,8.00,20181003.00,8.00,20181003.00,AUD
+100000017.00,2.00,sven.j@digipay.com.au,2208791738.00,,http://www.digipay.com.au,1000000051.00,DigiPay,Inc.,5.00,20181003.00,5.00,20181003.00,AUD
+100000018.00,1.00,yoshiko.kakuji@techcyclecanberra.com.au,4440238917.00,,http://www.techcyclecanberra.com.au,1000000052.00,TechCycle Canberra,Inc.,8.00,20181003.00,8.00,20181003.00,AUD
+100000019.00,2.00,alessio.galasso@ebike100.com,6328490087.00,,http://www.ebike100.com,1000000053.00,eBike 100,Inc.,6.00,20181003.00,6.00,20181003.00,AUD
+100000020.00,1.00,sujaymishra@cycleworld.co.in,4050378468.00,,http://www.cycleworld.co.in,1000000054.00,Cycle World,Ltd.,12.00,20181003.00,12.00,20181003.00,INR
+100000021.00,1.00,madhu.kumar@hitechsport.com,6065470312.00,,http://www.hitechsport.com,1000000055.00,High Tech Sports Inc,Ltd.,8.00,20181003.00,8.00,20181003.00,INR
+100000022.00,1.00,pooja.singh@tiresonfire.co.in,7980023486.00,,http://www.tiresonfire.co.in,1000000056.00,Tires On Fire,Ltd.,3.00,20181003.00,3.00,20181003.00,INR
+100000023.00,2.00,ajaz.khan@mxbyk.com,3629731486.00,,http://www.mxbyk.com,1000000057.00,MX Bike,Ltd.,8.00,20181003.00,8.00,20181003.00,INR
+100000024.00,1.00,aditya.rajput@fitnessworld.co.in,3206580974.00,,http://www.fitnessworld.co.in,1000000058.00,FitnessWorld,Ltd.,1.00,20181003.00,1.00,20181003.00,INR
+100000025.00,1.00,mudassir.k@homerundubai.com,4580963184.00,,http://www.homerundubai.com,1000000059.00,Homerun Millwork Inc.,Inc.,5.00,20181003.00,5.00,20181003.00,AED
+100000026.00,1.00,rehanshehzad@antoniobikes.com,1012697341.00,,http://www.antoniobikes.com,1000000060.00,Antonio Bandolera,Inc.,4.00,20181003.00,4.00,20181003.00,AED
+100000027.00,1.00,sarfaraz.khan@khancycles.ae,7345697824.00,,http://www.khancycles.ae,1000000061.00,Khan Cycles,Inc.,6.00,20181003.00,6.00,20181003.00,AED
+100000028.00,1.00,alam.sheikh@palmbeachbikes.ae,469614115.00,,http://www.palmbeachbikes.ae,1000000062.00,Palm Beach Bike World,Inc.,7.00,20181003.00,7.00,20181003.00,AED
+100000029.00,1.00,bhushan.shetty@a2zfitnes.com,6839542781.00,,http://www.a2zfitnes.com,1000000063.00,A to Z Fitness,Inc.,9.00,20181003.00,9.00,20181003.00,AED
+100000030.00,1.00,romain.le_mason@hudsonsport.ca,6714954542.00,,http://www.hudsonsport.ca,1000000064.00,Hudson SportsTec,Ltd.,10.00,20181003.00,10.00,20181003.00,CAD
+100000031.00,2.00,anthony.lebouef@ebike36.ca,2483693027.00,,http://www.ebike36.ca,1000000065.00,Ebike 36,Ltd.,3.00,20181003.00,3.00,20181003.00,CAD
+100000032.00,2.00,lisa.felske@wichitasport.com,2094573421.00,,http://www.wichitasport.com,1000000066.00,Wichita Sport,Ltd.,1.00,20181003.00,1.00,20181003.00,CAD
+100000033.00,1.00,jonathan.d.mason@movebybike.ca,4136278910.00,,http://www.movebybike.ca,1000000067.00,Move by Bike,Ltd.,1.00,20181003.00,1.00,20181003.00,CAD
+100000034.00,2.00,amelie.troyat@techcycletoronto.ca,3540671320.00,,http://www.techcycletoronto.ca,1000000068.00,TechCycle,Ltd.,4.00,20181003.00,4.00,20181003.00,CAD
+100000035.00,2.00,sophie.ribery@yourcycleshop.fr,7315064077.00,,http://www.yourcycleshop.fr,1000000069.00,YourCycleShop,S.A.R.L.,7.00,20181003.00,7.00,20181003.00,EUR
+100000036.00,1.00,jorge.velez@unolabmanufacturing.com,4381762683.00,,http://www.unolabmanufacturing.com,1000000070.00,Unolab Manufacturing,S.A.R.L.,13.00,20181003.00,13.00,20181003.00,EUR
+100000037.00,2.00,joseph_gschwandtner@ebike201.fr,9703586412.00,,http://www.ebike201.fr,1000000071.00,E bike 201,S.A.R.L.,4.00,20181003.00,4.00,20181003.00,EUR
+100000038.00,2.00,george_d_grant@thecyclefactor.fr,6843585642.00,,http://www.thecyclefactor.fr,1000000072.00,The Cycle Factor,S.A.R.L.,3.00,20181003.00,3.00,20181003.00,EUR
+100000039.00,1.00,theodor.monathy@eiffelbikes.fr,4203876954.00,,http://www.eiffelbikes.fr,1000000073.00,Eiffel Bikes,S.A.R.L.,9.00,20181003.00,9.00,20181003.00,EUR

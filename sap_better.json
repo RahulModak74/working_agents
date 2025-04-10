@@ -1,0 +1,231 @@
+[
+  {
+    "agent": "data_inventory_agent",
+    "content": "Create an inventory of what we can expect to find in the sap_data.csv file based on the column names provided. Identify the different sections (SalesOrders, SalesOrderItems, BusinessPartners, etc.) and key fields in each section.",
+    "file": "sap_data.csv",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "data_sections": ["string"],
+        "key_fields": ["string"],
+        "analysis_approach": "string"
+      }
+    }
+  },
+  {
+    "agent": "sales_orders_analyzer",
+    "content": "Analyze the sales orders data in the sap_data.csv file. Focus on order headers including fields like SALESORDERID, CREATEDBY, PARTNERID, GROSSAMOUNT, etc. Provide a summary of key metrics and patterns.",
+    "file": "sap_data.csv",
+    "readFrom": ["data_inventory_agent"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "order_count": "number",
+        "key_metrics": "object",
+        "insights": "string"
+      }
+    }
+  },
+  {
+    "agent": "sales_order_items_analyzer",
+    "content": "Analyze the sales order items data in the sap_data.csv file. Focus on line items including fields like SALESORDERID, SALESORDERITEM, PRODUCTID, QUANTITY, etc. Identify relationships with order headers.",
+    "file": "sap_data.csv",
+    "readFrom": ["data_inventory_agent", "sales_orders_analyzer"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "item_count": "number",
+        "key_metrics": "object",
+        "insights": "string"
+      }
+    }
+  },
+  {
+    "agent": "business_partners_analyzer",
+    "content": "Analyze the business partners data in the sap_data.csv file. Focus on partner information including fields like PARTNERID, PARTNERROLE, COMPANYNAME, etc. Identify relationships with sales orders.",
+    "file": "sap_data.csv",
+    "readFrom": ["data_inventory_agent", "sales_orders_analyzer"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "partner_count": "number",
+        "key_metrics": "object",
+        "insights": "string"
+      }
+    }
+  },
+  {
+    "agent": "supply_chain_analyzer",
+    "content": "Analyze the supply chain data in the sap_data.csv file. Focus on relevant fields like SupplierID, ProductID, CustomerID, ShipDate, etc. Identify connections to sales data.",
+    "file": "sap_data.csv",
+    "readFrom": ["data_inventory_agent", "sales_orders_analyzer", "sales_order_items_analyzer"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "record_count": "number",
+        "key_metrics": "object",
+        "insights": "string"
+      }
+    }
+  },
+  {
+    "agent": "reports_document_analyzer",
+    "content": "Analyze the Sales Reports.docx document to identify relevant SAP reports for our data. Match report types to the data we've analyzed so far.",
+    "file": "Sales Reports.docx",
+    "readFrom": ["sales_orders_analyzer", "sales_order_items_analyzer", "business_partners_analyzer", "supply_chain_analyzer"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "available_reports": ["string"],
+        "recommended_reports": ["string"],
+        "insights": "string"
+      }
+    }
+  },
+  {
+    "agent": "business_challenge_framer",
+    "content": "Based on all the SAP data analyzed so far, frame the key business challenges and opportunities that need to be addressed. This will serve as input to our cognitive planning process.",
+    "readFrom": ["sales_orders_analyzer", "sales_order_items_analyzer", "business_partners_analyzer", "supply_chain_analyzer", "reports_document_analyzer"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "key_challenges": ["string"],
+        "opportunities": ["string"],
+        "priority_areas": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "cognitive_pattern_explorer",
+    "content": "List all available cognitive planning patterns to identify the optimal approach for analyzing our SAP data. Focus on patterns that allow for structured exploration of multiple solution paths.",
+    "tools": ["cognitive:list_patterns"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "patterns": "object",
+        "recommendation": "string",
+        "reasoning": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_session_creator",
+    "content": "Create a cognitive planning session using the Tree of Thoughts pattern to address the business challenges identified from our SAP data analysis. Use pattern_id parameter explicitly.",
+    "readFrom": ["cognitive_pattern_explorer", "business_challenge_framer"],
+    "tools": ["cognitive:create_session"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "session_id": "string",
+        "pattern": "string",
+        "description": "string",
+        "stages": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "tot_workflow_navigator",
+    "content": "Navigate through the Tree of Thoughts cognitive planning workflow to identify optimal business improvement approaches for the analyzed SAP data. Use the get_next_step, select_action, and submit_result functions to progress through the process.",
+    "readFrom": ["cognitive_session_creator"],
+    "tools": ["cognitive:get_next_step", "cognitive:select_action", "cognitive:submit_result"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "session_id": "string",
+        "completed_steps": ["string"],
+        "key_decisions": ["string"],
+        "final_status": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_results_transformer",
+    "content": "Transform the completed Tree of Thoughts cognitive planning session into a structured business optimization plan for the SAP data. Extract specific recommendations and implementation approaches.",
+    "readFrom": ["tot_workflow_navigator"],
+    "tools": ["cognitive:get_results", "cognitive:transform_for_research"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "business_focus": "string",
+        "optimization_plan": {
+          "goal": "string",
+          "key_approaches": ["string"],
+          "implementation_steps": ["string"]
+        },
+        "expected_benefits": ["string"],
+        "cognitive_pattern_used": "string"
+      }
+    }
+  },
+  {
+    "agent": "dynamic_implementation_selector",
+    "type": "dynamic",
+    "initial_prompt": "Based on all SAP data analysis and the Tree of Thoughts optimization planning, determine which business area requires most urgent implementation focus. Choose from: 'sales_optimization', 'customer_management', 'supply_chain_efficiency', or 'order_processing_improvement'.",
+    "readFrom": ["sales_orders_analyzer", "sales_order_items_analyzer", "business_partners_analyzer", "supply_chain_analyzer", "cognitive_results_transformer"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_approach": "string",
+        "justification": "string"
+      }
+    },
+    "actions": {
+      "sales_optimization": {
+        "agent": "sales_optimization_planner",
+        "content": "Develop a detailed implementation plan for sales optimization based on the Tree of Thoughts analysis and SAP data insights. Include specific actionable recommendations with timelines and expected outcomes.",
+        "readFrom": ["sales_orders_analyzer", "sales_order_items_analyzer", "cognitive_results_transformer"]
+      },
+      "customer_management": {
+        "agent": "customer_management_planner",
+        "content": "Develop a detailed implementation plan for customer relationship management based on the Tree of Thoughts analysis and SAP data insights. Include specific actionable recommendations with timelines and expected outcomes.",
+        "readFrom": ["business_partners_analyzer", "sales_orders_analyzer", "cognitive_results_transformer"]
+      },
+      "supply_chain_efficiency": {
+        "agent": "supply_chain_planner",
+        "content": "Develop a detailed implementation plan for supply chain efficiency improvements based on the Tree of Thoughts analysis and SAP data insights. Include specific actionable recommendations with timelines and expected outcomes.",
+        "readFrom": ["supply_chain_analyzer", "sales_order_items_analyzer", "cognitive_results_transformer"]
+      },
+      "order_processing_improvement": {
+        "agent": "order_processing_planner",
+        "content": "Develop a detailed implementation plan for order processing improvements based on the Tree of Thoughts analysis and SAP data insights. Include specific actionable recommendations with timelines and expected outcomes.",
+        "readFrom": ["sales_orders_analyzer", "sales_order_items_analyzer", "cognitive_results_transformer"]
+      }
+    }
+  },
+  {
+    "agent": "implementation_validator",
+    "content": "Validate the selected implementation plan against the original SAP data analysis and Tree of Thoughts cognitive results. Identify any gaps, conflicts, or enhancement opportunities.",
+    "readFrom": ["dynamic_implementation_selector", "cognitive_results_transformer", "sales_orders_analyzer", "sales_order_items_analyzer", "business_partners_analyzer", "supply_chain_analyzer"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "validation_status": "string",
+        "alignment_score": "number",
+        "gaps_identified": ["string"],
+        "enhancement_opportunities": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "comprehensive_report_creator",
+    "content": "Create a comprehensive report that integrates all findings from the SAP data analysis, Tree of Thoughts cognitive planning, and implementation planning. Provide a clear roadmap for business optimization.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "SAP Data Analysis Overview",
+        "Business Challenges & Opportunities",
+        "Tree of Thoughts Cognitive Analysis",
+        "Strategic Optimization Plan",
+        "Implementation Roadmap",
+        "Expected Business Outcomes",
+        "Key Performance Indicators",
+        "Next Steps",
+        "Appendix: Detailed SAP Reports"
+      ]
+    }
+  }
+]

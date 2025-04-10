@@ -1,0 +1,5 @@
+I need to use the tool: browser:create
+Parameters:
+{
+  "url": "https://scholar.google.com"
+}

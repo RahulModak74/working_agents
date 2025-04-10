@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Research Jobs</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f2f2f2; }
+        tr:hover { background-color: #f5f5f5; }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+        .status-processing { background-color: #2196F3; }
+        .status-generating { background-color: #FF9800; }
+        .status-running { background-color: #9C27B0; }
+        .status-completed { background-color: #4CAF50; }
+        .status-error { background-color: #F44336; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Research Jobs</h1>
+        
+        {% if jobs %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Job ID</th>
+                    <th>Topic</th>
+                    <th>Status</th>
+                    <th>Started</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job_id, job in jobs.items() %}
+                <tr>
+                    <td>{{ job_id[:8] }}...</td>
+                    <td>{{ job.topic }}</td>
+                    <td>
+                        <span class="status-badge status-{{ job.status }}">{{ job.status }}</span>
+                    </td>
+                    <td>{{ job.started_at|timestamp_to_date }}</td>
+                    <td>
+                        <a href="/status/{{ job_id }}">View Status</a>
+                        {% if job.status == 'completed' and job.result_file %}
+                        | <a href="/results/{{ job_id }}">View Results</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No research jobs found.</p>
+        {% endif %}
+        
+        <p><a href="/">Submit New Research</a></p>
+    </div>
+</body>
+</html>

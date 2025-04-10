@@ -1,0 +1,108 @@
+# Traffic Blocking Strategy Based on Security Analysis
+
+To mitigate the identified threats and strengthen the security posture, the following traffic blocking strategy is proposed. This strategy includes IP blocking, user agent restrictions, rate limiting, and endpoint access controls.
+
+---
+
+## **1. IP Addresses to Block**
+Based on the analysis, the following IP addresses exhibit suspicious behavior and should be blocked immediately:
+
+- **192.168.1.100**:  
+  - **Reason**: Multiple sessions from the same IP, high number of POST requests, and access to sensitive endpoints such as `/login`, `/admin`, and `/user/data`.  
+  - **Action**: Block entirely from all endpoints.
+
+- **203.0.113.45**:  
+  - **Reason**: Access to admin endpoints using an outdated user agent (`curl/7.64.1`) and unusual timing.  
+  - **Action**: Block from accessing `/admin` and `/settings` endpoints.
+
+**Implementation Rule**:  
+```plaintext
+iptables -A INPUT -s 192.168.1.100 -j DROP  
+iptables -A INPUT -s 203.0.113.45 -j DROP
+```
+
+---
+
+## **2. User Agents to Restrict**
+The following user agents are associated with suspicious activity and should be restricted:
+
+- **curl/7.64.1**:  
+  - **Reason**: Outdated user agent accessing admin and settings endpoints.  
+  - **Action**: Block requests from this user agent.
+
+**Implementation Rule**:  
+```plaintext
+if ($http_user_agent ~* "curl/7.64.1") {  
+    return 403;  
+}
+```
+
+---
+
+## **3. Rate Limiting Recommendations**
+To mitigate brute force attacks and unusual request patterns, implement rate limiting on the following endpoints:
+
+- **/login**:  
+  - **Threshold**: 10 requests per minute per IP.  
+  - **Action**: Block IP temporarily for 5 minutes if the threshold is exceeded.
+
+- **/admin**:  
+  - **Threshold**: 5 requests per minute per IP.  
+  - **Action**: Block IP temporarily for 10 minutes if the threshold is exceeded.
+
+**Implementation Rule**:  
+```plaintext
+limit_req_zone $binary_remote_addr zone=login_limit:10m rate=10r/m;  
+limit_req_zone $binary_remote_addr zone=admin_limit:10m rate=5r/m;  
+
+location /login {  
+    limit_req zone=login_limit burst=5 nodelay;  
+}  
+
+location /admin {  
+    limit_req zone=admin_limit burst=3 nodelay;  
+}
+```
+
+---
+
+## **4. Endpoint Access Restrictions**
+To prevent unauthorized access and privilege escalation, restrict access to critical endpoints:
+
+- **/admin**:  
+  - **Allowed IPs**: Whitelist trusted IP addresses (e.g., internal network IPs).  
+  - **Allowed User Agents**: Modern browsers (e.g., Chrome, Firefox, Safari).  
+  - **Action**: Block all other IPs and user agents.
+
+- **/settings**:  
+  - **Allowed Methods**: Only `GET` and `POST`.  
+  - **Action**: Block `PUT` and other methods.
+
+**Implementation Rule**:  
+```plaintext
+location /admin {  
+    allow 192.168.1.0/24;  
+    deny all;  
+
+    if ($http_user_agent !~* "Mozilla|Chrome|Safari|Firefox") {  
+        return 403;  
+    }  
+}  
+
+location /settings {  
+    if ($request_method !~ ^(GET|POST)$) {  
+        return 405;  
+    }  
+}
+```
+
+---
+
+## **5. Additional Recommendations**
+1. **Monitor Temporal Patterns**: Enhance monitoring during peak activity times (12:00 PM and 3:00 PM) for unusual behavior.  
+2. **Implement Multi-Factor Authentication (MFA)**: Enforce MFA for access to `/login` and `/admin` endpoints.  
+3. **Alert on Unusual Timing**: Set up alerts for requests to `/admin` and `/settings` during unusual hours.  
+
+---
+
+This strategy is designed to address the identified threats effectively while minimizing disruption to legitimate users. Regularly review and update the rules based on ongoing monitoring and threat analysis.

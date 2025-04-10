@@ -1,0 +1,22 @@
+[
+  {
+    "agent": "forced_browser_test",
+    "content": "You are a browser automation agent. You MUST EXECUTE these exact tool calls in sequence:\n\n1. First, create a browser with these EXACT parameters:\nI need to use the tool: browser:create\nParameters:\n{\n  \"browser_id\": \"test_browser\",\n  \"headless\": false\n}\n\n2. After getting the result, navigate to Google with these EXACT parameters:\nI need to use the tool: browser:navigate\nParameters:\n{\n  \"url\": \"https://www.google.com\",\n  \"browser_id\": \"test_browser\"\n}\n\n3. After getting the result, get the page content with these EXACT parameters:\nI need to use the tool: browser:get_content\nParameters:\n{\n  \"browser_id\": \"test_browser\",\n  \"content_type\": \"text\"\n}\n\n4. After getting the result, find elements with these EXACT parameters:\nI need to use the tool: browser:find_elements\nParameters:\n{\n  \"selector\": \"a\",\n  \"browser_id\": \"test_browser\"\n}\n\n5. Finally, close the browser with these EXACT parameters:\nI need to use the tool: browser:close\nParameters:\n{\n  \"browser_id\": \"test_browser\"\n}\n\nAfter executing all these tool calls in order, summarize what you found in the requested output format. DO NOT SKIP ANY TOOL CALLS!",
+    "tools": [
+      "browser:create",
+      "browser:navigate",
+      "browser:get_content",
+      "browser:find_elements",
+      "browser:close"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "webpage_title": "string",
+        "content_found": "boolean",
+        "links_count": "number",
+        "browser_closed": "boolean"
+      }
+    }
+  }
+]

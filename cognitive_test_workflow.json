@@ -1,0 +1,121 @@
+[
+  {
+    "agent": "cognitive_pattern_lister",
+    "content": "List all available cognitive planning patterns to verify the cognitive tools are properly loaded and functioning.",
+    "tools": ["cognitive:list_patterns"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "patterns": "object",
+        "verification": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_session_creator",
+    "content": "Create a new cognitive planning session using the 'tree_of_thoughts' pattern to verify session creation functionality.",
+    "readFrom": ["cognitive_pattern_lister"],
+    "tools": ["cognitive:create_session"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "session_id": "string",
+        "pattern": "string",
+        "verification": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_status_checker",
+    "content": "Check the status of the created cognitive planning session to verify status retrieval functionality.",
+    "readFrom": ["cognitive_session_creator"],
+    "tools": ["cognitive:get_status"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "session_id": "string",
+        "pattern": "string",
+        "status": "string",
+        "current_stage": "number",
+        "verification": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_step_getter",
+    "content": "Get the next step of the cognitive planning workflow to verify the get_next_step functionality.",
+    "readFrom": ["cognitive_status_checker"],
+    "tools": ["cognitive:get_next_step"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "step_id": "number",
+        "agent_name": "string",
+        "verification": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_result_submitter",
+    "content": "Submit a simple test result to the cognitive planning workflow to verify the submit_result functionality.",
+    "readFrom": ["cognitive_step_getter"],
+    "tools": ["cognitive:submit_result"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "message": "string",
+        "session_status": "string",
+        "verification": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_result_getter",
+    "content": "Get the results of the cognitive planning session to verify the get_results functionality.",
+    "readFrom": ["cognitive_result_submitter"],
+    "tools": ["cognitive:get_results"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "session_id": "string",
+        "status": "string",
+        "results": "object",
+        "verification": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_research_transformer",
+    "content": "Test transforming cognitive planning results into a research plan to verify the transform_for_research functionality.",
+    "readFrom": ["cognitive_result_getter"],
+    "tools": ["cognitive:transform_for_research"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "cognitive_pattern": "string",
+        "research_plan": "object",
+        "verification": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_test_reporter",
+    "content": "Generate a comprehensive report on the cognitive planning tools testing results.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Cognitive Planning Tools Test Summary",
+        "Tool Verification Results",
+        "Test Workflow Execution",
+        "Identified Issues",
+        "Recommendations"
+      ]
+    }
+  }
+]

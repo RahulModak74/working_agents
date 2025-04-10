@@ -1,0 +1,29 @@
+[
+  {
+    "agent": "sqlite_file_creator",
+    "content": "Create a simple SQLite database file for testing using Python's built-in sqlite3 module. We'll create a file named test_sqlite.db in the current directory with a simple test table.",
+    "tools": ["repl"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "database_path": "string",
+        "tables_created": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "sqlite_test_runner",
+    "content": "Now that we have a SQLite database file, let's run some basic SQL operations on it using the SQL adapter tools.",
+    "readFrom": ["sqlite_file_creator"],
+    "tools": ["repl", "sql:tables", "sql:query", "sql:schema"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "tables_test": "object",
+        "query_test": "object",
+        "schema_test": "object"
+      }
+    }
+  }
+]

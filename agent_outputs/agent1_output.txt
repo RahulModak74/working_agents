@@ -1,0 +1,6 @@
+```json
+{
+  "score": 7,
+  "reasoning": "The session log indicates multiple failed authentication attempts followed by access from an unusual location, suggesting potential account compromise risk."
+}
+```

@@ -1,365 +1,386 @@
 #!/usr/bin/env python3
 
 """
-Tools Adapter Module
-This module provides an adapter layer between the workflow JSON tool format and
-the actual tool implementation in tools.py.
+SQLite Adapter Module - Simplified version that directly uses SQLite
 """
 
 import os
 import sys
 import json
+import sqlite3
+import re
 from typing import Any, Dict, List
 
-# Ensure both directories are in the path
-current_dir = os.path.dirname(os.path.abspath(__file__))
-if current_dir not in sys.path:
-    sys.path.insert(0, current_dir)
+# Get current directory for absolute paths
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Try to import the tools module
-try:
-    from tools import (
-        http_get as original_http_get,
-        http_post as original_http_post,
-        sql_query as original_sql_query,
-        sql_tables as original_sql_tables,
-        sql_schema as original_sql_schema,
-        vector_search as original_vector_search,
-        vector_add as original_vector_add,
-        vector_batch_add as original_vector_batch_add,
-        TOOL_MANAGER
-    )
-    real_tools_available = True
-except ImportError:
-    print("Warning: Real tools module not available. Using mock implementations.")
-    real_tools_available = False
-
-# Mock implementations for when real tools aren't available
-def mock_http_get(url, headers=None, **kwargs):
-    """Mock HTTP GET implementation"""
-    print(f"[MOCK] HTTP GET to {url} with headers {headers}")
-    return {
-        "success": True,
-        "status_code": 200,
-        "data": {
-            "message": "This is a mock HTTP GET response",
-            "url": url,
-            "records": 42
-        }
-    }
-
-def mock_http_post(url, headers=None, data=None, **kwargs):
-    """Mock HTTP POST implementation"""
-    print(f"[MOCK] HTTP POST to {url} with headers {headers} and data {data}")
-    return {
-        "success": True,
-        "status_code": 201,
-        "data": {
-            "message": "Data created successfully",
-            "id": "mock-12345"
-        }
-    }
-
-def mock_sql_query(database, query, **kwargs):
-    """Mock SQL query implementation"""
-    print(f"[MOCK] SQL query on database {database}: {query}")
-    return {
-        "success": True,
-        "results": [
-            {"id": 1, "timestamp": "2023-01-01", "endpoint": "/data"},
-            {"id": 2, "timestamp": "2023-01-02", "endpoint": "/users"}
-        ]
-    }
-
-def mock_sql_tables(database, **kwargs):
-    """Mock SQL tables implementation"""
-    print(f"[MOCK] Get tables in database {database}")
-    return ["table1", "table2", "table3"]
-
-def mock_sql_schema(database, table, **kwargs):
-    """Mock SQL schema implementation"""
-    print(f"[MOCK] Get schema for table {table} in database {database}")
-    return {
-        "columns": [
-            {"name": "id", "type": "INTEGER"},
-            {"name": "timestamp", "type": "DATETIME"},
-            {"name": "endpoint", "type": "TEXT"}
-        ]
-    }
-
-def mock_vector_search(collection, query=None, top_k=5, model=None, **kwargs):
-    """Mock vector search implementation"""
-    print(f"[MOCK] Vector search in collection {collection} for '{query}' (top {top_k})")
-    return [
-        {"id": "doc1", "content": "Sample document 1", "score": 0.95},
-        {"id": "doc2", "content": "Sample document 2", "score": 0.85},
-        {"id": "doc3", "content": "Sample document 3", "score": 0.75}
-    ]
-
-def mock_vector_add(collection, text, metadata=None, model=None, **kwargs):
-    """Mock vector add implementation"""
-    print(f"[MOCK] Adding document to collection {collection}")
-    return "mock-doc-id-123"
-
-def mock_vector_batch_add(collection, texts, metadatas=None, model=None, batch_size=None, **kwargs):
-    """Mock vector batch add implementation"""
-    print(f"[MOCK] Adding {len(texts) if texts else 0} documents to collection {collection}")
-    return ["mock-id-1", "mock-id-2", "mock-id-3"]
-
-# Adapter functions that bridge between workflow JSON format and actual tool implementation
-def http_get(**kwargs):
-    """Adapter for HTTP GET requests"""
-    # Extract parameters from kwargs
-    url = kwargs.get("url")
-    headers = kwargs.get("headers")
+def extract_database_path(kwargs):
+    """Extract database path from kwargs with multiple fallbacks"""
+    # Initialize with None
+    database = None
     
-    # Convert from string to dict if needed
-    if isinstance(headers, str):
+    # Method 0: Direct string parameter
+    if isinstance(kwargs, str):
+        database = kwargs
+    
+    # Method 1: Direct parameter lookup
+    if not database and "database" in kwargs:
+        database = kwargs["database"]
+    
+    # Method 2: Find most recently created SQLite database in current directory
+    if not database:
         try:
-            headers = json.loads(headers.replace("'", '"'))
-        except json.JSONDecodeError:
-            headers = {}
+            import glob
+            import os
+            
+            # Find all .sqlite and .db files
+            sqlite_files = glob.glob('*.sqlite') + glob.glob('*.db')
+            
+            if sqlite_files:
+                # Sort by modification time, most recent first
+                sqlite_files.sort(key=os.path.getmtime, reverse=True)
+                database = sqlite_files[0]
+                print(f"Found most recently created database: {database}")
+        except Exception as e:
+            print(f"Error finding database file: {e}")
     
-    if real_tools_available:
-        # Adapt parameters to the real tool
-        # In the real implementation, it expects name, endpoint, params
-        # Extract domain for the name
-        name = "default"
-        endpoint = ""
+    # Method 3: Content text analysis
+    if not database:
+        content = kwargs.get("content", "")
+        if isinstance(content, str):
+            # Try to find database name
+            db_patterns = [
+                r"database ['\"]?(.*?)['\"]?",
+                r"database: ['\"]?(.*?)['\"]?",
+                r"database file ['\"]?(.*?)['\"]?"
+            ]
+            
+            for pattern in db_patterns:
+                match = re.search(pattern, content, re.IGNORECASE)
+                if match:
+                    candidate = match.group(1).strip()
+                    # Clean up quotes if present
+                    if (candidate.startswith("'") and candidate.endswith("'")) or \
+                       (candidate.startswith('"') and candidate.endswith('"')):
+                        candidate = candidate[1:-1]
+                    
+                    # Only use if it looks like a database name
+                    if candidate and ";" not in candidate and " " not in candidate:
+                        database = candidate
+                        break
+    
+    # Method 4: Nested structure
+    if not database:
+        for k, v in kwargs.items():
+            if isinstance(v, dict) and "database" in v:
+                database = v["database"]
+                break
+    
+    # Fallback to default or most recent
+    if not database:
+        # Try to find any .sqlite or .db file
+        import glob
+        sqlite_files = glob.glob('*.sqlite') + glob.glob('*.db')
         
-        if url:
-            # Try to set up the tool with the base URL
-            try:
-                from urllib.parse import urlparse
-                parsed_url = urlparse(url)
-                base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
-                endpoint = parsed_url.path
-                
-                # Create/configure the HTTP tool
-                TOOL_MANAGER.create_http_tool(name, base_url, headers)
-                
-                # Add query parameters if present
-                params = {}
-                if parsed_url.query:
-                    import urllib.parse as urlparse
-                    params = dict(urlparse.parse_qsl(parsed_url.query))
-                
-                # Call the original function with adapted parameters
-                return original_http_get(name, endpoint, params)
-            except Exception as e:
-                print(f"Error adapting HTTP request: {e}")
-                # Fall back to the mock implementation
-                return mock_http_get(url, headers)
+        if sqlite_files:
+            database = sqlite_files[0]
+            print(f"Defaulting to: {database}")
         else:
-            return {"error": "URL not provided for HTTP GET request"}
-    else:
-        # Use the mock implementation
-        return mock_http_get(url, headers)
-
-def http_post(**kwargs):
-    """Adapter for HTTP POST requests"""
-    # Extract parameters from kwargs
-    url = kwargs.get("url")
-    headers = kwargs.get("headers")
-    data = kwargs.get("data")
+            # Last resort
+            database = "test_db.sqlite"
+            print(f"WARNING: No database specified, defaulting to {database}")
     
-    # Convert from string to dict if needed
-    if isinstance(headers, str):
-        try:
-            headers = json.loads(headers.replace("'", '"'))
-        except json.JSONDecodeError:
-            headers = {}
-    
-    if isinstance(data, str):
-        try:
-            data = json.loads(data.replace("'", '"'))
-        except json.JSONDecodeError:
-            pass  # Keep as string if parsing fails
-    
-    if real_tools_available:
-        # Adapt parameters to the real tool
-        name = "default"
-        endpoint = ""
+    # Convert to absolute path if relative
+    if not os.path.isabs(database):
+        # Prioritize current working directory
+        current_dir = os.getcwd()
+        database_path = os.path.join(current_dir, database)
         
-        if url:
-            try:
-                from urllib.parse import urlparse
-                parsed_url = urlparse(url)
-                base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
-                endpoint = parsed_url.path
-                
-                # Create/configure the HTTP tool
-                TOOL_MANAGER.create_http_tool(name, base_url, headers)
-                
-                # Call the original function with adapted parameters
-                return original_http_post(name, endpoint, data)
-            except Exception as e:
-                print(f"Error adapting HTTP POST request: {e}")
-                return mock_http_post(url, headers, data)
-        else:
-            return {"error": "URL not provided for HTTP POST request"}
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(database_path), exist_ok=True)
     else:
-        # Use the mock implementation
-        return mock_http_post(url, headers, data)
+        database_path = database
+    
+    print(f"Using full database path: {database_path}")
+    return database_path
+def execute_sqlite_query(database_path, query):
+    """Execute a SQLite query and return results"""
+    try:
+        print(f"Connecting to SQLite database: {database_path}")
+        
+        # Ensure the directory exists
+        db_dir = os.path.dirname(database_path)
+        if db_dir and not os.path.exists(db_dir):
+            os.makedirs(db_dir, exist_ok=True)
+        
+        # Connect to database (this creates it if it doesn't exist)
+        conn = sqlite3.connect(database_path)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        # Execute the query
+        try:
+            cursor.execute(query)
+            conn.commit()
+            
+            # Check if this is a SELECT query by seeing if it returns rows
+            if cursor.description:
+                # Convert rows to dictionaries
+                columns = [col[0] for col in cursor.description]
+                rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+                
+                # For readability in the results, limit to 10 rows if many
+                display_rows = rows[:10]
+                has_more = len(rows) > 10
+                
+                result = {
+                    "success": True,
+                    "query_type": "SELECT",
+                    "row_count": len(rows),
+                    "results": display_rows
+                }
+                
+                if has_more:
+                    result["note"] = f"Showing first 10 of {len(rows)} rows"
+            else:
+                # This was likely an INSERT, UPDATE, DELETE or CREATE
+                result = {
+                    "success": True,
+                    "query_type": "DML/DDL",
+                    "rows_affected": cursor.rowcount,
+                }
+                
+            return result
+        except sqlite3.Error as e:
+            print(f"SQLite error: {e}")
+            return {
+                "success": False,
+                "error": str(e)
+            }
+        finally:
+            cursor.close()
+            conn.close()
+    except Exception as e:
+        print(f"Exception in sqlite_query: {e}")
+        return {
+            "success": False,
+            "error": str(e)
+        }
 
+def get_sqlite_tables(database_path):
+    """Get list of tables in SQLite database"""
+    try:
+        print(f"Getting tables from: {database_path}")
+        
+        # Create database file if it doesn't exist
+        if not os.path.exists(database_path):
+            print(f"Database file does not exist, creating: {database_path}")
+            conn = sqlite3.connect(database_path)
+            conn.close()
+        
+        # Connect and get table list
+        conn = sqlite3.connect(database_path)
+        cursor = conn.cursor()
+        
+        # Query for all tables
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';")
+        tables = [row[0] for row in cursor.fetchall()]
+        
+        cursor.close()
+        conn.close()
+        
+        return {
+            "success": True,
+            "tables": tables,
+            "database_path": database_path
+        }
+    except Exception as e:
+        print(f"Error getting SQLite tables: {e}")
+        return {
+            "success": False, 
+            "error": str(e),
+            "database_path": database_path
+        }
+
+def get_sqlite_schema(database_path, table_name):
+    """Get schema for a table in SQLite database"""
+    try:
+        print(f"Getting schema for table {table_name} from: {database_path}")
+        
+        conn = sqlite3.connect(database_path)
+        cursor = conn.cursor()
+        
+        # Query for table info
+        cursor.execute(f"PRAGMA table_info({table_name});")
+        columns = cursor.fetchall()
+        
+        # Format column info
+        formatted_columns = []
+        for col in columns:
+            formatted_columns.append({
+                "name": col[1],
+                "type": col[2],
+                "notnull": bool(col[3]),
+                "default_value": col[4],
+                "is_primary_key": bool(col[5])
+            })
+        
+        cursor.close()
+        conn.close()
+        
+        return {
+            "success": True,
+            "table_name": table_name,
+            "columns": formatted_columns,
+            "database_path": database_path
+        }
+    except Exception as e:
+        print(f"Error getting SQLite schema: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "table_name": table_name,
+            "database_path": database_path
+        }
+
+def extract_table_name(kwargs):
+    """Extract table name from kwargs with multiple fallbacks"""
+    # Initialize with None
+    table = None
+    
+    # Method 1: Direct parameter lookup
+    if "table" in kwargs:
+        table = kwargs["table"]
+    
+    # Method 2: Content text analysis
+    if not table:
+        content = kwargs.get("content", "")
+        if isinstance(content, str):
+            # Look for exact table references
+            table_patterns = [
+                r"table ['\"]?(.*?)['\"]?",
+                r"table: ['\"]?(.*?)['\"]?",
+                r"table name ['\"]?(.*?)['\"]?"
+            ]
+            
+            for pattern in table_patterns:
+                match = re.search(pattern, content, re.IGNORECASE)
+                if match:
+                    candidate = match.group(1).strip()
+                    # Clean up quotes
+                    if (candidate.startswith("'") and candidate.endswith("'")) or \
+                       (candidate.startswith('"') and candidate.endswith('"')):
+                        candidate = candidate[1:-1]
+                    
+                    # Only use if it looks like a table name
+                    if candidate and ";" not in candidate:
+                        table = candidate
+                        break
+    
+    # Method 3: Nested structure
+    if not table:
+        for k, v in kwargs.items():
+            if isinstance(v, dict) and "table" in v:
+                table = v["table"]
+                break
+    
+    return table
+
+def extract_query(kwargs):
+    """Extract SQL query from kwargs with multiple fallbacks"""
+    # Initialize with None
+    query = None
+    
+    # Method 1: Direct parameter lookup
+    if "query" in kwargs:
+        query = kwargs["query"]
+    
+    # Method 2: Content text analysis
+    if not query:
+        content = kwargs.get("content", "")
+        if isinstance(content, str):
+            # Look for common SQL statements
+            sql_patterns = [
+                r"query: ['\"]([^;]+;)['\"]",
+                r"query ['\"]([^;]+;)['\"]",
+                r"following query: ['\"]([^;]+;)['\"]",
+                r"(CREATE TABLE [^;]+;)",
+                r"(INSERT INTO [^;]+;)",
+                r"(SELECT [^;]+;)",
+                r"(UPDATE [^;]+;)",
+                r"(DELETE FROM [^;]+;)"
+            ]
+            
+            for pattern in sql_patterns:
+                match = re.search(pattern, content, re.DOTALL | re.IGNORECASE)
+                if match:
+                    query = match.group(1).strip()
+                    break
+    
+    # Method 3: Nested structure
+    if not query:
+        for k, v in kwargs.items():
+            if isinstance(v, dict) and "query" in v:
+                query = v["query"]
+                break
+    
+    return query
+
+# Adapter functions
 def sql_query(**kwargs):
     """Adapter for SQL query execution"""
-    # Extract parameters from kwargs
-    database = kwargs.get("database")
-    query = kwargs.get("query")
+    print(f"\n--- SQL QUERY EXECUTION ---")
+    print(f"Received parameters: {list(kwargs.keys())}")
     
-    if real_tools_available:
-        try:
-            return original_sql_query(database, query)
-        except Exception as e:
-            print(f"Error executing SQL query: {e}")
-            return mock_sql_query(database, query)
-    else:
-        return mock_sql_query(database, query)
+    # Extract the database path and query
+    database_path = extract_database_path(kwargs)
+    query = extract_query(kwargs)
+    
+    # Validate we have required parameters
+    if not query:
+        error_msg = "SQL query not provided"
+        print(f"ERROR: {error_msg}")
+        return {"success": False, "error": error_msg}
+    
+    print(f"Executing query: {query}")
+    
+    # Execute the query
+    return execute_sqlite_query(database_path, query)
 
 def sql_tables(**kwargs):
     """Adapter for SQL tables listing"""
-    database = kwargs.get("database")
+    print(f"\n--- SQL TABLES LISTING ---")
+    print(f"Received parameters: {list(kwargs.keys())}")
     
-    if real_tools_available:
-        try:
-            return original_sql_tables(database)
-        except Exception as e:
-            print(f"Error listing SQL tables: {e}")
-            return mock_sql_tables(database)
-    else:
-        return mock_sql_tables(database)
+    # Extract the database path
+    database_path = extract_database_path(kwargs)
+    
+    # Get the tables
+    return get_sqlite_tables(database_path)
 
 def sql_schema(**kwargs):
     """Adapter for SQL schema retrieval"""
-    database = kwargs.get("database")
-    table = kwargs.get("table")
+    print(f"\n--- SQL SCHEMA RETRIEVAL ---")
+    print(f"Received parameters: {list(kwargs.keys())}")
     
-    if real_tools_available:
-        try:
-            return original_sql_schema(database, table)
-        except Exception as e:
-            print(f"Error retrieving SQL schema: {e}")
-            return mock_sql_schema(database, table)
-    else:
-        return mock_sql_schema(database, table)
-
-def vector_db_search(**kwargs):
-    """Adapter for vector database search"""
-    # Extract parameters from kwargs
-    collection = kwargs.get("collection")
-    query = kwargs.get("query")
-    top_k = kwargs.get("top_k")
-    model = kwargs.get("model")
+    # Extract the database path and table name
+    database_path = extract_database_path(kwargs)
+    table_name = extract_table_name(kwargs)
     
-    # Convert string values to appropriate types
-    if isinstance(top_k, str):
-        try:
-            top_k = int(top_k)
-        except ValueError:
-            top_k = 5
+    # Validate we have required parameters
+    if not table_name:
+        error_msg = "Table name not provided"
+        print(f"ERROR: {error_msg}")
+        return {"success": False, "error": error_msg}
     
-    if real_tools_available:
-        try:
-            # Adapt parameters to the real tool
-            name = collection or "default"
-            k = top_k or 5
-            
-            # Configure the vector DB with the model if needed
-            if model and collection:
-                try:
-                    vector_db = TOOL_MANAGER.get_vector_db(name)
-                    # Check if we need to create a new one with the specified model
-                    if not vector_db or vector_db.model_name != model:
-                        TOOL_MANAGER.create_vector_db(name, model)
-                except Exception as e:
-                    print(f"Error configuring vector database: {e}")
-            
-            return original_vector_search(name, query, k)
-        except Exception as e:
-            print(f"Error searching vector database: {e}")
-            return mock_vector_search(collection, query, top_k, model)
-    else:
-        return mock_vector_search(collection, query, top_k, model)
-
-def vector_db_add(**kwargs):
-    """Adapter for adding a document to vector database"""
-    # Extract parameters from kwargs
-    collection = kwargs.get("collection")
-    text = kwargs.get("text")
-    metadata = kwargs.get("metadata")
-    model = kwargs.get("model")
-    
-    if real_tools_available:
-        try:
-            # Adapt parameters to the real tool
-            name = collection or "default"
-            
-            # Configure the vector DB with the model if needed
-            if model and collection:
-                try:
-                    vector_db = TOOL_MANAGER.get_vector_db(name)
-                    # Check if we need to create a new one with the specified model
-                    if not vector_db or vector_db.model_name != model:
-                        TOOL_MANAGER.create_vector_db(name, model)
-                except Exception as e:
-                    print(f"Error configuring vector database: {e}")
-            
-            return original_vector_add(name, text, metadata)
-        except Exception as e:
-            print(f"Error adding document to vector database: {e}")
-            return mock_vector_add(collection, text, metadata, model)
-    else:
-        return mock_vector_add(collection, text, metadata, model)
-
-def vector_db_batch_add(**kwargs):
-    """Adapter for adding multiple documents to vector database"""
-    # Extract parameters from kwargs
-    collection = kwargs.get("collection")
-    texts = kwargs.get("texts")
-    metadatas = kwargs.get("metadatas")
-    model = kwargs.get("model")
-    batch_size = kwargs.get("batch_size")
-    
-    # Convert string values to appropriate types
-    if isinstance(batch_size, str):
-        try:
-            batch_size = int(batch_size)
-        except ValueError:
-            batch_size = 10
-    
-    if real_tools_available:
-        try:
-            # Adapt parameters to the real tool
-            name = collection or "default"
-            
-            # Configure the vector DB with the model if needed
-            if model and collection:
-                try:
-                    vector_db = TOOL_MANAGER.get_vector_db(name)
-                    # Check if we need to create a new one with the specified model
-                    if not vector_db or vector_db.model_name != model:
-                        TOOL_MANAGER.create_vector_db(name, model)
-                except Exception as e:
-                    print(f"Error configuring vector database: {e}")
-            
-            return original_vector_batch_add(name, texts, metadatas)
-        except Exception as e:
-            print(f"Error batch adding documents to vector database: {e}")
-            return mock_vector_batch_add(collection, texts, metadatas, model, batch_size)
-    else:
-        return mock_vector_batch_add(collection, texts, metadatas, model, batch_size)
+    # Get the schema
+    return get_sqlite_schema(database_path, table_name)
 
 # Tool registry
 TOOL_REGISTRY = {
-    "http:get": http_get,
-    "http:post": http_post,
     "sql:query": sql_query,
     "sql:tables": sql_tables,
-    "sql:schema": sql_schema,
-    "vector_db:search": vector_db_search,
-    "vector_db:add": vector_db_add,
-    "vector_db:batch_add": vector_db_batch_add
+    "sql:schema": sql_schema
 }
 
 def execute_tool(tool_id, **kwargs):
@@ -372,7 +393,15 @@ def execute_tool(tool_id, **kwargs):
             return result
         except Exception as e:
             print(f"Error executing tool {tool_id}: {e}")
+            import traceback
+            traceback.print_exc()
             return {"error": f"Tool execution failed: {str(e)}"}
     else:
         print(f"Unknown tool: {tool_id}")
         return {"error": f"Unknown tool: {tool_id}"}
+
+# Allow direct execution for testing
+if __name__ == "__main__":
+    # Example usage
+    result = execute_tool("sql:tables", database="test_sqlite.db")
+    print(result)

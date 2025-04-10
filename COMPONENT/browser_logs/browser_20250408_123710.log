@@ -1,0 +1,60 @@
+2025-04-08 12:37:10,562 - browser_adapter - INFO - ==================================================
+2025-04-08 12:37:10,562 - browser_adapter - INFO - BROWSER ADAPTER INITIALIZED
+2025-04-08 12:37:10,562 - browser_adapter - INFO - Logging to: /home/rahul/enhanced_agents_with_tools/COMPONENT/browser_logs/browser_20250408_123710.log
+2025-04-08 12:37:10,562 - browser_adapter - INFO - ==================================================
+2025-04-08 12:37:10,582 - browser_adapter - INFO - ✅ Playwright successfully imported
+2025-04-08 12:37:10,582 - browser_adapter - INFO - Screenshot directory: /home/rahul/enhanced_agents_with_tools/COMPONENT/screenshots
+2025-04-08 12:37:10,728 - browser_adapter - INFO - 🚀 Playwright started successfully
+2025-04-08 12:37:10,728 - browser_adapter - INFO - ================================================================================
+2025-04-08 12:37:10,728 - browser_adapter - INFO - ✅ Browser automation tools registered successfully
+2025-04-08 12:37:10,728 - browser_adapter - INFO - Available browser tools: browser:click, browser:close, browser:create, browser:find_elements, browser:get_content, browser:navigate, browser:stats
+2025-04-08 12:37:10,728 - browser_adapter - INFO - Logs will be written to: /home/rahul/enhanced_agents_with_tools/COMPONENT/browser_logs/browser_20250408_123710.log
+2025-04-08 12:37:10,728 - browser_adapter - INFO - Screenshots will be saved to: /home/rahul/enhanced_agents_with_tools/COMPONENT/screenshots
+2025-04-08 12:37:10,728 - browser_adapter - INFO - ================================================================================
+2025-04-08 12:37:10,728 - browser_adapter - INFO - Tool called: browser:create(browser_id=direct_test, browser_type=chromium, headless=False)
+2025-04-08 12:37:10,728 - browser_adapter - INFO - 🔧 Creating browser: type=chromium, headless=False, id=direct_test
+2025-04-08 12:37:10,728 - browser_adapter - INFO - Selected Chromium browser
+2025-04-08 12:37:10,895 - browser_adapter - INFO - Browser launched successfully: chromium
+2025-04-08 12:37:10,901 - browser_adapter - INFO - Browser context created
+2025-04-08 12:37:10,984 - browser_adapter - INFO - Page created in browser
+2025-04-08 12:37:10,984 - browser_adapter - INFO - ✅ Browser created successfully with ID: direct_test
+2025-04-08 12:37:10,984 - browser_adapter - INFO - browser:create result: success
+2025-04-08 12:37:10,984 - browser_adapter - INFO - Tool called: browser:navigate(url=https://www.google.com, browser_id=direct_test, wait_until=load)
+2025-04-08 12:37:10,984 - browser_adapter - INFO - 🌐 Navigating to URL: https://www.google.com in browser: direct_test
+2025-04-08 12:37:10,984 - browser_adapter - INFO - Getting page for browser: direct_test
+2025-04-08 12:37:10,984 - browser_adapter - INFO - Page for browser direct_test is responsive
+2025-04-08 12:37:10,984 - browser_adapter - INFO - Starting navigation to https://www.google.com with wait_until=load
+2025-04-08 12:37:13,131 - browser_adapter - INFO - ✅ Navigation successful to: https://www.google.com/
+2025-04-08 12:37:13,131 - browser_adapter - INFO - Page title: Google
+2025-04-08 12:37:13,132 - browser_adapter - INFO - Navigation took 2.14 seconds
+2025-04-08 12:37:13,217 - browser_adapter - INFO - 📸 Screenshot saved: /home/rahul/enhanced_agents_with_tools/COMPONENT/screenshots/direct_test_navigate_20250408_123713.png
+2025-04-08 12:37:13,217 - browser_adapter - INFO - browser:navigate result: success
+2025-04-08 12:37:13,217 - browser_adapter - INFO - Tool called: browser:get_content(browser_id=direct_test, content_type=text)
+2025-04-08 12:37:13,217 - browser_adapter - INFO - 📄 Getting text content from browser: direct_test
+2025-04-08 12:37:13,217 - browser_adapter - INFO - Getting page for browser: direct_test
+2025-04-08 12:37:13,217 - browser_adapter - INFO - Page for browser direct_test is responsive
+2025-04-08 12:37:13,220 - browser_adapter - INFO - Getting content from page: Google (https://www.google.com/)
+2025-04-08 12:37:13,221 - browser_adapter - INFO - Retrieving text content
+2025-04-08 12:37:13,318 - browser_adapter - INFO - 📸 Screenshot saved: /home/rahul/enhanced_agents_with_tools/COMPONENT/screenshots/direct_test_get_content_20250408_123713.png
+2025-04-08 12:37:13,318 - browser_adapter - INFO - Content preview: About
+Store
+GmailImages
+Sign in
+ 
+Google offered in: हिन्दी বাংলা తెలుగు मराठी தமிழ் ગુજરાતી ಕನ್ನಡ മലയാളം ਪੰਜਾਬੀ
+India
+Advertising
+Business
+How Search works
+Privacy
+Terms
+Settings
+2025-04-08 12:37:13,318 - browser_adapter - INFO - Content length: 179 characters
+2025-04-08 12:37:13,318 - browser_adapter - INFO - browser:get_content result: success, content length: 179
+2025-04-08 12:37:13,318 - browser_adapter - INFO - Tool called: browser:close(browser_id=direct_test)
+2025-04-08 12:37:13,318 - browser_adapter - INFO - 🛑 Closing browser: direct_test
+2025-04-08 12:37:13,326 - browser_adapter - INFO - Closed page for browser direct_test
+2025-04-08 12:37:13,338 - browser_adapter - INFO - Closed context for browser direct_test
+2025-04-08 12:37:13,378 - browser_adapter - INFO - Closed browser instance direct_test
+2025-04-08 12:37:13,378 - browser_adapter - INFO - ✅ Browser direct_test successfully closed
+2025-04-08 12:37:13,378 - browser_adapter - INFO - browser:close result: success

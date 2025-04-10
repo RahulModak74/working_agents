@@ -1,0 +1,5 @@
+```json
+{
+  "result": "I need to use the tool: browser:create\nParameters:\n{\n  \"browser_id\": \"test_browser\",\n  \"headless\": false\n}\n\nI need to use the tool: browser:navigate\nParameters:\n{\n  \"url\": \"https://www.google.com\",\n  \"browser_id\": \"test_browser\"\n}\n\nI need to use the tool: browser:get_content\nParameters:\n{\n  \"browser_id\": \"test_browser\",\n  \"content_type\": \"text\"\n}\n\nI need to use the tool: browser:close\nParameters:\n{\n  \"browser_id\": \"test_browser\"\n}"
+}
+```

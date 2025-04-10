@@ -1,0 +1,125 @@
+[
+  {
+    "agent": "tot_root_agent",
+    "content": "Analyze the following complex problem and generate 3-5 distinct initial approaches: {problem_description}",
+    "tools": [
+      "planning:chain_of_thought"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "problem_understanding": "string",
+        "initial_approaches": [
+          {
+            "approach_id": "string",
+            "description": "string",
+            "reasoning": "string",
+            "estimated_probability": "number"
+          }
+        ]
+      }
+    },
+    "memory_id": "tot_session"
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on the initial approaches generated, select the 2 most promising branches to explore in depth. Choose branches with the highest estimated probability of success.",
+    "readFrom": [
+      "tot_root_agent"
+    ],
+    "tools": [
+      "planning:get_summary"
+    ],
+    "memory_id": "tot_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_branches": [
+          "string"
+        ],
+        "reasoning": "string"
+      }
+    },
+    "actions": {
+      "branch_1": {
+        "agent": "branch_explorer_1",
+        "content": "Explore branch {selected_branches[0]} in detail. Generate 2-3 sub-branches from this approach, evaluating their probability of success. Conduct a full depth-first exploration of this approach.",
+        "readFrom": [
+          "tot_root_agent"
+        ],
+        "tools": [
+          "planning:create_plan",
+          "planning:chain_of_thought"
+        ]
+      },
+      "branch_2": {
+        "agent": "branch_explorer_2",
+        "content": "Explore branch {selected_branches[1]} in detail. Generate 2-3 sub-branches from this approach, evaluating their probability of success. Conduct a full depth-first exploration of this approach.",
+        "readFrom": [
+          "tot_root_agent"
+        ],
+        "tools": [
+          "planning:create_plan",
+          "planning:chain_of_thought"
+        ]
+      }
+    }
+  },
+  {
+    "agent": "tot_evaluator",
+    "content": "Compare the results from both branches explored in depth. Determine which approach has the highest probability of success based on the detailed exploration. Provide a confidence score for each branch.",
+    "readFrom": [
+      "branch_explorer_1",
+      "branch_explorer_2"
+    ],
+    "tools": [
+      "planning:chain_of_thought"
+    ],
+    "memory_id": "tot_session",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "branch_evaluations": [
+          {
+            "branch_id": "string",
+            "confidence_score": "number",
+            "strengths": [
+              "string"
+            ],
+            "weaknesses": [
+              "string"
+            ]
+          }
+        ],
+        "recommended_branch": "string",
+        "final_confidence": "number"
+      }
+    }
+  },
+  {
+    "agent": "tot_solution_agent",
+    "content": "Based on the recommended branch and all previous explorations, develop the final detailed solution to the problem. Address any weaknesses identified in the evaluation phase.",
+    "readFrom": [
+      "tot_root_agent",
+      "branch_explorer_1",
+      "branch_explorer_2",
+      "tot_evaluator"
+    ],
+    "tools": [
+      "planning:chain_of_thought"
+    ],
+    "memory_id": "tot_session",
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Problem Summary",
+        "Solution Approach",
+        "Detailed Implementation",
+        "Expected Outcomes",
+        "Potential Challenges",
+        "Mitigation Strategies"
+      ]
+    }
+  }
+]

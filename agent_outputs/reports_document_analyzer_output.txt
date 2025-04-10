@@ -1,0 +1,46 @@
+```json
+{
+  "available_reports": [
+    "SD Sales Order Analysis (VA05)",
+    "Sales Order List (VA05N)",
+    "Customer Sales Analysis (MC+E)",
+    "Material Sales Statistics (MC+A)",
+    "Customer/Material Info Records (VD51/VD52)",
+    "Sales Document Flow (VA03)",
+    "Billing Document Report (VF05)",
+    "List of Billing Documents (VF05N)",
+    "Customer Open Items (FBL5N)",
+    "List of Discounts and Pricing Conditions (V/LD)",
+    "Delivery Performance Analysis (VL06O)",
+    "Supply Chain Cockpit (SAP SCM)",
+    "Business Partner Master Data Report (BP)",
+    "Sales Volume by Product Hierarchy (MC+E or KE30 CO-PA)",
+    "Pricing Analysis Report (V/LD)",
+    "Data Quality Dashboard (SAP Information Steward if available)",
+    "Sales Operating Reports in BW (Query Cubes / BEx Queries)"
+  ],
+  "recommended_reports": [
+    "SD Sales Order Analysis (VA05)",
+    "Customer Sales Analysis (MC+E)",
+    "Material Sales Statistics (MC+A)",
+    "Pricing Analysis Report (V/LD)",
+    "Billing Document Report (VF05)",
+    "Customer Open Items (FBL5N)",
+    "Business Partner Master Data Report (BP)",
+    "Sales Volume by Product Hierarchy (MC+E or KE30)",
+    "Delivery Performance Analysis (VL06O)"
+  ],
+  "gap_addressing_reports": [
+    "Pricing Analysis Report (V/LD)",
+    "Customer Master Data Consistency Checks (BP consistency reports)",
+    "Data Quality Dashboard (SAP Information Steward or MDG Data Quality)",
+    "Customer Open Items (FBL5N) with partner reconciliation",
+    "Sales and Distribution Incompletion Log",
+    "CO-PA Profitability Reports (KE30) for discount impact analysis",
+    "SD Analytics with conditions details (SAP BW or embedded analytics)",
+    "Supply Chain Cockpit analytics (SAP SCM/APO)",
+    "Customer and Channel Performance Reports (custom or BW-based)"
+  ],
+  "insights": "SAP standard reporting includes strong SD reporting capabilities such as SD Sales Order Analysis (VA05), Customer and Material Sales Statistics (MC+E, MC+A), Billing (VF05), Pricing (V/LD), and master data views (BP, VD*). Based on the dataset, recommended focus areas are transaction amount validation (SD reports), discount scrutiny (Pricing reports), customer and master data linkage (BP and reconciliations), and KPIs on volumes by product/customer (MC+ reports). Critical gaps such as excessive discounts far beyond typical norms, inconsistent business partner linkages, and weak data integrity would benefit from deeper pricing condition analytics (V/LD), profitability and discount impact views (CO-PA reports), and systematic data quality dashboards (SAP Information Steward, MDG). Enhancing data quality and analyzing pricing anomalies with these reports can directly target revenue leakage risks, improve partner-channel clarity, and support timely, accurate operational metrics."
+}
+```

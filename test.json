@@ -1,0 +1,11 @@
+[
+  {
+    "agent": "agent1",
+    "content": "Pl can you create a comprehensive workflow for SAP HANA enterprise future similar to cyberscurity workflow .. Please note the file also contains list of availabl tools that is for your reference only output should NOT contain tools it should only have workflow.. I want the workflow with same  detail  level but content will obviously be different suited for HANA",
+    "file": ["new_simple1.json"],
+    "output_format": {
+      "type": "json"
+    },
+    "memory_id": "json_based_workflow"
+  }
+]

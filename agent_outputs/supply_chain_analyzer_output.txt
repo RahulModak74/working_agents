@@ -1,0 +1,43 @@
+```json
+{
+  "record_count": 10,
+  "key_metrics": {
+    "distinct_suppliers": 10,
+    "distinct_products": 10,
+    "distinct_customers": 10,
+    "total_sales_amount": 8502935.81,
+    "average_sales_per_order": 850293.58,
+    "average_discount": 0.655,
+    "max_discount": 0.9,
+    "min_discount": 0.28,
+    "quantity_stats": {
+      "min": 1,
+      "max": 2,
+      "average": 1.4
+    },
+    "order_date_range": "2018/06/30 to 2019/03/16",
+    "ship_date_range": "2019/01/01 to 2019/03/24",
+    "currency_breakdown": {
+      "USD": "dominant in transactional data",
+      "EUR": "appears mainly in partners, minor in transactions",
+      "Others": "AUD, INR, AED, GBP, CAD primarily in partner master data"
+    },
+    "supplier_region_diversity": 6,
+    "product_brands": [
+      "Dodge",
+      "Toyota",
+      "GMC",
+      "Volkswagen",
+      "Mercury",
+      "Mitsubishi",
+      "BMW",
+      "Dodge",
+      "Subaru",
+      "Others"
+    ],
+    "shipping_modes": ["Standard Class", "Second Class", "First Class", "Same Day"]
+  },
+  "insights": "The sap_data supply chain preview shows a broad one-to-one mapping of supplier, product, and customer per row, with supplier details integrated alongside transactional sales and shipping info. Vehicles from diverse global brands drive large order values, averaging over $850K per order item, consistent with luxury automotive sales. Discount rates are highly variable, with some extreme (up to 90%), indicating potential over-discounting, special deals, or data input errors. Geographic diversity spans US-centric customer addresses but links to globally distributed suppliers across multiple currencies, mostly normalized to USD in transaction amounts. Shipments take place within a roughly 9-month window, supporting the view of steady, high-value automotive sales fulfilled globally. However, relational connections to upstream business partner master data and sales order headers are partially weakened by inconsistent key formats, implying possible integration challenges.",
+  "quality_adjusted_analysis": "Known data quality issues — such as inconsistent ID formats (mixed decimals and strings), mixed date representations (slashes vs numerics), extreme or inconsistent discount values, and duplicate or poorly linked partner/customer identifiers — risk distorting supply chain analytics. Misformatted numerical IDs impair reliable mapping of SupplierID, CustomerID, and OrderID across datasets, risking broken joins and underestimating supplier concentration or customer lifecycle analysis. High discounts should be flagged or filtered to avoid skewed revenue assumptions. Date inconsistencies complicate order fulfillment timeline analysis, while duplication or truncation of contact data constrains customer/supplier segmentation. Until standardized, the dataset should be treated with caution for operational insights; it requires key cleansing, discount validation, date reformatting, and deduplication to enable dependable linkage of supply chain flows to sales orders and business partner data."
+}
+```

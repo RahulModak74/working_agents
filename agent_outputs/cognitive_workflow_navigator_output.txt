@@ -1,0 +1,8 @@
+{
+  "session_id": "AG-1234",
+  "completed_steps": [
+    "Define Research Dimensions"
+  ],
+  "key_decisions": [],
+  "final_status": "active"
+}
