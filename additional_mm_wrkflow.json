@@ -1,0 +1,116 @@
+[
+  {
+    "agent": "transaction_data_analyzer",
+    "content": "Analyze the transaction data in the new_sap.csv file. This file contains consolidated data from four SAP MM transaction types: purchase order creation (ME21), material document list/goods movements (MB51), purchase document analysis (ME80FN), and purchase orders by vendor (ME2L). Identify the structure of the file, separate the different transaction types based on column patterns, and provide an overview of what data is available for analysis.",
+    "file": "new_sap.csv",
+    "readFrom": ["data_inventory_agent", "data_quality_validator"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "transaction_types_identified": ["string"],
+        "record_counts": "object",
+        "column_mappings": "object",
+        "data_quality_notes": ["string"],
+        "analysis_approach": "string"
+      }
+    }
+  },
+  {
+    "agent": "purchase_order_transaction_analyzer",
+    "content": "Analyze the purchase order creation transaction data (similar to ME21 transaction) in the new_sap.csv file. Identify key patterns in purchasing behavior, document characteristics, and vendor relationships. Provide insights into pricing, material categories, and procurement practices.",
+    "file": "new_sap.csv",
+    "readFrom": ["transaction_data_analyzer", "data_inventory_agent", "purchase_orders_analyzer"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "transaction_count": "number",
+        "key_metrics": {
+          "vendor_distribution": "object",
+          "material_distribution": "object",
+          "price_analysis": "object",
+          "date_patterns": "object"
+        },
+        "procurement_insights": ["string"],
+        "data_quality_notes": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "material_movement_analyzer",
+    "content": "Analyze the material document list data (similar to MB51 transaction) in the new_sap.csv file showing goods movements. Extract insights about inventory movements, batch management, storage location usage, and movement type distributions. Focus on material flow patterns and transaction characteristics.",
+    "file": "new_sap.csv",
+    "readFrom": ["transaction_data_analyzer", "data_inventory_agent", "inventory_supply_chain_analyzer"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "movement_count": "number",
+        "key_metrics": {
+          "movement_type_distribution": "object",
+          "batch_management_status": "object",
+          "storage_location_patterns": "object",
+          "posting_frequency": "object"
+        },
+        "material_flow_insights": ["string"],
+        "batch_traceability_assessment": "string",
+        "data_quality_notes": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "purchase_document_analysis_analyzer",
+    "content": "Analyze the purchase document analysis data (similar to ME80FN transaction) in the new_sap.csv file. Evaluate purchase order fulfillment statuses, delivery performance, procurement efficiency, and order-to-delivery metrics. Identify bottlenecks in the procurement process and assess vendor performance.",
+    "file": "new_sap.csv",
+    "readFrom": ["transaction_data_analyzer", "data_inventory_agent", "purchase_orders_analyzer", "purchase_order_items_analyzer"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "po_analysis_count": "number",
+        "key_metrics": {
+          "delivery_performance": "object",
+          "status_distribution": "object",
+          "procurement_cycle_time": "object",
+          "order_fulfillment_rates": "object"
+        },
+        "process_bottlenecks": ["string"],
+        "vendor_performance_insights": ["string"],
+        "data_quality_notes": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "vendor_purchase_analyzer",
+    "content": "Analyze the purchase orders by vendor data (similar to ME2L transaction) in the new_sap.csv file. Assess vendor-specific purchasing patterns, item fulfillment rates, price consistency, and delivery reliability. Identify opportunities for vendor rationalization or relationship improvement.",
+    "file": "new_sap.csv",
+    "readFrom": ["transaction_data_analyzer", "data_inventory_agent", "purchase_orders_analyzer", "vendor_data_analyzer"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "vendor_po_count": "number",
+        "key_metrics": {
+          "vendor_order_distribution": "object",
+          "item_fulfillment_by_vendor": "object",
+          "pricing_consistency": "object",
+          "delivery_reliability_by_vendor": "object"
+        },
+        "vendor_relationship_insights": ["string"],
+        "optimization_opportunities": ["string"],
+        "data_quality_notes": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "transaction_data_integrator",
+    "content": "Integrate insights from all transaction-specific MM data sources in the new_sap.csv file (purchase order creation, material movements, purchase document analysis, and purchase orders by vendor) to create a unified view of the procurement-to-payment process. Identify cross-transaction relationships, process gaps, and optimization opportunities that span multiple transaction types.",
+    "readFrom": ["purchase_order_transaction_analyzer", "material_movement_analyzer", "purchase_document_analysis_analyzer", "vendor_purchase_analyzer"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "integrated_process_view": "object",
+        "cross_transaction_gaps": ["string"],
+        "end_to_end_metrics": "object",
+        "system_utilization_patterns": ["string"],
+        "optimization_recommendations": ["string"]
+      }
+    }
+  }
+]
