@@ -1,0 +1,417 @@
+[
+  {
+    "agent": "data_inventory_agent",
+    "content": "Create an inventory of what we can expect to find in the com_op.csv file based on the column names provided. Identify the different sections (MaterialMaster, PurchaseOrders, InventoryLevels, VendorData, etc.) and key fields in each section.",
+    "file": "com_op.csv",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "data_sections": ["string"],
+        "key_fields": ["string"],
+        "analysis_approach": "string"
+      }
+    }
+  },
+  {
+    "agent": "data_quality_validator",
+    "content": "Perform a comprehensive data quality assessment on the com_op.csv file focusing on MM data. Analyze completeness, accuracy, consistency, and timeliness of the data. Identify missing values, duplicates, outliers, and any other data quality issues that could impact analysis.",
+    "file": "com_op.csv",
+    "readFrom": ["data_inventory_agent"],
+    "tools": ["planning:tree_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "quality_metrics": {
+          "completeness": "number",
+          "accuracy": "number",
+          "consistency": "number",
+          "timeliness": "number"
+        },
+        "data_issues": ["string"],
+        "critical_gaps": ["string"],
+        "recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "data_integrity_checker",
+    "content": "Analyze referential integrity across different sections of the com_op.csv file. Verify that foreign key relationships (like MATERIALID between purchase orders and order items, or VENDORID between orders and vendor data) are maintained. Identify any integrity violations or data inconsistencies.",
+    "file": "com_op.csv",
+    "readFrom": ["data_inventory_agent", "data_quality_validator"],
+    "tools": ["planning:tree_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "verified_relationships": ["string"],
+        "integrity_violations": ["string"],
+        "data_consistency_issues": ["string"],
+        "impact_on_analysis": "string"
+      }
+    }
+  },
+  {
+    "agent": "purchase_orders_analyzer",
+    "content": "Analyze the purchase orders data in the com_op.csv file. Focus on order headers including fields like ORDERID, CREATEDBY, VENDORID, TOTALAMOUNT, etc. Provide a summary of key metrics and patterns. Consider the data quality issues identified previously in your analysis.",
+    "file": "com_op.csv",
+    "readFrom": ["data_inventory_agent", "data_quality_validator", "data_integrity_checker"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "order_count": "number",
+        "key_metrics": "object",
+        "insights": "string",
+        "quality_adjusted_analysis": "string"
+      }
+    }
+  },
+  {
+    "agent": "purchase_order_items_analyzer",
+    "content": "Analyze the purchase order items data in the com_op.csv file. Focus on line items including fields like ORDERID, ORDERITEM, MATERIALID, QUANTITY, etc. Identify relationships with purchase orders. Adjust your analysis based on the previously identified data quality issues.",
+    "file": "com_op.csv",
+    "readFrom": ["data_inventory_agent", "purchase_orders_analyzer", "data_quality_validator", "data_integrity_checker"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "item_count": "number",
+        "key_metrics": "object",
+        "insights": "string",
+        "quality_adjusted_analysis": "string"
+      }
+    }
+  },
+  {
+    "agent": "vendor_data_analyzer",
+    "content": "Analyze the vendor data in the com_op.csv file. Focus on vendor information including fields like VENDORID, VENDORNAME, VENDORRATING, etc. Identify relationships with purchase orders. Consider data quality limitations in your analysis.",
+    "file": "com_op.csv",
+    "readFrom": ["data_inventory_agent", "purchase_orders_analyzer", "data_quality_validator", "data_integrity_checker"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "vendor_count": "number",
+        "key_metrics": "object",
+        "insights": "string",
+        "quality_adjusted_analysis": "string"
+      }
+    }
+  },
+  {
+    "agent": "inventory_supply_chain_analyzer",
+    "content": "Analyze the inventory and supply chain data in the com_op.csv file. Focus on relevant fields like SUPPLIERID, MATERIALID, STOCKLEVEL, REORDERPOINT, etc. Identify connections to purchase data. Adjust analysis based on known data quality issues.",
+    "file": "com_op.csv",
+    "readFrom": ["data_inventory_agent", "purchase_orders_analyzer", "purchase_order_items_analyzer", "data_quality_validator", "data_integrity_checker"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "record_count": "number",
+        "key_metrics": "object",
+        "insights": "string",
+        "quality_adjusted_analysis": "string"
+      }
+    }
+  },
+  {
+    "agent": "industry_benchmark_researcher",
+    "content": "Research industry benchmarks and standards for key MM business metrics including procurement efficiency, inventory turnover, vendor performance, and supply chain responsiveness. Contextualizing our findings against industry standards will provide valuable perspective.",
+    "tools": ["planning:tree_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "procurement_benchmarks": "object",
+        "inventory_turnover_benchmarks": "object",
+        "vendor_management_benchmarks": "object",
+        "supply_chain_benchmarks": "object",
+        "data_quality_benchmarks": "object",
+        "benchmark_sources": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "benchmarked_analysis_integrator",
+    "content": "Integrate the industry benchmarks with our MM data analysis to contextualize findings. Compare our metrics against industry standards and identify areas where performance is above or below expectations. This contextual analysis will enhance the value of our insights.",
+    "readFrom": ["industry_benchmark_researcher", "purchase_orders_analyzer", "purchase_order_items_analyzer", "vendor_data_analyzer", "inventory_supply_chain_analyzer"],
+    "tools": ["planning:tree_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "contextualized_metrics": "object",
+        "performance_gaps": ["string"],
+        "competitive_advantages": ["string"],
+        "industry_position": "string"
+      }
+    }
+  },
+  {
+    "agent": "reports_document_analyzer",
+    "content": "Analyze the MM Reports.docx document to identify relevant SAP MM reports for our data. Match report types to the data we've analyzed so far and determine which standard SAP MM reports would best address the identified performance gaps.",
+    "file": "MM Reports.docx",
+    "readFrom": ["purchase_orders_analyzer", "purchase_order_items_analyzer", "vendor_data_analyzer", "inventory_supply_chain_analyzer", "benchmarked_analysis_integrator"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "available_reports": ["string"],
+        "recommended_reports": ["string"],
+        "gap_addressing_reports": ["string"],
+        "insights": "string"
+      }
+    }
+  },
+  {
+    "agent": "business_challenge_framer",
+    "content": "Based on all the MM data analyzed so far, frame the key business challenges and opportunities that need to be addressed. This will serve as input to our cognitive planning process. Incorporate both data quality limitations and industry benchmark comparisons in your assessment.",
+    "readFrom": ["purchase_orders_analyzer", "purchase_order_items_analyzer", "vendor_data_analyzer", "inventory_supply_chain_analyzer", "reports_document_analyzer", "data_quality_validator", "benchmarked_analysis_integrator"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "key_challenges": ["string"],
+        "opportunities": ["string"],
+        "priority_areas": ["string"],
+        "data_limitations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "cognitive_pattern_explorer",
+    "content": "List all available cognitive planning patterns to identify the optimal approach for analyzing our MM data. Focus on patterns that allow for structured exploration of multiple solution paths, especially those suited for business optimization in the context of data quality challenges.",
+    "tools": ["cognitive:list_patterns"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "patterns": "object",
+        "recommendation": "string",
+        "reasoning": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_session_creator",
+    "content": "Create a cognitive planning session using the Tree of Thoughts pattern to address the business challenges identified from our MM data analysis. Use pattern_id parameter explicitly. Ensure the problem description includes awareness of data quality limitations and industry benchmarking context.",
+    "readFrom": ["cognitive_pattern_explorer", "business_challenge_framer"],
+    "tools": ["cognitive:create_session"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "status": "string",
+        "session_id": "string",
+        "pattern": "string",
+        "description": "string",
+        "stages": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "tot_workflow_navigator",
+    "content": "Navigate through the Tree of Thoughts cognitive planning workflow to identify optimal business improvement approaches for the analyzed MM data. Use the get_next_step, select_action, and submit_result functions to progress through the process. Ensure that data quality limitations are factored into the decision-making process.",
+    "readFrom": ["cognitive_session_creator", "data_quality_validator"],
+    "tools": ["cognitive:get_next_step", "cognitive:select_action", "cognitive:submit_result"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "session_id": "string",
+        "completed_steps": ["string"],
+        "key_decisions": ["string"],
+        "final_status": "string"
+      }
+    }
+  },
+  {
+    "agent": "cognitive_results_transformer",
+    "content": "Transform the completed Tree of Thoughts cognitive planning session into a structured business optimization plan for the MM data. Extract specific recommendations and implementation approaches. Factor in data quality considerations and industry benchmarks to ensure recommendations are practical and impactful.",
+    "readFrom": ["tot_workflow_navigator", "data_quality_validator", "benchmarked_analysis_integrator"],
+    "tools": ["cognitive:get_results", "cognitive:transform_for_research"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "business_focus": "string",
+        "optimization_plan": {
+          "goal": "string",
+          "key_approaches": ["string"],
+          "implementation_steps": ["string"]
+        },
+        "expected_benefits": ["string"],
+        "data_quality_dependencies": ["string"],
+        "cognitive_pattern_used": "string"
+      }
+    }
+  },
+  {
+    "agent": "cost_benefit_analyzer",
+    "content": "Conduct a comprehensive cost-benefit analysis for each of the potential improvement areas identified in the cognitive planning process. Estimate implementation costs (technology, process change, training), projected benefits (revenue increase, cost reduction, efficiency gains), and calculate ROI and payback periods to prioritize recommendations.",
+    "readFrom": ["cognitive_results_transformer", "benchmarked_analysis_integrator"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "improvement_areas": [
+          {
+            "area": "string",
+            "estimated_costs": "object",
+            "projected_benefits": "object",
+            "roi": "number",
+            "payback_period": "string",
+            "risk_factors": ["string"]
+          }
+        ],
+        "prioritized_recommendations": ["string"],
+        "financial_impact_summary": "string"
+      }
+    }
+  },
+  {
+    "agent": "sap_implementation_specialist",
+    "content": "Provide detailed SAP-specific implementation guidance for the prioritized MM recommendations. Include SAP MM module configurations, transaction codes, tables, BAPIs, and other SAP-specific technical elements required for implementation. Ensure recommendations align with SAP best practices and standard SAP MM functionality.",
+    "readFrom": ["cognitive_results_transformer", "cost_benefit_analyzer", "reports_document_analyzer"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "implementation_plans": [
+          {
+            "recommendation": "string",
+            "sap_modules": ["string"],
+            "transaction_codes": ["string"],
+            "configuration_steps": ["string"],
+            "technical_requirements": ["string"],
+            "testing_approaches": ["string"]
+          }
+        ],
+        "implementation_timeline": "object",
+        "resource_requirements": "object",
+        "critical_success_factors": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "data_quality_remediation_planner",
+    "content": "Develop a detailed plan to address the data quality issues identified during the analysis. Focus on improving data completeness, accuracy, consistency, and timeliness to support successful implementation of the business improvement recommendations.",
+    "readFrom": ["data_quality_validator", "data_integrity_checker", "cognitive_results_transformer", "sap_implementation_specialist"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "data_quality_objectives": ["string"],
+        "remediation_steps": ["string"],
+        "data_governance_recommendations": ["string"],
+        "validation_procedures": ["string"],
+        "impact_on_business_improvements": "string"
+      }
+    }
+  },
+  {
+    "agent": "implementation_risk_analyzer",
+    "content": "Analyze potential risks and challenges for implementing the recommended SAP MM improvements, especially considering the identified data quality issues. Provide mitigation strategies to ensure successful implementation.",
+    "readFrom": ["cognitive_results_transformer", "cost_benefit_analyzer", "sap_implementation_specialist", "data_quality_remediation_planner"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "implementation_risks": [
+          {
+            "risk": "string",
+            "probability": "number",
+            "impact": "number",
+            "mitigation_strategy": "string"
+          }
+        ],
+        "critical_dependencies": ["string"],
+        "risk_adjusted_timeline": "object",
+        "contingency_recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "dynamic_implementation_selector",
+    "type": "dynamic",
+    "initial_prompt": "Based on all MM data analysis, industry benchmarking, cost-benefit analysis, and the Tree of Thoughts optimization planning, determine which business area requires the most urgent implementation focus. Choose from: 'procurement_optimization', 'vendor_management', 'inventory_efficiency', or 'order_processing_improvement'. Consider both business impact and implementation feasibility in your selection.",
+    "readFrom": ["purchase_orders_analyzer", "purchase_order_items_analyzer", "vendor_data_analyzer", "inventory_supply_chain_analyzer", "cognitive_results_transformer", "cost_benefit_analyzer", "sap_implementation_specialist", "implementation_risk_analyzer"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "selected_approach": "string",
+        "justification": "string",
+        "expected_impact": "string",
+        "implementation_complexity": "string"
+      }
+    },
+    "actions": {
+      "procurement_optimization": {
+        "agent": "procurement_optimization_planner",
+        "content": "Develop a detailed implementation plan for procurement optimization based on the Tree of Thoughts analysis and MM data insights. Include specific actionable recommendations with timelines, expected outcomes, SAP-specific implementation steps, and data quality dependencies.",
+        "readFrom": ["purchase_orders_analyzer", "purchase_order_items_analyzer", "cognitive_results_transformer", "cost_benefit_analyzer", "sap_implementation_specialist", "data_quality_remediation_planner"]
+      },
+      "vendor_management": {
+        "agent": "vendor_management_planner",
+        "content": "Develop a detailed implementation plan for vendor management improvements based on the Tree of Thoughts analysis and MM data insights. Include specific actionable recommendations with timelines, expected outcomes, SAP-specific implementation steps, and data quality dependencies.",
+        "readFrom": ["vendor_data_analyzer", "purchase_orders_analyzer", "cognitive_results_transformer", "cost_benefit_analyzer", "sap_implementation_specialist", "data_quality_remediation_planner"]
+      },
+      "inventory_efficiency": {
+        "agent": "inventory_efficiency_planner",
+        "content": "Develop a detailed implementation plan for inventory efficiency improvements based on the Tree of Thoughts analysis and MM data insights. Include specific actionable recommendations with timelines, expected outcomes, SAP-specific implementation steps, and data quality dependencies.",
+        "readFrom": ["inventory_supply_chain_analyzer", "purchase_order_items_analyzer", "cognitive_results_transformer", "cost_benefit_analyzer", "sap_implementation_specialist", "data_quality_remediation_planner"]
+      },
+      "order_processing_improvement": {
+        "agent": "order_processing_planner",
+        "content": "Develop a detailed implementation plan for order processing improvements within the MM module based on the Tree of Thoughts analysis and MM data insights. Include specific actionable recommendations with timelines, expected outcomes, SAP-specific implementation steps, and data quality dependencies.",
+        "readFrom": ["purchase_orders_analyzer", "purchase_order_items_analyzer", "cognitive_results_transformer", "cost_benefit_analyzer", "sap_implementation_specialist", "data_quality_remediation_planner"]
+      }
+    }
+  },
+  {
+    "agent": "implementation_reliability_tester",
+    "content": "Design test scenarios and validation approaches to ensure reliable execution of the MM implementation plan. Identify potential execution bottlenecks and develop failsafe mechanisms to maintain implementation continuity.",
+    "readFrom": ["dynamic_implementation_selector", "sap_implementation_specialist", "implementation_risk_analyzer"],
+    "tools": ["planning:chain_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "test_scenarios": ["string"],
+        "validation_criteria": ["string"],
+        "performance_metrics": ["string"],
+        "reliability_recommendations": ["string"],
+        "contingency_procedures": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "implementation_validator",
+    "content": "Validate the selected MM implementation plan against the original MM data analysis, Tree of Thoughts cognitive results, industry benchmarks, and cost-benefit analysis. Identify any gaps, conflicts, or enhancement opportunities. Confirm that data quality dependencies are properly addressed.",
+    "readFrom": ["dynamic_implementation_selector", "cognitive_results_transformer", "purchase_orders_analyzer", "purchase_order_items_analyzer", "vendor_data_analyzer", "inventory_supply_chain_analyzer", "benchmarked_analysis_integrator", "cost_benefit_analyzer", "data_quality_remediation_planner"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "validation_status": "string",
+        "alignment_score": "number",
+        "gaps_identified": ["string"],
+        "enhancement_opportunities": ["string"],
+        "data_dependency_validation": "string"
+      }
+    }
+  },
+  {
+    "agent": "comprehensive_report_creator",
+    "content": "Create a comprehensive report that integrates all findings from the MM data analysis, data quality assessment, industry benchmarking, Tree of Thoughts cognitive planning, cost-benefit analysis, and implementation planning. Provide a clear roadmap for business optimization with SAP MM-specific implementation details.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "SAP MM Data Analysis Overview",
+        "Data Quality Assessment",
+        "Industry Benchmark Comparison",
+        "Business Challenges & Opportunities",
+        "Tree of Thoughts Cognitive Analysis",
+        "Strategic Optimization Plan",
+        "Cost-Benefit Analysis",
+        "SAP MM-Specific Implementation Details",
+        "Implementation Roadmap",
+        "Data Quality Remediation Plan",
+        "Risk Management",
+        "Expected Business Outcomes",
+        "Key Performance Indicators",
+        "Next Steps",
+        "Appendix: Detailed SAP Reports"
+      ]
+    }
+  }
+]
+
