@@ -1,0 +1,75 @@
+[
+  {
+    "agent": "agent1",
+    "content": "Please review the session log in the journey.csv file and return a risk assessment score. Provide your output as a JSON object with a 'score' field (1-10) and a 'reasoning' field with brief explanation.",
+    "file": "journey.csv",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "score": "number",
+        "reasoning": "string"
+      }
+    },
+    "memory_id": "risk_assessment"
+  },
+  {
+    "agent": "agent2",
+    "content": "Based on the risk score from agent1, provide detailed reasoning why this session might be risky. Consider typical bot patterns and suspicious behaviors.",
+    "readFrom": ["agent1"],
+    "memory_id": "risk_assessment",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "risk_patterns": ["string"],
+        "confidence": "number"
+      }
+    }
+  },
+  {
+    "agent": "dynamic_agent",
+    "type": "dynamic",
+    "initial_prompt": "Based on the risk assessment, determine what action should be taken next. Choose from: 'mitigate', 'investigate', 'ignore', or 'escalate'.",
+    "readFrom": ["agent1", "agent2"],
+    "memory_id": "risk_assessment",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "action": "string",
+        "reasoning": "string",
+        "next_agent": "string"
+      }
+    },
+    "actions": {
+      "mitigate": {
+        "agent": "agent3",
+        "content": "List 3 specific security measures to mitigate the risks identified by agent2.",
+        "readFrom": ["agent1", "agent2"]
+      },
+      "investigate": {
+        "agent": "agent4",
+        "content": "Outline a detailed investigation plan to gather more information about this potentially suspicious session.",
+        "readFrom": ["agent1", "agent2"]
+      },
+      "ignore": {
+        "agent": "agent5",
+        "content": "Explain why this session can be safely ignored despite the risk score.",
+        "readFrom": ["agent1", "agent2"]
+      },
+      "escalate": {
+        "agent": "agent6",
+        "content": "Draft an escalation report for the security team with all relevant information.",
+        "readFrom": ["agent1", "agent2"]
+      }
+    }
+  },
+  {
+    "agent": "final_reporter",
+    "content": "Synthesize all previous assessments into a final risk report. Include the risk score, key findings, chosen action, and recommended next steps.",
+    "readFrom": ["agent1", "agent2", "dynamic_agent", "*"],
+    "memory_id": "risk_assessment",
+    "output_format": {
+      "type": "markdown",
+      "sections": ["Executive Summary", "Risk Assessment", "Action Taken", "Recommendations"]
+    }
+  }
+]

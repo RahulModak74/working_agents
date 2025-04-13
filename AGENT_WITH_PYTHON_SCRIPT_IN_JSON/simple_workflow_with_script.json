@@ -1,0 +1,35 @@
+[
+  {
+    "agent": "data_analyzer",
+    "run_script": {
+      "path": "simple_processor.py",
+      "input_file": "sample_data.txt"
+    },
+    "use_script_output_as_content": true,
+    "content": "Analyze the provided data metrics and generate insights.",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "summary": "string",
+        "key_insights": ["string"],
+        "data_quality_assessment": "string",
+        "recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "report_generator",
+    "content": "Based on the data analysis, generate a comprehensive report that explains the findings and provides actionable recommendations.",
+    "readFrom": ["data_analyzer", "data_analyzer_script"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary", 
+        "Data Overview", 
+        "Key Findings", 
+        "Recommendations",
+        "Next Steps"
+      ]
+    }
+  }
+]

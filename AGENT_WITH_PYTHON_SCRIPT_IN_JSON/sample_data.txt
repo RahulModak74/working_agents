@@ -1,0 +1,14 @@
+This is a sample text file.
+It contains multiple lines of text to demonstrate the script execution feature.
+
+The script will process this file and count:
+- Number of lines
+- Number of words
+- Number of characters
+
+It will also calculate some basic metrics like average line length.
+
+This sample data can be used to test the workflow without needing complex data sources.
+The workflow will run the script first, then pass the results to an AI agent for analysis.
+
+Feel free to modify this file or create your own to test different scenarios.
