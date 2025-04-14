@@ -1,0 +1,156 @@
+[
+  {
+    "agent": "corporate_data_inventory_agent",
+    "content": "Inventory the cross-module SAP data from SD, MM, PP, and FICO. Identify which sections relate to each module and how they interlink. Extract key fields per module and detect intersection fields (e.g., Material Number, Cost Center, Sales Order, Vendor ID).",
+    "file": "overall_4_modules_sap.csv",
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "modules_covered": ["string"],
+        "data_sections": ["string"],
+        "intersection_fields": ["string"],
+        "recommended_splits": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "corporate_data_quality_validator",
+    "content": "Assess data quality across all modules. Detect inconsistencies between modules (e.g., PO vs GRN, MRP vs Inventory), missing keys, duplicates, and conflicting values in overlapping dimensions like Cost Center or Material Number.",
+    "readFrom": ["corporate_data_inventory_agent"],
+    "tools": ["planning:tree_of_thought"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "module_quality_scores": "object",
+        "cross_module_conflicts": ["string"],
+        "critical_data_gaps": ["string"],
+        "recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "cross_module_integrity_checker",
+    "content": "Validate referential integrity across SD–MM–PP–FICO. Match Material Numbers, Vendor IDs, Cost Centers, Sales Orders, and Production Orders across modules. Identify broken links or orphan records.",
+    "readFrom": ["corporate_data_inventory_agent", "corporate_data_quality_validator"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "verified_links": ["string"],
+        "broken_relationships": ["string"],
+        "impact_on_reporting": "string"
+      }
+    }
+  },
+  {
+    "agent": "financial_flow_tracker",
+    "content": "Trace end-to-end financial flow across the modules: from Sales Order (SD) → Procurement (MM) → Production (PP) → Billing (SD) → Accounting (FICO). Highlight leakages, margin drops, delays, or misallocations.",
+    "readFrom": ["corporate_data_inventory_agent", "cross_module_integrity_checker"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "flow_breaks": ["string"],
+        "margin_leak_sources": ["string"],
+        "recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "procure_to_pay_analyzer",
+    "content": "Analyze the Procure-to-Pay cycle: Purchase Orders (MM) → Goods Movement (PP/MM) → Invoices (FICO). Check PO delivery delays, vendor performance, and invoice mismatches.",
+    "readFrom": ["corporate_data_inventory_agent", "corporate_data_quality_validator"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "delayed_pos": ["string"],
+        "vendor_issues": ["string"],
+        "recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "order_to_cash_analyzer",
+    "content": "Analyze the Order-to-Cash process: Sales Orders → Deliveries → Billing → Cash Received. Identify bottlenecks in fulfillment or payment collection, credit risks, and order margin trends.",
+    "readFrom": ["corporate_data_inventory_agent", "corporate_data_quality_validator"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "fulfillment_gaps": ["string"],
+        "billing_issues": ["string"],
+        "margin_trends": ["string"],
+        "recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "manufacturing_alignment_agent",
+    "content": "Assess how well Production Orders (PP) align with MRP demand (MD04), BOMs, and sales forecasts (SD). Highlight production inefficiencies, overstocking, or recipe misalignment.",
+    "readFrom": ["corporate_data_inventory_agent", "corporate_data_quality_validator"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "overproduction_signals": ["string"],
+        "bom_mismatches": ["string"],
+        "recommendations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "cross_module_kpi_synthesizer",
+    "content": "Generate key performance indicators (KPIs) that blend data across modules. Include lead time (P2P, O2C), working capital cycle, forecast accuracy, spend efficiency, and stock turnover.",
+    "readFrom": [
+      "procure_to_pay_analyzer",
+      "order_to_cash_analyzer",
+      "manufacturing_alignment_agent",
+      "financial_flow_tracker"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "kpis": "object",
+        "module_dependencies": ["string"],
+        "threshold_alerts": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "executive_recommendation_generator",
+    "content": "Based on all analytics, generate strategic business recommendations for SAP-wide improvements across Finance, Procurement, Sales, and Production. Prioritize based on cross-module ROI.",
+    "readFrom": [
+      "cross_module_kpi_synthesizer",
+      "financial_flow_tracker",
+      "procure_to_pay_analyzer",
+      "order_to_cash_analyzer",
+      "manufacturing_alignment_agent",
+      "corporate_data_quality_validator"
+    ],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "strategic_focus_areas": ["string"],
+        "top_recommendations": ["string"],
+        "module_interactions": ["string"],
+        "data_limitations": ["string"]
+      }
+    }
+  },
+  {
+    "agent": "corporate_report_generator",
+    "content": "Create a board-level SAP analytics report with executive summary, cross-module insights, key KPIs, module-wise findings, and strategic initiatives. Focus on how data-driven decisions can align departments.",
+    "readFrom": ["*"],
+    "output_format": {
+      "type": "markdown",
+      "sections": [
+        "Executive Summary",
+        "Cross-Module SAP Architecture",
+        "Integrated Data Quality Review",
+        "Procure-to-Pay & Order-to-Cash Insights",
+        "Manufacturing & BOM Efficiency",
+        "Finance-Linked Production Intelligence",
+        "Key Cross-Module KPIs",
+        "Strategic Business Recommendations",
+        "Top 5 ROI-Based Initiatives",
+        "Appendix: Data Inventory & Relationship Map"
+      ]
+    }
+  }
+]
