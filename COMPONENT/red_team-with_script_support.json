@@ -1,0 +1,41 @@
+[
+  {
+    "agent": "intelligence_gatherer",
+    "run_script": {
+      "path": "tools/osint_toolkit.py",
+      "input_params": {
+        "target_domain": "$target_domain",
+        "tools": ["theHarvester", "spiderfoot", "amass", "github-dorks"],
+        "output_dir": "results/osint"
+      }
+    },
+    "use_script_output_as_content": true,
+    "content": "Analyze the OSINT data collected by the open-source tools. Identify the most relevant information from theHarvester (email addresses, subdomains), Spiderfoot (digital footprint, relationships), Amass (domain intelligence), and GitHub dork results. Determine the organization's structure, digital assets, employee information, technology stack, and potential vulnerabilities that could be exploited through social engineering or technical means.",
+    "tools": ["osint:gather", "socmint:analyze", "domain:enumerate"],
+    "output_format": {
+      "type": "json",
+      "schema": {
+        "org_structure": "object",
+        "digital_assets": ["string"],
+        "employee_info": ["object"],
+        "technology_stack": ["string"],
+        "potential_vulnerabilities": ["string"],
+        "phishing_vectors": ["string"]
+      }
+    },
+    "memory_id": "red_team_exercise"
+  },
+  {
+    "agent": "infrastructure_scanner",
+    "run_script": {
+      "path": "tools/infra_scan_toolkit.py",
+      "input_params": {
+        "target_domain": "$target_domain",
+        "ip_ranges": "$intelligence_gatherer.digital_assets",
+        "tools": ["nmap", "masscan", "dnsenum", "aquatone", "shodan-cli"],
+        "stealth_mode": true,
+        "output_dir": "results/infrastructure"
+      }
+    },
+    "use_script_output_as_content": true,
+    "content": "Analyze the infrastructure scan results from Nmap (detailed service enumeration), Masscan (rapid port scanning), DNSenum (DNS information), Aquatone (visual reconnaissance), and Shodan (internet-facing assets). Identify network topology, exposed services, subdomains, cloud resources, IP
