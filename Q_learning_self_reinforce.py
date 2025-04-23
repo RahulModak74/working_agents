@@ -1,3 +1,5 @@
+
+# python3 .\q_learning_ollama_analysis.py "Pl code python script to  fit pymc3 regression"  (How to run)
 import requests
 import sys
 #Normal ollama is on port 11434 .. I hv used port 11435 for other reasons
