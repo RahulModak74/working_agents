@@ -1,0 +1,2 @@
+This folder has one simple txt file which is all agentic_ai platform python files and a zip file with same name as the execution script
+  python3 agentic_ai_platform.py
