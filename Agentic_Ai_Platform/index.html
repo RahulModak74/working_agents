@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Complete Async Workflow Executor</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f5f7fa; 
+            color: #333;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            padding: 30px 0; 
+            text-align: center; 
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        
+        /* Status indicator */
+        .status-bar {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #28a745;
+        }
+        .status-dot.warning { background: #ffc107; }
+        .status-dot.error { background: #dc3545; }
+        
+        /* Tab Navigation */
+        .tab-nav { 
+            display: flex; 
+            background: white; 
+            border-radius: 10px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .tab-button { 
+            flex: 1; 
+            padding: 15px 20px; 
+            background: white; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-button:hover { background: #f8f9fa; }
+        .tab-button.active { 
+            background: #667eea; 
+            color: white; 
+            border-bottom-color: #4c63d2;
+        }
+        
+        /* Tab Content */
+        .tab-content { 
+            display: none; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .tab-content.active { display: block; }
+        .tab-content h3 { 
+            color: #667eea; 
+            margin-bottom: 20px; 
+            font-size: 1.5em;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        /* Form Styling */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+            color: #555;
+        }
+        input[type="file"], input[type="text"], input[type="number"], select { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 2px solid #e1e5e9; 
+            border-radius: 8px; 
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        input[type="file"]:focus, input[type="text"]:focus, input[type="number"]:focus, select:focus { 
+            outline: none; 
+            border-color: #667eea; 
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .btn { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            padding: 12px 25px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary { background: #6c757d; }
+        .btn-success { background: #28a745; }
+        .btn-info { background: #17a2b8; }
+        .btn-warning { background: #ffc107; color: #000; }
+        .btn-danger { background: #dc3545; }
+        
+        /* Results Area */
+        .results { 
+            background: #f8f9fa; 
+            border: 2px solid #e9ecef; 
+            padding: 20px; 
+            border-radius: 8px; 
+            white-space: pre-wrap; 
+            font-family: 'Courier New', monospace; 
+            max-height: 500px; 
+            overflow-y: auto;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .results.success { border-color: #28a745; background: #d4edda; }
+        .results.error { border-color: #dc3545; background: #f8d7da; }
+        
+        /* Status indicators */
+        .status { 
+            display: inline-block; 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-size: 12px; 
+            font-weight: bold; 
+            text-transform: uppercase;
+            margin-right: 10px;
+        }
+        .status.started { background: #007bff; color: white; }
+        .status.running { background: #ffc107; color: #000; }
+        .status.completed { background: #28a745; color: white; }
+        .status.failed { background: #dc3545; color: white; }
+        
+        /* Loading Animation */
+        .loading { 
+            display: none; 
+            text-align: center; 
+            padding: 20px;
+        }
+        .spinner { 
+            border: 4px solid #f3f3f3; 
+            border-top: 4px solid #667eea; 
+            border-radius: 50%; 
+            width: 40px; 
+            height: 40px; 
+            animation: spin 1s linear infinite; 
+            margin: 0 auto 10px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Progress bar */
+        .progress-bar {
+            background: #e9ecef;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tab-nav { flex-direction: column; }
+            .tab-button { border-bottom: 1px solid #eee; }
+            .container { padding: 10px; }
+            .form-row { flex-direction: column; }
+            .status-bar { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Complete Async Workflow Executor</h1>
+            <p>Advanced multi-agent workflow execution with real-time monitoring</p>
+        </div>
+        
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot" id="framework-status"></div>
+                <span id="framework-text">Framework Status</span>
+            </div>
+            <div class="status-item">
+                <div class="status-dot" id="api-status"></div>
+                <span id="api-text">API Status</span>
+            </div>
+            <div class="status-item">
+                <div class="status-dot" id="tools-status"></div>
+                <span id="tools-text">Tools Status</span>
+            </div>
+            <div class="status-item">
+                <span id="model-info">Model: Loading...</span>
+            </div>
+        </div>
+        
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-button active" onclick="showTab('upload-workflow')">📤 Upload Workflow</button>
+            <button class="tab-button" onclick="showTab('upload-data')">📁 Upload Data</button>
+            <button class="tab-button" onclick="showTab('execute')">▶️ Execute</button>
+            <button class="tab-button" onclick="showTab('monitor')">📊 Monitor</button>
+            <button class="tab-button" onclick="showTab('manage')">🗂️ Manage</button>
+            <button class="tab-button" onclick="showTab('framework')">🔧 Framework</button>
+        </div>
+        
+        <!-- Upload Workflow Tab -->
+        <div id="upload-workflow" class="tab-content active">
+            <h3>Upload JSON Workflow</h3>
+            <form id="workflow-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="workflow-file">Select Workflow JSON File:</label>
+                    <input type="file" id="workflow-file" name="workflow" accept=".json" required>
+                </div>
+                <button type="submit" class="btn">📤 Upload & Analyze Workflow</button>
+                <button type="button" onclick="testServer()" class="btn btn-info">🧪 Test Server</button>
+            </form>
+            <div class="loading" id="workflow-loading">
+                <div class="spinner"></div>
+                <p>Uploading and analyzing workflow...</p>
+            </div>
+        </div>
+        
+        <!-- Upload Data Tab -->
+        <div id="upload-data" class="tab-content">
+            <h3>Upload Data Files</h3>
+            <form id="data-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="data-files">Select Data Files (CSV, DOCX, TXT, etc.):</label>
+                    <input type="file" id="data-files" name="data" multiple>
+                </div>
+                <button type="submit" class="btn">📁 Upload Data Files</button>
+            </form>
+            <div class="loading" id="data-loading">
+                <div class="spinner"></div>
+                <p>Uploading data files...</p>
+            </div>
+        </div>
+        
+        <!-- Execute Tab -->
+        <div id="execute" class="tab-content">
+            <h3>Execute Workflow</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="workflow-id">Workflow ID:</label>
+                    <input type="text" id="workflow-id" placeholder="Enter workflow ID from upload step">
+                </div>
+                <div class="form-group">
+                    <label for="max-concurrent">Max Concurrent Agents:</label>
+                    <input type="number" id="max-concurrent" value="3" min="1" max="5">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="data-path">Data File Path (optional):</label>
+                <input type="text" id="data-path" placeholder="e.g., ./uploads/your-file.csv">
+            </div>
+            <div class="form-group">
+                <label for="features">Features (optional):</label>
+                <select id="features" multiple>
+                    <option value="tools">Tools</option>
+                    <option value="flow_control">Flow Control</option>
+                    <option value="dynamic_agents">Dynamic Agents</option>
+                    <option value="basic_async">Basic Async</option>
+                </select>
+                <small>Hold Ctrl/Cmd to select multiple features</small>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="verbose"> Verbose Logging
+                </label>
+            </div>
+            <button onclick="executeWorkflow()" class="btn">▶️ Execute Workflow</button>
+            <button onclick="listWorkflows()" class="btn btn-secondary">📋 List Available Workflows</button>
+            <div class="loading" id="execute-loading">
+                <div class="spinner"></div>
+                <p>Starting workflow execution...</p>
+            </div>
+        </div>
+        
+        <!-- Monitor Tab -->
+        <div id="monitor" class="tab-content">
+            <h3>Monitor Execution</h3>
+            <div class="form-group">
+                <label for="execution-id">Execution ID:</label>
+                <input type="text" id="execution-id" placeholder="Enter execution ID">
+            </div>
+            <div id="execution-progress" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div id="progress-text">Initializing...</div>
+            </div>
+            <button onclick="checkStatus()" class="btn btn-info">📊 Check Status</button>
+            <button onclick="listExecutions()" class="btn btn-secondary">📋 List All Executions</button>
+            <button onclick="toggleAutoRefresh()" class="btn btn-success" id="auto-refresh-btn">🔄 Start Auto-Refresh</button>
+            <div class="loading" id="monitor-loading">
+                <div class="spinner"></div>
+                <p>Checking execution status...</p>
+            </div>
+        </div>
+        
+        <!-- Manage Tab -->
+        <div id="manage" class="tab-content">
+            <h3>Manage Workflows & Executions</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <button onclick="listWorkflows()" class="btn">📋 List All Workflows</button>
+                    <button onclick="listExecutions()" class="btn btn-secondary">📊 List All Executions</button>
+                </div>
+                <div class="form-group">
+                    <button onclick="healthCheck()" class="btn btn-info">❤️ Health Check</button>
+                    <button onclick="clearResults()" class="btn btn-warning">🗑️ Clear Results</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Framework Tab -->
+        <div id="framework" class="tab-content">
+            <h3>Framework Information</h3>
+            <button onclick="getFrameworkInfo()" class="btn btn-info">🔧 Get Framework Info</button>
+            <button onclick="testApiConnection()" class="btn btn-secondary">🧪 Test API Connection</button>
+            <div id="framework-details" style="margin-top: 20px;"></div>
+        </div>
+        
+        <!-- Results Display -->
+        <div id="results" class="results"></div>
+    </div>
+    
+    <script>
+        let autoRefreshInterval = null;
+        let currentExecutionId = null;
+        const results = document.getElementById('results');
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await updateStatus();
+            showResults({message: 'Complete Async Workflow Executor initialized! Check the framework status and start by uploading a workflow.'}, 'info');
+        });
+        
+        // Update status indicators
+        async function updateStatus() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                const frameworkStatus = document.getElementById('framework-status');
+                const frameworkText = document.getElementById('framework-text');
+                if (data.framework_status?.complete_async_framework) {
+                    frameworkStatus.className = 'status-dot';
+                    frameworkText.textContent = 'Complete Framework';
+                } else {
+                    frameworkStatus.className = 'status-dot warning';
+                    frameworkText.textContent = 'Fallback Framework';
+                }
+                
+                const apiStatus = document.getElementById('api-status');
+                const apiText = document.getElementById('api-text');
+                if (data.config?.api_status === 'accessible') {
+                    apiStatus.className = 'status-dot';
+                    apiText.textContent = 'API Connected';
+                } else {
+                    apiStatus.className = 'status-dot error';
+                    apiText.textContent = 'API Issue';
+                }
+                
+                const toolsStatus = document.getElementById('tools-status');
+                const toolsText = document.getElementById('tools-text');
+                if (data.tools_discovered > 0) {
+                    toolsStatus.className = 'status-dot';
+                    toolsText.textContent = `${data.tools_discovered} Tools`;
+                } else {
+                    toolsStatus.className = 'status-dot warning';
+                    toolsText.textContent = 'No Tools';
+                }
+                
+                const modelInfo = document.getElementById('model-info');
+                modelInfo.textContent = `Model: ${data.config?.model || 'Unknown'}`;
+                
+            } catch (error) {
+                console.error('Failed to update status:', error);
+            }
+        }
+        
+        // FIXED Tab switching - no more event.target error
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            const targetTab = document.getElementById(tabName);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+            
+            // Find and activate the correct button
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => {
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabName)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            clearResults();
+        }
+        
+        // Utility functions
+        function showLoading(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) element.style.display = 'block';
+        }
+        
+        function hideLoading(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) element.style.display = 'none';
+        }
+        
+        function showResults(data, type = 'info') {
+            results.className = `results ${type}`;
+            results.textContent = JSON.stringify(data, null, 2);
+            results.scrollTop = 0;
+        }
+        
+        function clearResults() {
+            results.textContent = '';
+            results.className = 'results';
+            updateProgress(-1);
+        }
+        
+        function updateProgress(percentage, text) {
+            const progressBar = document.getElementById('execution-progress');
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            
+            if (progressBar && progressFill && progressText) {
+                if (percentage >= 0) {
+                    progressBar.style.display = 'block';
+                    progressFill.style.width = `${percentage}%`;
+                    progressText.textContent = text || `${percentage}% complete`;
+                } else {
+                    progressBar.style.display = 'none';
+                }
+            }
+        }
+        
+        // Test server function
+        async function testServer() {
+            try {
+                showLoading('workflow-loading');
+                const response = await fetch('/test');
+                const data = await response.json();
+                console.log('Server test:', data);
+                showResults(data, 'success');
+            } catch (error) {
+                console.error('Server test failed:', error);
+                showResults({error: 'Server test failed: ' + error.message}, 'error');
+            } finally {
+                hideLoading('workflow-loading');
+            }
+        }
+        
+        // Upload workflow - FIXED
+        document.getElementById('workflow-form').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('workflow-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showResults({error: 'Please select a workflow file'}, 'error');
+                return;
+            }
+            
+            if (!file.name.endsWith('.json')) {
+                showResults({error: 'Please select a JSON file'}, 'error');
+                return;
+            }
+            
+            console.log('Uploading file:', file.name, 'Size:', file.size);
+            showLoading('workflow-loading');
+            
+            try {
+                const formData = new FormData();
+                formData.append('workflow', file);
+                
+                const response = await fetch('/upload-workflow', { 
+                    method: 'POST', 
+                    body: formData 
+                });
+                
+                const data = await response.json();
+                console.log('Upload response:', data);
+                
+                if (response.ok) {
+                    showResults(data, 'success');
+                    document.getElementById('workflow-id').value = data.workflow_id;
+                    
+                    if (data.features && data.features.length > 0) {
+                        const featuresSelect = document.getElementById('features');
+                        featuresSelect.innerHTML = '';
+                        ['tools', 'flow_control', 'dynamic_agents', 'basic_async'].forEach(feature => {
+                            const option = document.createElement('option');
+                            option.value = feature;
+                            option.textContent = feature.replace('_', ' ').toUpperCase();
+                            if (data.features.includes(feature)) {
+                                option.selected = true;
+                            }
+                            featuresSelect.appendChild(option);
+                        });
+                    }
+                } else {
+                    showResults(data, 'error');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                showResults({error: 'Network error: ' + error.message}, 'error');
+            } finally {
+                hideLoading('workflow-loading');
+            }
+        };
+        
+        // Upload data
+        document.getElementById('data-form').onsubmit = async (e) => {
+            e.preventDefault();
+            showLoading('data-loading');
+            
+            try {
+                const formData = new FormData(e.target);
+                const response = await fetch('/upload-data', { method: 'POST', body: formData });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResults(data, 'success');
+                    if (data.uploaded_files && data.uploaded_files.length > 0) {
+                        document.getElementById('data-path').value = data.uploaded_files[0].file_path;
+                    }
+                } else {
+                    showResults(data, 'error');
+                }
+            } catch (error) {
+                showResults({error: error.message}, 'error');
+            } finally {
+                hideLoading('data-loading');
+            }
+        };
+        
+        // Execute workflow - FIXED
+        async function executeWorkflow() {
+            const workflowId = document.getElementById('workflow-id').value;
+            const dataPath = document.getElementById('data-path').value;
+            const maxConcurrent = parseInt(document.getElementById('max-concurrent').value) || 3; // REDUCED FROM 5
+            const featuresSelect = document.getElementById('features');
+            const selectedFeatures = Array.from(featuresSelect.selectedOptions).map(option => option.value);
+            const verbose = document.getElementById('verbose').checked;
+            
+            if (!workflowId) {
+                showResults({error: 'Please enter a workflow ID'}, 'error');
+                return;
+            }
+            
+            showLoading('execute-loading');
+            
+            try {
+                const response = await fetch('/execute-workflow', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        workflow_id: workflowId,
+                        data_file_path: dataPath,
+                        max_concurrent: maxConcurrent,
+                        features: selectedFeatures.length > 0 ? selectedFeatures : null,
+                        verbose: verbose
+                    })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResults(data, 'success');
+                    document.getElementById('execution-id').value = data.execution_id;
+                    currentExecutionId = data.execution_id;
+                    
+                    // Switch to monitor tab - FIXED
+                    showTab('monitor');
+                    
+                    // Start auto-refresh
+                    if (!autoRefreshInterval) {
+                        toggleAutoRefresh();
+                    }
+                } else {
+                    showResults(data, 'error');
+                }
+            } catch (error) {
+                showResults({error: error.message}, 'error');
+            } finally {
+                hideLoading('execute-loading');
+            }
+        }
+        
+        // Check status
+        async function checkStatus() {
+            const executionId = document.getElementById('execution-id').value || currentExecutionId;
+            
+            if (!executionId) {
+                showResults({error: 'Please enter an execution ID'}, 'error');
+                return;
+            }
+            
+            showLoading('monitor-loading');
+            
+            try {
+                const response = await fetch(`/execution-status/${executionId}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResults(data, data.status === 'failed' ? 'error' : 'success');
+                    
+                    if (data.results_summary) {
+                        const summary = data.results_summary;
+                        const percentage = (summary.completed / summary.total_agents) * 100;
+                        updateProgress(percentage, `${summary.completed}/${summary.total_agents} agents completed`);
+                    }
+                    
+                    if (data.status === 'completed' || data.status === 'failed') {
+                        if (autoRefreshInterval) {
+                            toggleAutoRefresh();
+                        }
+                    }
+                } else {
+                    showResults(data, 'error');
+                }
+            } catch (error) {
+                showResults({error: error.message}, 'error');
+            } finally {
+                hideLoading('monitor-loading');
+            }
+        }
+        
+        // List workflows
+        async function listWorkflows() {
+            try {
+                const response = await fetch('/list-workflows');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    let displayData = {
+                        workflows: data.workflows.map(w => ({
+                            id: w.workflow_id,
+                            steps: w.steps,
+                            agents: w.agents,
+                            features: w.features,
+                            created: w.created,
+                            size: w.size_kb + ' KB'
+                        })),
+                        total: data.workflows.length
+                    };
+                    showResults(displayData, 'success');
+                } else {
+                    showResults(data, 'error');
+                }
+            } catch (error) {
+                showResults({error: error.message}, 'error');
+            }
+        }
+        
+        // List executions
+        async function listExecutions() {
+            try {
+                const response = await fetch('/list-executions');
+                const data = await response.json();
+                showResults(data, response.ok ? 'success' : 'error');
+            } catch (error) {
+                showResults({error: error.message}, 'error');
+            }
+        }
+        
+        // Health check
+        async function healthCheck() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                showResults(data, 'success');
+                await updateStatus();
+            } catch (error) {
+                showResults({error: error.message}, 'error');
+            }
+        }
+        
+        // Get framework info
+        async function getFrameworkInfo() {
+            try {
+                const response = await fetch('/framework-info');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResults(data, 'success');
+                    
+                    const detailsDiv = document.getElementById('framework-details');
+                    if (detailsDiv) {
+                        let html = '<h4>Framework Status:</h4>';
+                        
+                        for (const [name, info] of Object.entries(data.frameworks)) {
+                            const status = info.available ? '✅' : '❌';
+                            html += `<p>${status} <strong>${name}</strong>: ${info.description}</p>`;
+                        }
+                        
+                        html += '<h4>Tools:</h4>';
+                        if (data.tools.available) {
+                            html += `<p>✅ ${data.tools.count} tools discovered</p>`;
+                            if (data.tools.tools.length > 0) {
+                                html += '<p>Sample tools: ' + data.tools.tools.slice(0, 5).join(', ') + '</p>';
+                            }
+                        } else {
+                            html += '<p>❌ No tools available</p>';
+                        }
+                        
+                        detailsDiv.innerHTML = html;
+                    }
+                } else {
+                    showResults(data, 'error');
+                }
+            } catch (error) {
+                showResults({error: error.message}, 'error');
+            }
+        }
+        
+        // Test API connection
+        async function testApiConnection() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                let testResult = {
+                    endpoint: data.config?.endpoint || 'unknown',
+                    model: data.config?.model || 'unknown',
+                    api_status: data.config?.api_status || 'unknown',
+                    test_result: data.config?.api_status === 'accessible' ? 'SUCCESS' : 'FAILED'
+                };
+                
+                showResults(testResult, testResult.test_result === 'SUCCESS' ? 'success' : 'error');
+            } catch (error) {
+                showResults({error: error.message}, 'error');
+            }
+        }
+        
+        // Auto-refresh toggle
+        function toggleAutoRefresh() {
+            const btn = document.getElementById('auto-refresh-btn');
+            
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+                btn.textContent = '🔄 Start Auto-Refresh';
+                btn.className = 'btn btn-success';
+            } else {
+                autoRefreshInterval = setInterval(() => {
+                    const executionId = document.getElementById('execution-id').value || currentExecutionId;
+                    if (executionId) {
+                        checkStatus();
+                    }
+                }, 5000); // INCREASED from 3000 to 5000ms
+                btn.textContent = '⏸️ Stop Auto-Refresh';
+                btn.className = 'btn btn-danger';
+            }
+        }
+        
+        // Clear results
+        function clearResults() {
+            results.textContent = '';
+            results.className = 'results';
+            updateProgress(-1);
+        }
+    </script>
+</body>
+</html>
