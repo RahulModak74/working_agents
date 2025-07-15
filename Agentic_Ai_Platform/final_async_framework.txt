@@ -1,0 +1,3329 @@
+Python Files Content Aggregation
+Generated on 2025-07-15 at 11:01:04
+==================================================
+
+==================================================
+FILE: async_dynamic_agents.py
+==================================================
+
+#!/usr/bin/env python3
+
+import asyncio
+import json
+from typing import Dict, Any, List, Optional
+import logging
+
+logger = logging.getLogger("async_dynamic_agents")
+
+class AsyncDynamicAgentExecutor:
+    """Async executor with dynamic agent support"""
+    
+    def __init__(self, base_executor):
+        self.base_executor = base_executor
+        self.dynamic_results = {}
+    
+    async def execute_dynamic_workflow(self, workflow: List[Dict[str, Any]], 
+                                     data_file: str = None) -> Dict[str, Any]:
+        """Execute workflow with dynamic agent support"""
+        
+        results = {}
+        
+        for step_index, step in enumerate(workflow):
+            step_type = step.get("type", "agent")
+            
+            if step_type == "dynamic":
+                # Handle dynamic agent
+                dynamic_result = await self._execute_dynamic_agent(step, results, data_file)
+                
+                agent_name = step.get("agent")
+                if agent_name:
+                    results[agent_name] = dynamic_result
+                
+                # Check if dynamic agent selected an action
+                action_key = await self._extract_action_from_result(dynamic_result)
+                
+                if action_key:
+                    action_name = f"{agent_name}_action"
+                    results[action_name] = action_key
+                    logger.info(f"🔍 Dynamic agent selected action: {action_key}")
+                    
+                    # Execute the selected action
+                    await self._execute_dynamic_action(step, action_key, results, data_file)
+            
+            else:
+                # Handle regular agent
+                if hasattr(self.base_executor, '_execute_step_async'):
+                    result = await self.base_executor._execute_step_async(step, data_file)
+                else:
+                    # Fallback to regular execution
+                    result = await self._execute_regular_agent(step, results, data_file)
+                
+                agent_name = step.get("agent")
+                if agent_name:
+                    results[agent_name] = result
+        
+        return results
+    
+    async def _execute_dynamic_agent(self, step: Dict[str, Any], 
+                                   current_results: Dict[str, Any], 
+                                   data_file: str = None) -> Dict[str, Any]:
+        """Execute dynamic agent that can choose its action"""
+        
+        agent_name = step.get("agent")
+        initial_prompt = step.get("initial_prompt", "")
+        output_format = step.get("output_format", {})
+        required_tools = step.get("tools", [])
+        
+        # Collect references for dynamic agent
+        references = self._collect_references(step.get("readFrom", []), current_results)
+        
+        # Create enhanced prompt for dynamic decision making
+        enhanced_prompt = initial_prompt
+        
+        # Add available actions information
+        actions = step.get("actions", {})
+        if actions:
+            enhanced_prompt += "\n\n### Available Actions:\n"
+            for action_key, action_info in actions.items():
+                action_desc = action_info.get("description", action_key)
+                enhanced_prompt += f"- **{action_key}**: {action_desc}\n"
+            
+            enhanced_prompt += "\nBased on the context and available information, select the most appropriate action."
+        
+        # Add reference information
+        if references:
+            enhanced_prompt += "\n\n### Reference Information:\n"
+            for ref_name, ref_content in references.items():
+                enhanced_prompt += f"\n#### Output from {ref_name}:\n"
+                if isinstance(ref_content, dict):
+                    enhanced_prompt += json.dumps(ref_content, indent=2)
+                else:
+                    enhanced_prompt += str(ref_content)
+        
+        # Execute the dynamic agent
+        result = await self._call_agent_async(
+            agent_name=agent_name,
+            prompt=enhanced_prompt,
+            output_format=output_format,
+            required_tools=required_tools,
+            file_path=data_file if step.get("file") else None
+        )
+        
+        return result
+    
+    async def _execute_dynamic_action(self, dynamic_step: Dict[str, Any], 
+                                    action_key: str, 
+                                    current_results: Dict[str, Any],
+                                    data_file: str = None):
+        """Execute the action selected by dynamic agent"""
+        
+        actions = dynamic_step.get("actions", {})
+        
+        if action_key not in actions:
+            logger.warning(f"Selected action '{action_key}' not found in available actions")
+            return
+        
+        action = actions[action_key]
+        next_agent_name = action.get("agent")
+        
+        if not next_agent_name:
+            logger.warning(f"Action '{action_key}' has no agent specified")
+            return
+        
+        action_content = action.get("content", "")
+        action_output_format = action.get("output_format")
+        action_tools = action.get("tools", [])
+        
+        # Collect references for the action
+        action_refs = self._collect_references(action.get("readFrom", []), current_results)
+        
+        # Execute the action agent
+        action_result = await self._call_agent_async(
+            agent_name=next_agent_name,
+            prompt=action_content,
+            output_format=action_output_format,
+            required_tools=action_tools,
+            file_path=data_file if action.get("file") else None,
+            references=action_refs
+        )
+        
+        # Store action result
+        current_results[next_agent_name] = action_result
+        logger.info(f"✅ Dynamic action '{action_key}' executed by {next_agent_name}")
+    
+    async def _extract_action_from_result(self, result: Dict[str, Any]) -> Optional[str]:
+        """Extract selected action from dynamic agent result"""
+        
+        if not isinstance(result, dict):
+            return None
+        
+        # Try various possible action keys
+        for key in ["response_action", "action", "selected_focus", "selected_action", "choice"]:
+            if key in result:
+                action_value = result[key]
+                if isinstance(action_value, str):
+                    return action_value
+                elif isinstance(action_value, dict) and "action" in action_value:
+                    return action_value["action"]
+        
+        # Try to parse from content
+        content = result.get("content", "")
+        if isinstance(content, str):
+            # Look for action indicators in content
+            import re
+            action_patterns = [
+                r"selected action:\s*([a-zA-Z_][a-zA-Z0-9_]*)",
+                r"action:\s*([a-zA-Z_][a-zA-Z0-9_]*)",
+                r"choose:\s*([a-zA-Z_][a-zA-Z0-9_]*)"
+            ]
+            
+            for pattern in action_patterns:
+                match = re.search(pattern, content, re.IGNORECASE)
+                if match:
+                    return match.group(1)
+        
+        return None
+    
+    async def _call_agent_async(self, agent_name: str, prompt: str, 
+                              output_format: Optional[Dict[str, Any]] = None,
+                              required_tools: List[str] = None,
+                              file_path: Optional[str] = None,
+                              references: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Call agent asynchronously with full feature support"""
+        
+        # Build enhanced prompt
+        enhanced_prompt = prompt
+        
+        # Add reference information
+        if references:
+            enhanced_prompt += "\n\n### Reference Information:\n"
+            for ref_name, ref_content in references.items():
+                enhanced_prompt += f"\n#### Output from {ref_name}:\n"
+                if isinstance(ref_content, dict):
+                    enhanced_prompt += json.dumps(ref_content, indent=2)
+                else:
+                    enhanced_prompt += str(ref_content)
+        
+        # Add file content if provided
+        if file_path:
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    file_content = f.read()
+                    if len(file_content) > 10000:
+                        file_content = file_content[:10000]
+                    enhanced_prompt += f"\n\nFile content:\n```\n{file_content}\n```"
+            except Exception as e:
+                logger.warning(f"Could not read file {file_path}: {e}")
+        
+        # Add tool information
+        if required_tools:
+            enhanced_prompt += f"\n\nYou have access to these tools: {', '.join(required_tools)}"
+        
+        # Add format instructions
+        if output_format:
+            output_type = output_format.get("type", "text")
+            schema = output_format.get("schema")
+            
+            if output_type == "json" and schema:
+                enhanced_prompt += "\n\n### Response Format Instructions:\n"
+                enhanced_prompt += "You MUST respond with a valid JSON object exactly matching this schema:\n"
+                enhanced_prompt += f"```json\n{json.dumps(schema, indent=2)}\n```\n"
+                enhanced_prompt += "\nReturning properly formatted JSON is CRITICAL."
+        
+        # Build conversation
+        system_message = f"You are a specialized assistant. Your responses must strictly follow the format specified."
+        conversation = [
+            {"role": "system", "content": system_message},
+            {"role": "user", "content": enhanced_prompt}
+        ]
+        
+        # Use base executor's API call method
+        if hasattr(self.base_executor, '_call_api_async'):
+            response = await self.base_executor._call_api_async(conversation)
+        else:
+            # Fallback - simulate async call
+            await asyncio.sleep(0.1)
+            response = f"Simulated response from {agent_name}"
+        
+        # Process response based on output format
+        if output_format and output_format.get("type") == "json":
+            return self._extract_json_from_response(response)
+        else:
+            return {"content": response}
+    
+    async def _execute_regular_agent(self, step: Dict[str, Any], 
+                                   current_results: Dict[str, Any],
+                                   data_file: str = None) -> Dict[str, Any]:
+        """Execute regular (non-dynamic) agent"""
+        
+        agent_name = step.get("agent")
+        content = step.get("content", "")
+        output_format = step.get("output_format", {})
+        required_tools = step.get("tools", [])
+        
+        # Collect references
+        references = self._collect_references(step.get("readFrom", []), current_results)
+        
+        # Execute agent
+        return await self._call_agent_async(
+            agent_name=agent_name,
+            prompt=content,
+            output_format=output_format,
+            required_tools=required_tools,
+            file_path=data_file if step.get("file") else None,
+            references=references
+        )
+    
+    def _collect_references(self, read_from: List[str], current_results: Dict[str, Any]) -> Dict[str, Any]:
+        """Collect references from current results"""
+        references = {}
+        
+        for ref in read_from:
+            if ref == "*":
+                # Include all current results
+                references.update(current_results)
+            elif isinstance(ref, str) and ref in current_results:
+                references[ref] = current_results[ref]
+        
+        return references
+    
+    def _extract_json_from_response(self, response: str) -> Dict[str, Any]:
+        """Extract JSON from response with fallback"""
+        try:
+            return json.loads(response)
+        except json.JSONDecodeError:
+            import re
+            json_match = re.search(r'\{.*\}', response, re.DOTALL)
+            if json_match:
+                try:
+                    return json.loads(json_match.group())
+                except:
+                    return {"error": "Could not parse JSON", "raw_response": response}
+            else:
+                return {"error": "No JSON found", "raw_response": response}
+
+# Integration class that combines all async features
+class FullAsyncWorkflowExecutor:
+    """Complete async workflow executor with all features"""
+    
+    def __init__(self, config: Dict[str, Any], max_concurrent: int = 50):
+        self.config = config
+        self.max_concurrent = max_concurrent
+        
+        # Initialize sub-executors
+        from async_executor import AsyncWorkflowExecutor
+        self.base_executor = AsyncWorkflowExecutor(config, max_concurrent)
+        
+        # Add tool integration if available
+        try:
+            from async_tool_integration import AsyncToolIntegratedExecutor
+            self.tool_executor = AsyncToolIntegratedExecutor(config, max_concurrent)
+        except ImportError as e:
+            logger.warning(f"Tool integration not available: {e}")
+            self.tool_executor = None
+        
+        # Add flow control if available
+        try:
+            from tool_manager import tool_manager
+            from async_flow_control import AsyncFlowControlExecutor
+            self.flow_executor = AsyncFlowControlExecutor(tool_manager, max_concurrent)
+        except ImportError as e:
+            logger.warning(f"Flow control not available: {e}")
+            self.flow_executor = None
+        
+        # Add dynamic agent support
+        self.dynamic_executor = AsyncDynamicAgentExecutor(self.base_executor)
+    
+    async def execute_complete_workflow(self, workflow: List[Dict[str, Any]], 
+                                      data_file: str = None) -> Dict[str, Any]:
+        """Execute workflow with all async features enabled"""
+        
+        logger.info("🚀 Starting complete async workflow execution")
+        
+        # Analyze workflow to determine features needed
+        features_needed = self._analyze_workflow_features(workflow)
+        logger.info(f"Detected features: {', '.join(features_needed)}")
+        
+        try:
+            # Choose appropriate executor based on features
+            if "dynamic_agents" in features_needed:
+                if "flow_control" in features_needed and self.flow_executor:
+                    # Complex workflow with both dynamic agents and flow control
+                    return await self._execute_complex_workflow(workflow, data_file)
+                else:
+                    # Dynamic agents only
+                    return await self.dynamic_executor.execute_dynamic_workflow(workflow, data_file)
+            
+            elif "flow_control" in features_needed and self.flow_executor:
+                # Flow control workflow
+                return await self.flow_executor.execute_workflow_with_flow_control(workflow, data_file)
+            
+            elif "tools" in features_needed and self.tool_executor:
+                # Tool-enabled workflow
+                return await self.tool_executor.execute_workflow_with_tools(workflow, data_file)
+            
+            else:
+                # Basic async workflow
+                async with self.base_executor as executor:
+                    return await executor.execute_workflow_async(workflow, data_file)
+        
+        except Exception as e:
+            logger.error(f"❌ Complete async workflow execution failed: {e}")
+            return {"error": str(e), "success": False}
+    
+    async def _execute_complex_workflow(self, workflow: List[Dict[str, Any]], 
+                                      data_file: str = None) -> Dict[str, Any]:
+        """Execute workflow with multiple advanced features"""
+        
+        # This would combine dynamic agents, flow control, and tools
+        # For now, prioritize dynamic agents with fallback to flow control
+        
+        try:
+            return await self.dynamic_executor.execute_dynamic_workflow(workflow, data_file)
+        except Exception as e:
+            logger.warning(f"Dynamic execution failed, falling back to flow control: {e}")
+            if self.flow_executor:
+                return await self.flow_executor.execute_workflow_with_flow_control(workflow, data_file)
+            else:
+                raise e
+    
+    def _analyze_workflow_features(self, workflow: List[Dict[str, Any]]) -> List[str]:
+        """Analyze workflow to determine what features are needed"""
+        
+        features = []
+        
+        for step in workflow:
+            # Check for dynamic agents
+            if step.get("type") == "dynamic":
+                features.append("dynamic_agents")
+            
+            # Check for flow control
+            if step.get("type") in ["loop", "conditional", "parallel", "state"]:
+                features.append("flow_control")
+            
+            # Check for tools
+            if step.get("tools"):
+                features.append("tools")
+        
+        return list(set(features))  # Remove duplicates
+
+# Utility function for easy usage
+async def execute_advanced_workflow(workflow_file: str, config: Dict[str, Any], 
+                                  data_file: str = None, max_concurrent: int = 50) -> Dict[str, Any]:
+    """Execute workflow with all advanced async features"""
+    
+    # Load workflow
+    with open(workflow_file, 'r', encoding='utf-8') as f:
+        workflow = json.load(f)
+    
+    if isinstance(workflow, dict) and "steps" in workflow:
+        workflow = workflow["steps"]
+    
+    # Execute with full feature support
+    executor = FullAsyncWorkflowExecutor(config, max_concurrent)
+    return await executor.execute_complete_workflow(workflow, data_file)
+
+
+==================================================
+FILE: async_executor.py
+==================================================
+
+#!/usr/bin/env python3
+
+import asyncio
+import aiohttp
+import json
+import time
+from typing import Dict, Any, List, Optional, Set
+from dataclasses import dataclass
+from collections import defaultdict, deque
+import logging
+
+logger = logging.getLogger("async_executor")
+
+@dataclass
+class AgentTask:
+    """Represents a single agent execution task"""
+    agent_name: str
+    prompt: str
+    file_path: Optional[str] = None
+    output_format: Optional[Dict[str, Any]] = None
+    references: Optional[Dict[str, Any]] = None
+    required_tools: List[str] = None
+    dependencies: Set[str] = None
+    priority: int = 0
+
+class AsyncWorkflowExecutor:
+    """High-performance async workflow executor for large-scale operations"""
+    
+    def __init__(self, config: Dict[str, Any], max_concurrent: int = 50, 
+                 max_connections: int = 100, rate_limit: float = 10.0):
+        self.config = config
+        self.max_concurrent = max_concurrent
+        self.max_connections = max_connections
+        self.rate_limit = rate_limit  # requests per second
+        
+        # Rate limiting
+        self.request_times = deque()
+        self.rate_limiter = asyncio.Semaphore(max_concurrent)
+        
+        # Results storage
+        self.results = {}
+        self.completed_agents = set()
+        self.failed_agents = set()
+        
+        # Connection management
+        self.session = None
+        self.connector = None
+        
+    async def __aenter__(self):
+        """Async context manager entry"""
+        self.connector = aiohttp.TCPConnector(
+            limit=self.max_connections,
+            limit_per_host=20,
+            keepalive_timeout=30,
+            enable_cleanup_closed=True
+        )
+        
+        timeout = aiohttp.ClientTimeout(total=120, connect=10)
+        self.session = aiohttp.ClientSession(
+            connector=self.connector,
+            timeout=timeout,
+            headers={'Content-Type': 'application/json'}
+        )
+        return self
+    
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit"""
+        if self.session:
+            await self.session.close()
+        if self.connector:
+            await self.connector.close()
+    
+    async def _rate_limit(self):
+        """Implement rate limiting"""
+        async with self.rate_limiter:
+            now = time.time()
+            
+            # Remove old requests outside the window
+            while self.request_times and now - self.request_times[0] > 1.0:
+                self.request_times.popleft()
+            
+            # Check if we need to wait
+            if len(self.request_times) >= self.rate_limit:
+                sleep_time = 1.0 - (now - self.request_times[0])
+                if sleep_time > 0:
+                    await asyncio.sleep(sleep_time)
+            
+            self.request_times.append(now)
+    
+    async def _call_api_async(self, conversation: List[Dict], retries: int = 3) -> str:
+        """Async API call with retries and rate limiting"""
+        await self._rate_limit()
+        
+        payload = {
+            "model": self.config["default_model"],
+            "messages": conversation
+        }
+        
+        headers = {}
+        if self.config.get("api_key"):
+            headers["Authorization"] = f"Bearer {self.config['api_key']}"
+        
+        for attempt in range(retries):
+            try:
+                async with self.session.post(
+                    self.config["endpoint"],
+                    json=payload,
+                    headers=headers
+                ) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        content = (data.get('content', '') or 
+                                 data.get('choices', [{}])[0].get('message', {}).get('content', ''))
+                        return content
+                    elif response.status == 429:  # Rate limited
+                        wait_time = 2 ** attempt
+                        logger.warning(f"Rate limited, waiting {wait_time}s")
+                        await asyncio.sleep(wait_time)
+                    else:
+                        logger.error(f"API error {response.status}: {await response.text()}")
+                        
+            except asyncio.TimeoutError:
+                logger.warning(f"API timeout on attempt {attempt + 1}")
+            except Exception as e:
+                logger.error(f"API error on attempt {attempt + 1}: {e}")
+            
+            if attempt < retries - 1:
+                await asyncio.sleep(2 ** attempt)
+        
+        return f"Error: Failed after {retries} attempts"
+    
+    async def _execute_agent_async(self, task: AgentTask) -> Dict[str, Any]:
+        """Execute a single agent asynchronously"""
+        try:
+            # Build the prompt
+            enhanced_prompt = task.prompt
+            
+            # Add reference information
+            if task.references:
+                enhanced_prompt += "\n\n### Reference Information:\n"
+                for ref_name, ref_content in task.references.items():
+                    enhanced_prompt += f"\n#### Output from {ref_name}:\n"
+                    if isinstance(ref_content, dict):
+                        enhanced_prompt += json.dumps(ref_content, indent=2)
+                    else:
+                        enhanced_prompt += str(ref_content)
+            
+            # Add file content if provided
+            if task.file_path:
+                try:
+                    with open(task.file_path, 'r', encoding='utf-8') as f:
+                        file_content = f.read()
+                        if len(file_content) > 10000:
+                            file_content = file_content[:10000]
+                        enhanced_prompt += f"\n\nFile content:\n```\n{file_content}\n```"
+                except Exception as e:
+                    logger.warning(f"Could not read file {task.file_path}: {e}")
+            
+            # Add format instructions
+            if task.output_format:
+                output_type = task.output_format.get("type", "text")
+                schema = task.output_format.get("schema")
+                
+                if output_type == "json" and schema:
+                    enhanced_prompt += "\n\n### Response Format Instructions:\n"
+                    enhanced_prompt += "You MUST respond with a valid JSON object exactly matching this schema:\n"
+                    enhanced_prompt += f"```json\n{json.dumps(schema, indent=2)}\n```\n"
+                    enhanced_prompt += "\nReturning properly formatted JSON is CRITICAL."
+            
+            # Build conversation
+            system_message = f"You are a specialized assistant. Your responses must strictly follow the format specified."
+            conversation = [
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": enhanced_prompt}
+            ]
+            
+            # Make API call
+            response = await self._call_api_async(conversation)
+            
+            # Process response based on output format
+            if task.output_format and task.output_format.get("type") == "json":
+                try:
+                    result = json.loads(response)
+                except json.JSONDecodeError:
+                    # Try to extract JSON from response
+                    import re
+                    json_match = re.search(r'\{.*\}', response, re.DOTALL)
+                    if json_match:
+                        try:
+                            result = json.loads(json_match.group())
+                        except:
+                            result = {"error": "Could not parse JSON", "raw_response": response}
+                    else:
+                        result = {"error": "No JSON found", "raw_response": response}
+            else:
+                result = {"content": response}
+            
+            logger.info(f"✅ Agent {task.agent_name} completed successfully")
+            return result
+            
+        except Exception as e:
+            error_result = {"error": f"Agent execution failed: {str(e)}"}
+            logger.error(f"❌ Agent {task.agent_name} failed: {e}")
+            return error_result
+    
+    def _build_dependency_graph(self, workflow: List[Dict]) -> Dict[str, Set[str]]:
+        """Build dependency graph from workflow"""
+        dependencies = {}
+        
+        for step in workflow:
+            agent_name = step.get("agent", "")
+            deps = set()
+            
+            # Check readFrom dependencies
+            read_from = step.get("readFrom", [])
+            for ref in read_from:
+                if isinstance(ref, str) and ref != "*":
+                    deps.add(ref)
+                elif ref == "*":
+                    # Depends on all previous agents
+                    for prev_step in workflow:
+                        if prev_step.get("agent") == agent_name:
+                            break
+                        prev_agent = prev_step.get("agent")
+                        if prev_agent:
+                            deps.add(prev_agent)
+            
+            dependencies[agent_name] = deps
+        
+        return dependencies
+    
+    def _create_execution_batches(self, workflow: List[Dict]) -> List[List[AgentTask]]:
+        """Create batches of agents that can be executed in parallel"""
+        dependencies = self._build_dependency_graph(workflow)
+        
+        # Create tasks
+        tasks = {}
+        for step in workflow:
+            agent_name = step.get("agent", "")
+            if agent_name:
+                task = AgentTask(
+                    agent_name=agent_name,
+                    prompt=step.get("content", ""),
+                    file_path=step.get("file"),
+                    output_format=step.get("output_format"),
+                    required_tools=step.get("tools", []),
+                    dependencies=dependencies.get(agent_name, set())
+                )
+                tasks[agent_name] = task
+        
+        # Create batches using topological sort
+        batches = []
+        completed = set()
+        remaining = set(tasks.keys())
+        
+        while remaining:
+            # Find tasks with no pending dependencies
+            ready = []
+            for agent_name in remaining:
+                task = tasks[agent_name]
+                if task.dependencies.issubset(completed):
+                    ready.append(task)
+            
+            if not ready:
+                # Circular dependency or error - add remaining tasks
+                logger.warning("Possible circular dependency detected")
+                ready = [tasks[name] for name in remaining]
+            
+            # Create batch (limit size for memory management)
+            batch_size = min(len(ready), self.max_concurrent)
+            batch = ready[:batch_size]
+            batches.append(batch)
+            
+            # Update completed and remaining
+            for task in batch:
+                completed.add(task.agent_name)
+                remaining.discard(task.agent_name)
+        
+        return batches
+    
+    async def execute_workflow_async(self, workflow: List[Dict], data_file: str = None) -> Dict[str, Any]:
+        """Execute workflow asynchronously with optimizations"""
+        logger.info(f"Starting async workflow execution with {len(workflow)} agents")
+        
+        # Create execution batches
+        batches = self._create_execution_batches(workflow)
+        logger.info(f"Created {len(batches)} execution batches")
+        
+        results = {}
+        
+        for batch_idx, batch in enumerate(batches):
+            logger.info(f"Executing batch {batch_idx + 1}/{len(batches)} with {len(batch)} agents")
+            
+            # Update references for tasks in this batch
+            for task in batch:
+                if task.required_tools:
+                    # Add references from completed agents
+                    refs = {}
+                    for dep in task.dependencies:
+                        if dep in results:
+                            refs[dep] = results[dep]
+                    task.references = refs
+            
+            # Execute batch concurrently
+            batch_tasks = [self._execute_agent_async(task) for task in batch]
+            batch_results = await asyncio.gather(*batch_tasks, return_exceptions=True)
+            
+            # Store results
+            for task, result in zip(batch, batch_results):
+                if isinstance(result, Exception):
+                    results[task.agent_name] = {"error": str(result)}
+                    self.failed_agents.add(task.agent_name)
+                else:
+                    results[task.agent_name] = result
+                    self.completed_agents.add(task.agent_name)
+            
+            # Progress update
+            completed_count = len(self.completed_agents)
+            failed_count = len(self.failed_agents)
+            total_count = len(workflow)
+            
+            logger.info(f"Progress: {completed_count}/{total_count} completed, {failed_count} failed")
+            
+            # Small delay between batches to prevent overwhelming
+            if batch_idx < len(batches) - 1:
+                await asyncio.sleep(0.1)
+        
+        logger.info("✅ Async workflow execution completed")
+        
+        return {
+            "results": results,
+            "completed_count": len(self.completed_agents),
+            "failed_count": len(self.failed_agents),
+            "total_count": len(workflow)
+        }
+
+# Utility function for easy usage
+async def execute_large_workflow(workflow_file: str, config: Dict[str, Any], 
+                                data_file: str = None, max_concurrent: int = 50) -> Dict[str, Any]:
+    """Execute a large workflow asynchronously"""
+    
+    # Load workflow
+    with open(workflow_file, 'r', encoding='utf-8') as f:
+        workflow = json.load(f)
+    
+    if isinstance(workflow, dict) and "steps" in workflow:
+        workflow = workflow["steps"]
+    
+    async with AsyncWorkflowExecutor(config, max_concurrent=max_concurrent) as executor:
+        return await executor.execute_workflow_async(workflow, data_file)
+
+
+==================================================
+FILE: async_flow_control.py
+==================================================
+
+#!/usr/bin/env python3
+
+import asyncio
+import json
+import copy
+from typing import Dict, Any, List, Optional, Union
+from datetime import datetime
+import logging
+
+# Import workflow state components (assuming they exist)
+try:
+    from workflow_state import WorkflowContext, WorkflowState, ConditionEvaluator
+except ImportError:
+    # Minimal implementations if not available
+    class WorkflowState:
+        def __init__(self):
+            self.variables = {}
+            self.scopes = []
+            self.execution_history = []
+            self.checkpoints = {}
+            self.current_scope = "global"
+            self.iteration_counters = {}
+        
+        def set_variable(self, name: str, value: Any, scope: str = None):
+            self.variables[name] = value
+        
+        def get_variable(self, name: str, scope: str = None) -> Any:
+            return self.variables.get(name)
+        
+        def get_state_summary(self) -> Dict[str, Any]:
+            return {"variables": self.variables}
+    
+    class ConditionEvaluator:
+        def __init__(self, state): 
+            self.state = state
+        def evaluate(self, condition: str) -> bool:
+            return True  # Simplified
+    
+    class WorkflowContext:
+        def __init__(self):
+            self.state = WorkflowState()
+            self.condition_evaluator = ConditionEvaluator(self.state)
+            self.results = {}
+
+logger = logging.getLogger("async_flow_control")
+
+class AsyncFlowControlExecutor:
+    """Async executor with advanced flow control capabilities"""
+    
+    def __init__(self, tool_manager, max_concurrent: int = 50):
+        self.tool_manager = tool_manager
+        self.max_concurrent = max_concurrent
+        self.context = WorkflowContext()
+    
+    async def execute_workflow_with_flow_control(self, workflow: List[Dict[str, Any]], 
+                                               data_file: str = None) -> Dict[str, Any]:
+        """Execute workflow with full flow control support"""
+        
+        try:
+            logger.info("Starting async workflow execution with flow control")
+            
+            # Initialize workflow variables if present
+            if isinstance(workflow, dict) and "variables" in workflow:
+                for var_name, var_value in workflow["variables"].items():
+                    self.context.state.set_variable(var_name, var_value)
+                workflow = workflow.get("steps", [])
+            
+            # Execute all steps with flow control
+            for step_index, step in enumerate(workflow):
+                logger.info(f"Executing step {step_index + 1}/{len(workflow)}")
+                
+                try:
+                    result = await self._execute_step_async(step, data_file)
+                    
+                    # Store result if agent name is present
+                    if "agent" in step:
+                        agent_name = step["agent"]
+                        self.context.results[agent_name] = result
+                        logger.info(f"✅ Step {step_index + 1} ({agent_name}) completed")
+                    
+                except Exception as e:
+                    error_msg = f"❌ Step {step_index + 1} failed: {str(e)}"
+                    logger.error(error_msg)
+                    
+                    # Handle error based on policy
+                    error_policy = step.get("on_error", "stop")
+                    if error_policy == "stop":
+                        raise Exception(error_msg)
+                    elif error_policy == "continue":
+                        logger.warning("Continuing execution despite error")
+                        continue
+            
+            # Return final results
+            final_results = dict(self.context.results)
+            final_results["workflow_state"] = self.context.state.get_state_summary()
+            
+            logger.info("✅ Async flow control workflow execution completed")
+            return final_results
+            
+        except Exception as e:
+            logger.error(f"❌ Async flow control workflow execution failed: {str(e)}")
+            return {"error": str(e), "partial_results": dict(self.context.results)}
+    
+    async def _execute_step_async(self, step: Dict[str, Any], data_file: str = None) -> Any:
+        """Execute a single workflow step with async flow control"""
+        
+        # Resolve template variables in step
+        resolved_step = self._resolve_step_variables(step)
+        
+        # Get step type
+        step_type = resolved_step.get("type", "agent")
+        
+        # Route to appropriate async handler
+        if step_type == "agent":
+            return await self._execute_agent_step_async(resolved_step, data_file)
+        elif step_type == "loop":
+            return await self._execute_loop_step_async(resolved_step, data_file)
+        elif step_type == "conditional":
+            return await self._execute_conditional_step_async(resolved_step, data_file)
+        elif step_type == "parallel":
+            return await self._execute_parallel_step_async(resolved_step, data_file)
+        elif step_type == "state":
+            return await self._execute_state_step_async(resolved_step)
+        else:
+            raise ValueError(f"Unknown step type: {step_type}")
+    
+    async def _execute_agent_step_async(self, step: Dict[str, Any], data_file: str = None) -> Any:
+        """Execute agent step asynchronously"""
+        # This would integrate with your AsyncToolIntegratedExecutor
+        # For now, simplified implementation
+        agent_name = step.get("agent")
+        content = step.get("content", "")
+        
+        # Simulate async agent execution
+        await asyncio.sleep(0.1)  # Simulate work
+        
+        return {"content": f"Result from {agent_name}: {content[:50]}..."}
+    
+    async def _execute_loop_step_async(self, step: Dict[str, Any], data_file: str = None) -> List[Any]:
+        """Execute async loop with various loop types"""
+        
+        loop_type = step.get("loop_type", "while")
+        max_iterations = step.get("max_iterations", 100)
+        steps = step.get("steps", [])
+        
+        if not steps:
+            logger.warning("Loop step has no substeps")
+            return []
+        
+        results = []
+        iteration = 0
+        
+        # Create loop scope
+        loop_scope_name = f"loop_{datetime.now().timestamp()}"
+        self.context.state.set_variable("current_loop", loop_scope_name)
+        
+        try:
+            if loop_type == "while":
+                condition = step.get("condition", "true")
+                
+                while iteration < max_iterations:
+                    # Update iteration counter
+                    self.context.state.set_variable("iteration", iteration)
+                    
+                    # Check condition
+                    if not self._evaluate_condition(condition):
+                        logger.info(f"Loop condition failed at iteration {iteration}")
+                        break
+                    
+                    # Execute substeps concurrently if possible
+                    iteration_results = []
+                    if step.get("parallel_substeps", False):
+                        # Execute substeps in parallel
+                        tasks = [self._execute_step_async(substep, data_file) for substep in steps]
+                        iteration_results = await asyncio.gather(*tasks, return_exceptions=True)
+                    else:
+                        # Execute substeps sequentially
+                        for substep in steps:
+                            result = await self._execute_step_async(substep, data_file)
+                            iteration_results.append(result)
+                    
+                    results.append(iteration_results)
+                    iteration += 1
+                    
+                    logger.debug(f"Completed async while loop iteration {iteration}")
+            
+            elif loop_type == "for_count":
+                count = step.get("count", 1)
+                
+                # Execute iterations with controlled concurrency
+                semaphore = asyncio.Semaphore(min(self.max_concurrent, count))
+                
+                async def execute_iteration(i):
+                    async with semaphore:
+                        self.context.state.set_variable("iteration", i)
+                        self.context.state.set_variable("index", i)
+                        
+                        iteration_results = []
+                        for substep in steps:
+                            result = await self._execute_step_async(substep, data_file)
+                            iteration_results.append(result)
+                        
+                        return iteration_results
+                
+                # Execute all iterations concurrently with semaphore control
+                tasks = [execute_iteration(i) for i in range(min(count, max_iterations))]
+                results = await asyncio.gather(*tasks, return_exceptions=True)
+                
+                logger.debug(f"Completed async for_count loop with {len(results)} iterations")
+            
+            elif loop_type == "for_each":
+                collection = step.get("collection", [])
+                item_variable = step.get("item_variable", "current_item")
+                
+                # Resolve collection if it's a variable reference
+                if isinstance(collection, str):
+                    collection = self.context.state.get_variable(collection) or []
+                
+                # Execute with controlled concurrency
+                semaphore = asyncio.Semaphore(min(self.max_concurrent, len(collection)))
+                
+                async def execute_for_item(i, item):
+                    async with semaphore:
+                        self.context.state.set_variable("iteration", i)
+                        self.context.state.set_variable("index", i)
+                        self.context.state.set_variable(item_variable, item)
+                        
+                        iteration_results = []
+                        for substep in steps:
+                            result = await self._execute_step_async(substep, data_file)
+                            iteration_results.append(result)
+                        
+                        return iteration_results
+                
+                # Execute all items concurrently with semaphore control
+                tasks = [execute_for_item(i, item) for i, item in enumerate(collection[:max_iterations])]
+                results = await asyncio.gather(*tasks, return_exceptions=True)
+                
+                logger.debug(f"Completed async for_each loop with {len(results)} items")
+            
+            else:
+                raise ValueError(f"Unknown loop type: {loop_type}")
+        
+        finally:
+            # Cleanup loop scope
+            pass
+        
+        logger.info(f"Async loop completed with {len(results)} iterations")
+        return results
+    
+    async def _execute_conditional_step_async(self, step: Dict[str, Any], data_file: str = None) -> Any:
+        """Execute async conditional step"""
+        
+        condition = step.get("condition", "true")
+        true_steps = step.get("true_steps", step.get("then_steps", []))
+        false_steps = step.get("false_steps", step.get("else_steps", []))
+        
+        # Evaluate condition
+        if self._evaluate_condition(condition):
+            logger.info(f"Condition '{condition}' evaluated to True")
+            
+            # Execute true steps (potentially in parallel)
+            if step.get("parallel_execution", False):
+                tasks = [self._execute_step_async(substep, data_file) for substep in true_steps]
+                results = await asyncio.gather(*tasks, return_exceptions=True)
+            else:
+                results = []
+                for substep in true_steps:
+                    result = await self._execute_step_async(substep, data_file)
+                    results.append(result)
+            
+            return results
+        else:
+            logger.info(f"Condition '{condition}' evaluated to False")
+            
+            # Execute false steps
+            if step.get("parallel_execution", False):
+                tasks = [self._execute_step_async(substep, data_file) for substep in false_steps]
+                results = await asyncio.gather(*tasks, return_exceptions=True)
+            else:
+                results = []
+                for substep in false_steps:
+                    result = await self._execute_step_async(substep, data_file)
+                    results.append(result)
+            
+            return results
+    
+    async def _execute_parallel_step_async(self, step: Dict[str, Any], data_file: str = None) -> List[Any]:
+        """Execute parallel step with controlled concurrency"""
+        
+        parallel_steps = step.get("steps", step.get("agents", []))
+        max_parallel = step.get("max_parallel", self.max_concurrent)
+        
+        if not parallel_steps:
+            logger.warning("Parallel step has no substeps")
+            return []
+        
+        # Use semaphore to control concurrency
+        semaphore = asyncio.Semaphore(max_parallel)
+        
+        async def execute_with_semaphore(substep):
+            async with semaphore:
+                return await self._execute_step_async(substep, data_file)
+        
+        # Execute all substeps with controlled concurrency
+        tasks = [execute_with_semaphore(substep) for substep in parallel_steps]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        # Handle exceptions
+        processed_results = []
+        for i, result in enumerate(results):
+            if isinstance(result, Exception):
+                logger.error(f"Parallel substep {i} failed: {result}")
+                processed_results.append({"error": str(result)})
+            else:
+                processed_results.append(result)
+        
+        logger.info(f"Async parallel execution completed with {len(parallel_steps)} substeps")
+        return processed_results
+    
+    async def _execute_state_step_async(self, step: Dict[str, Any]) -> Any:
+        """Execute async state management step"""
+        
+        operation = step.get("operation")
+        if not operation:
+            raise ValueError("State step must have 'operation' field")
+        
+        # Most state operations are synchronous, so just wrap them
+        if operation == "set_variable":
+            var_name = step.get("variable_name")
+            var_value = step.get("value")
+            if var_name:
+                self.context.state.set_variable(var_name, var_value)
+                return {"success": True, "variable": var_name, "value": var_value}
+        
+        elif operation == "get_variable":
+            var_name = step.get("variable_name")
+            if var_name:
+                value = self.context.state.get_variable(var_name)
+                return {"variable": var_name, "value": value}
+        
+        elif operation == "delay":
+            delay_seconds = step.get("seconds", 1.0)
+            await asyncio.sleep(delay_seconds)
+            return {"success": True, "delayed_seconds": delay_seconds}
+        
+        # Add other state operations as needed
+        return {"success": True, "operation": operation}
+    
+    def _resolve_step_variables(self, step: Dict[str, Any]) -> Dict[str, Any]:
+        """Resolve template variables in step"""
+        # Simplified implementation - could use workflow_state's resolve_step_variables
+        return step
+    
+    def _evaluate_condition(self, condition: str) -> bool:
+        """Evaluate condition"""
+        # Use the condition evaluator if available
+        if hasattr(self.context, 'condition_evaluator'):
+            return self.context.condition_evaluator.evaluate(condition)
+        
+        # Simplified evaluation
+        if condition.lower() in ['true', '1', 'yes']:
+            return True
+        elif condition.lower() in ['false', '0', 'no']:
+            return False
+        
+        # Try to evaluate variable
+        if hasattr(self.context.state, 'get_variable'):
+            value = self.context.state.get_variable(condition)
+            return bool(value)
+        
+        return True  # Default to true for safety
+
+
+
+==================================================
+FILE: async_framework_main.py
+==================================================
+
+#!/usr/bin/env python3
+"""
+Complete Async Framework Integration
+Main entry point for async workflow execution with all features
+"""
+
+import asyncio
+import json
+import logging
+import sys
+import os
+from typing import Dict, Any, List, Optional
+from pathlib import Path
+
+# Add this at the top of async_framework_main.py after the existing imports:
+
+# Import with error handling
+try:
+    from utils import get_config
+except ImportError:
+    def get_config():
+        return {
+            "default_model": "deepseek/deepseek-chat:free",
+            "api_key": os.environ.get("OPENROUTER_API_KEY", ""),
+            "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+            "output_dir": "./async_outputs"
+        }
+
+try:
+    from tool_manager import tool_manager
+except ImportError:
+    tool_manager = None
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger("async_framework")
+
+class AsyncFrameworkManager:
+    """Manages the complete async framework with all features"""
+    
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
+        self.config = config or self._get_default_config()
+        self.available_features = self._check_available_features()
+        
+        logger.info(f"🚀 Async Framework initialized")
+        logger.info(f"Available features: {', '.join(self.available_features)}")
+    
+    def _get_default_config(self) -> Dict[str, Any]:
+        """Get default configuration"""
+        try:
+            from utils import get_config
+            return get_config()
+        except ImportError:
+            return {
+                "default_model": "deepseek/deepseek-chat:free",
+                "api_key": os.environ.get("OPENROUTER_API_KEY", ""),
+                "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+                "output_dir": "./async_outputs"
+            }
+    
+    def _check_available_features(self) -> List[str]:
+        """Check which features are available"""
+        features = ["basic_async"]
+        
+        try:
+            from async_tool_integration import AsyncToolIntegratedExecutor
+            features.append("tools")
+        except ImportError:
+            logger.warning("Tool integration not available")
+        
+        try:
+            from async_flow_control import AsyncFlowControlExecutor
+            features.append("flow_control")
+        except ImportError:
+            logger.warning("Flow control not available")
+        
+        try:
+            from async_dynamic_agents import AsyncDynamicAgentExecutor
+            features.append("dynamic_agents")
+        except ImportError:
+            logger.warning("Dynamic agents not available")
+        
+        return features
+    
+    async def execute_workflow(self, workflow_file: str, 
+                             data_file: Optional[str] = None,
+                             max_concurrent: int = 50,
+                             features: Optional[List[str]] = None) -> Dict[str, Any]:
+        """Execute workflow with specified features"""
+        
+        # Load workflow
+        workflow = self._load_workflow(workflow_file)
+        if not workflow:
+            return {"error": "Failed to load workflow", "success": False}
+        
+        # Determine which executor to use
+        requested_features = features or self._analyze_workflow_features(workflow)
+        executor_class = self._select_executor(requested_features)
+        
+        logger.info(f"Using executor: {executor_class.__name__}")
+        logger.info(f"Features: {', '.join(requested_features)}")
+        
+        try:
+            # Execute with selected executor
+            if executor_class.__name__ == "FullAsyncWorkflowExecutor":
+                from async_dynamic_agents import FullAsyncWorkflowExecutor
+                executor = FullAsyncWorkflowExecutor(self.config, max_concurrent)
+                return await executor.execute_complete_workflow(workflow, data_file)
+            
+            elif executor_class.__name__ == "AsyncToolIntegratedExecutor":
+                from async_tool_integration import AsyncToolIntegratedExecutor
+                async with AsyncToolIntegratedExecutor(self.config, max_concurrent) as executor:
+                    return await executor.execute_workflow_with_tools(workflow, data_file)
+            
+            elif executor_class.__name__ == "AsyncFlowControlExecutor":
+                from async_flow_control import AsyncFlowControlExecutor
+                from tool_manager import tool_manager
+                executor = AsyncFlowControlExecutor(tool_manager, max_concurrent)
+                return await executor.execute_workflow_with_flow_control(workflow, data_file)
+            
+            else:
+                # Default to basic async executor
+                from async_executor import AsyncWorkflowExecutor
+                async with AsyncWorkflowExecutor(self.config, max_concurrent) as executor:
+                    return await executor.execute_workflow_async(workflow, data_file)
+        
+        except Exception as e:
+            logger.error(f"Workflow execution failed: {e}")
+            return {"error": str(e), "success": False}
+    
+    def _load_workflow(self, workflow_file: str) -> Optional[List[Dict[str, Any]]]:
+        """Load workflow from file"""
+        try:
+            with open(workflow_file, 'r', encoding='utf-8') as f:
+                workflow_data = json.load(f)
+            
+            if isinstance(workflow_data, dict) and "steps" in workflow_data:
+                return workflow_data["steps"]
+            elif isinstance(workflow_data, list):
+                return workflow_data
+            else:
+                logger.error("Invalid workflow format")
+                return None
+                
+        except Exception as e:
+            logger.error(f"Failed to load workflow {workflow_file}: {e}")
+            return None
+    
+    def _analyze_workflow_features(self, workflow: List[Dict[str, Any]]) -> List[str]:
+        """Analyze workflow to determine needed features"""
+        features = []
+        
+        for step in workflow:
+            # Check for dynamic agents
+            if step.get("type") == "dynamic":
+                features.append("dynamic_agents")
+            
+            # Check for flow control
+            if step.get("type") in ["loop", "conditional", "parallel", "state"]:
+                features.append("flow_control")
+            
+            # Check for tools
+            if step.get("tools"):
+                features.append("tools")
+        
+        return list(set(features))
+    
+    def _select_executor(self, requested_features: List[str]):
+        """Select the best executor based on requested features"""
+        
+        # Priority order: dynamic_agents > flow_control > tools > basic
+        if "dynamic_agents" in requested_features and "dynamic_agents" in self.available_features:
+            from async_dynamic_agents import FullAsyncWorkflowExecutor
+            return FullAsyncWorkflowExecutor
+        
+        elif "flow_control" in requested_features and "flow_control" in self.available_features:
+            from async_flow_control import AsyncFlowControlExecutor
+            return AsyncFlowControlExecutor
+        
+        elif "tools" in requested_features and "tools" in self.available_features:
+            from async_tool_integration import AsyncToolIntegratedExecutor
+            return AsyncToolIntegratedExecutor
+        
+        else:
+            from async_executor import AsyncWorkflowExecutor
+            return AsyncWorkflowExecutor
+    
+    def create_example_workflow(self, filename: str = "example_async_workflow.json"):
+        """Create an example workflow file"""
+        
+        example_workflow = {
+            "variables": {
+                "project_name": "AsyncDemo",
+                "analysis_depth": "detailed"
+            },
+            "steps": [
+                {
+                    "agent": "data_collector",
+                    "content": "Collect and analyze data about {{project_name}} with {{analysis_depth}} level",
+                    "output_format": {
+                        "type": "json",
+                        "schema": {
+                            "summary": "string",
+                            "data_points": "array",
+                            "confidence": "number"
+                        }
+                    }
+                },
+                {
+                    "type": "conditional",
+                    "condition": "{{data_collector.confidence}} > 0.8",
+                    "true_steps": [
+                        {
+                            "agent": "detailed_analyzer",
+                            "content": "Perform detailed analysis based on high-confidence data",
+                            "readFrom": ["data_collector"]
+                        }
+                    ],
+                    "false_steps": [
+                        {
+                            "agent": "basic_analyzer", 
+                            "content": "Perform basic analysis due to low confidence",
+                            "readFrom": ["data_collector"]
+                        }
+                    ]
+                },
+                {
+                    "type": "parallel",
+                    "max_parallel": 3,
+                    "steps": [
+                        {
+                            "agent": "summary_generator",
+                            "content": "Generate executive summary",
+                            "readFrom": ["*"]
+                        },
+                        {
+                            "agent": "report_formatter",
+                            "content": "Format detailed report",
+                            "readFrom": ["*"]
+                        },
+                        {
+                            "agent": "metrics_calculator",
+                            "content": "Calculate performance metrics",
+                            "readFrom": ["*"]
+                        }
+                    ]
+                }
+            ]
+        }
+        
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(example_workflow, f, indent=2)
+        
+        logger.info(f"✅ Created example workflow: {filename}")
+        return filename
+
+# Utility functions for easy usage
+async def run_async_workflow(workflow_file: str, 
+                           config: Optional[Dict[str, Any]] = None,
+                           data_file: Optional[str] = None,
+                           max_concurrent: int = 50,
+                           features: Optional[List[str]] = None) -> Dict[str, Any]:
+    """Run async workflow with automatic feature detection"""
+    
+    framework = AsyncFrameworkManager(config)
+    return await framework.execute_workflow(
+        workflow_file=workflow_file,
+        data_file=data_file,
+        max_concurrent=max_concurrent,
+        features=features
+    )
+
+def run_async_workflow_sync(workflow_file: str, 
+                          config: Optional[Dict[str, Any]] = None,
+                          data_file: Optional[str] = None,
+                          max_concurrent: int = 50,
+                          features: Optional[List[str]] = None) -> Dict[str, Any]:
+    """Synchronous wrapper for async workflow execution"""
+    
+    return asyncio.run(run_async_workflow(
+        workflow_file, config, data_file, max_concurrent, features
+    ))
+
+# CLI Interface
+def main():
+    """Command-line interface for async framework"""
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Async Workflow Framework")
+    parser.add_argument("--workflow", required=True, help="Workflow JSON file")
+    parser.add_argument("--data", help="Data file to process")
+    parser.add_argument("--concurrent", type=int, default=50, help="Max concurrent agents")
+    parser.add_argument("--features", nargs="*", 
+                       choices=["basic_async", "tools", "flow_control", "dynamic_agents"],
+                       help="Force specific features")
+    parser.add_argument("--config", help="Config file (Python module)")
+    parser.add_argument("--create-example", action="store_true", 
+                       help="Create example workflow file")
+    parser.add_argument("--analyze", action="store_true", 
+                       help="Analyze workflow without execution")
+    parser.add_argument("--verbose", "-v", action="store_true", 
+                       help="Verbose logging")
+    
+    args = parser.parse_args()
+    
+    # Setup logging level
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+    
+    # Load custom config if specified
+    config = None
+    if args.config:
+        try:
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("custom_config", args.config)
+            config_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(config_module)
+            config = config_module.CONFIG
+            logger.info(f"Loaded custom config from {args.config}")
+        except Exception as e:
+            logger.error(f"Failed to load config {args.config}: {e}")
+            sys.exit(1)
+    
+    # Create example workflow if requested
+    if args.create_example:
+        framework = AsyncFrameworkManager(config)
+        example_file = framework.create_example_workflow()
+        print(f"✅ Created example workflow: {example_file}")
+        print("Run with: python async_framework_main.py --workflow example_async_workflow.json")
+        return
+    
+    # Analyze workflow if requested
+    if args.analyze:
+        framework = AsyncFrameworkManager(config)
+        workflow = framework._load_workflow(args.workflow)
+        if workflow:
+            features = framework._analyze_workflow_features(workflow)
+            print(f"\n📊 Workflow Analysis:")
+            print(f"File: {args.workflow}")
+            print(f"Total Steps: {len(workflow)}")
+            print(f"Required Features: {', '.join(features) if features else 'basic_async'}")
+            print(f"Available Features: {', '.join(framework.available_features)}")
+            
+            # Check compatibility
+            missing_features = set(features) - set(framework.available_features)
+            if missing_features:
+                print(f"⚠️  Missing Features: {', '.join(missing_features)}")
+                print("Some workflow features may not work properly.")
+            else:
+                print("✅ All required features are available!")
+        return
+    
+    # Execute workflow
+    print(f"🚀 Starting async workflow execution...")
+    print(f"Workflow: {args.workflow}")
+    print(f"Max Concurrent: {args.concurrent}")
+    if args.features:
+        print(f"Forced Features: {', '.join(args.features)}")
+    
+    try:
+        import time
+        start_time = time.time()
+        
+        results = run_async_workflow_sync(
+            workflow_file=args.workflow,
+            config=config,
+            data_file=args.data,
+            max_concurrent=args.concurrent,
+            features=args.features
+        )
+        
+        end_time = time.time()
+        execution_time = end_time - start_time
+        
+        # Print results summary
+        print(f"\n{'='*50}")
+        print("EXECUTION SUMMARY")
+        print(f"{'='*50}")
+        
+        if results.get("success", True):  # Default to True if not specified
+            print(f"✅ Workflow completed successfully")
+            
+            # Extract metrics based on result structure
+            if "results" in results:
+                # FullAsyncWorkflowExecutor format
+                exec_results = results["results"]
+                total_count = results.get("total_count", len(exec_results))
+                completed_count = results.get("completed_count", total_count)
+                failed_count = results.get("failed_count", 0)
+            else:
+                # Simple format - count results
+                total_count = len([k for k in results.keys() if not k.endswith('_action') and k != 'success'])
+                completed_count = total_count
+                failed_count = 0
+            
+            print(f"Total Agents: {total_count}")
+            print(f"Completed: {completed_count}")
+            print(f"Failed: {failed_count}")
+            print(f"Execution Time: {execution_time:.1f} seconds ({execution_time/60:.1f} minutes)")
+            
+            if total_count > 0:
+                success_rate = (completed_count / total_count) * 100
+                agents_per_second = completed_count / execution_time if execution_time > 0 else 0
+                print(f"Success Rate: {success_rate:.1f}%")
+                print(f"Agents/Second: {agents_per_second:.2f}")
+            
+            # Save results
+            output_dir = Path("./async_outputs")
+            output_dir.mkdir(exist_ok=True)
+            results_file = output_dir / f"results_{int(start_time)}.json"
+            
+            with open(results_file, 'w', encoding='utf-8') as f:
+                json.dump(results, f, indent=2, default=str)
+            
+            print(f"📁 Results saved to: {results_file}")
+            
+        else:
+            print(f"❌ Workflow failed: {results.get('error', 'Unknown error')}")
+            
+    except KeyboardInterrupt:
+        print("\n🛑 Execution interrupted by user")
+        sys.exit(1)
+    except Exception as e:
+        print(f"❌ Execution failed: {e}")
+        if args.verbose:
+            import traceback
+            traceback.print_exc()
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
+
+
+==================================================
+FILE: async_tool_integration.py
+==================================================
+
+#!/usr/bin/env python3
+
+import asyncio
+from typing import Dict, Any, List
+from async_executor import AsyncWorkflowExecutor, AgentTask
+from tool_manager import tool_manager
+from utils import extract_tool_calls
+import json
+import logging
+
+logger = logging.getLogger("async_tool_executor")
+
+class AsyncToolIntegratedExecutor(AsyncWorkflowExecutor):
+    """Enhanced async executor with tool management integration"""
+    
+    def __init__(self, config: Dict[str, Any], max_concurrent: int = 50, 
+                 max_connections: int = 100, rate_limit: float = 10.0):
+        super().__init__(config, max_concurrent, max_connections, rate_limit)
+        
+        # Auto-discover tools
+        self.num_tools = tool_manager.discover_tools()
+        logger.info(f"🔧 Auto-discovered {self.num_tools} tools for async execution")
+    
+    async def _execute_agent_with_tools(self, task: AgentTask) -> Dict[str, Any]:
+        """Execute agent with tool support"""
+        try:
+            # Build enhanced prompt with tool information
+            enhanced_prompt = task.prompt
+            
+            # Add tool information if required_tools is provided
+            if task.required_tools:
+                available_tools = []
+                unavailable_tools = []
+                
+                for tool_id in task.required_tools:
+                    if tool_manager.is_tool_available(tool_id):
+                        available_tools.append(tool_id)
+                    else:
+                        unavailable_tools.append(tool_id)
+                
+                if available_tools:
+                    enhanced_prompt += f"\n\nYou have access to these tools: {', '.join(available_tools)}"
+                    enhanced_prompt += """
+To use a tool, format your response like this:
+
+I need to use the tool: $TOOL_NAME
+Parameters:
+{
+  "param1": "value1",
+  "param2": "value2"
+}
+
+Wait for the tool result before continuing.
+"""
+                
+                if unavailable_tools:
+                    enhanced_prompt += f"\n\nNote: The following tools are not available: {', '.join(unavailable_tools)}"
+            
+            # Add reference information
+            if task.references:
+                enhanced_prompt += "\n\n### Reference Information:\n"
+                for ref_name, ref_content in task.references.items():
+                    enhanced_prompt += f"\n#### Output from {ref_name}:\n"
+                    if isinstance(ref_content, dict):
+                        enhanced_prompt += json.dumps(ref_content, indent=2)
+                    else:
+                        enhanced_prompt += str(ref_content)
+            
+            # Add file content if provided
+            if task.file_path:
+                try:
+                    with open(task.file_path, 'r', encoding='utf-8') as f:
+                        file_content = f.read()
+                        if len(file_content) > 10000:
+                            file_content = file_content[:10000]
+                        enhanced_prompt += f"\n\nFile content:\n```\n{file_content}\n```"
+                except Exception as e:
+                    logger.warning(f"Could not read file {task.file_path}: {e}")
+            
+            # Build system message
+            system_message = f"You are a specialized assistant. Your responses must strictly follow the format specified."
+            
+            # Add domain-specific additions to system message
+            agent_name = task.agent_name.lower()
+            if "security" in agent_name or "threat" in agent_name or "cyber" in enhanced_prompt.lower():
+                system_message = "You are a cybersecurity analysis assistant. " + system_message
+            elif "journey" in agent_name or "customer" in agent_name or "segment" in enhanced_prompt.lower():
+                system_message = "You are a customer journey analysis assistant. " + system_message
+            elif "finance" in agent_name or "investment" in agent_name or "portfolio" in enhanced_prompt.lower():
+                system_message = "You are a financial analysis assistant. " + system_message
+            
+            # Build conversation
+            conversation = [
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": enhanced_prompt}
+            ]
+            
+            # Make initial API call
+            response_content = await self._call_api_async(conversation)
+            
+            # Handle tool calls
+            if "I need to use the tool:" in response_content:
+                logger.info(f"Detected tool call attempts in response for {task.agent_name}")
+                
+                # Process all tool calls in the response
+                all_tool_calls = extract_tool_calls(response_content)
+                
+                if all_tool_calls:
+                    # Process tool calls (limit to 5 for safety)
+                    for idx, tool_call in enumerate(all_tool_calls[:5]):
+                        tool_name = tool_call["tool_name"]
+                        params = tool_call["params"]
+                        
+                        logger.info(f"📡 Processing tool call {idx+1}: {tool_name}")
+                        
+                        # Execute tool (this is synchronous, but fast)
+                        tool_result = tool_manager.execute_tool(tool_name, **params)
+                        tool_result_str = json.dumps(tool_result, indent=2)
+                        
+                        # Replace tool call with result
+                        tool_call_text = tool_call["full_text"]
+                        response_content = response_content.replace(
+                            tool_call_text,
+                            f"Tool result for {tool_name}:\n```json\n{tool_result_str}\n```"
+                        )
+                    
+                    # Get final response with tool results
+                    final_prompt = f"Here is the result of executing your tool calls:\n\n{response_content}\n\nBased on these results, please provide your final response."
+                    
+                    conversation.append({"role": "assistant", "content": response_content})
+                    conversation.append({"role": "user", "content": final_prompt})
+                    
+                    # Get final response
+                    response_content = await self._call_api_async(conversation)
+            
+            # Process response based on output format
+            if task.output_format and task.output_format.get("type") == "json":
+                result = self._extract_json_from_response(response_content)
+            else:
+                result = {"content": response_content}
+            
+            logger.info(f"✅ Agent {task.agent_name} completed successfully")
+            return result
+            
+        except Exception as e:
+            error_result = {"error": f"Agent execution failed: {str(e)}"}
+            logger.error(f"❌ Agent {task.agent_name} failed: {e}")
+            return error_result
+    
+    def _extract_json_from_response(self, response: str) -> Dict[str, Any]:
+        """Extract JSON from response with fallback"""
+        try:
+            return json.loads(response)
+        except json.JSONDecodeError:
+            # Try to extract JSON from response
+            import re
+            json_match = re.search(r'\{.*\}', response, re.DOTALL)
+            if json_match:
+                try:
+                    return json.loads(json_match.group())
+                except:
+                    return {"error": "Could not parse JSON", "raw_response": response}
+            else:
+                return {"error": "No JSON found", "raw_response": response}
+    
+    async def execute_workflow_with_tools(self, workflow: List[Dict], data_file: str = None) -> Dict[str, Any]:
+        """Execute workflow with full tool integration"""
+        logger.info(f"Starting async workflow execution with tools: {len(workflow)} agents")
+        
+        # Create execution batches (same as parent)
+        batches = self._create_execution_batches(workflow)
+        logger.info(f"Created {len(batches)} execution batches with tool support")
+        
+        results = {}
+        
+        for batch_idx, batch in enumerate(batches):
+            logger.info(f"Executing batch {batch_idx + 1}/{len(batches)} with {len(batch)} agents")
+            
+            # Update references for tasks in this batch
+            for task in batch:
+                # Add references from completed agents
+                refs = {}
+                for dep in task.dependencies:
+                    if dep in results:
+                        refs[dep] = results[dep]
+                task.references = refs
+            
+            # Execute batch with tool support
+            batch_tasks = [self._execute_agent_with_tools(task) for task in batch]
+            batch_results = await asyncio.gather(*batch_tasks, return_exceptions=True)
+            
+            # Store results
+            for task, result in zip(batch, batch_results):
+                if isinstance(result, Exception):
+                    results[task.agent_name] = {"error": str(result)}
+                    self.failed_agents.add(task.agent_name)
+                else:
+                    results[task.agent_name] = result
+                    self.completed_agents.add(task.agent_name)
+            
+            # Progress update
+            completed_count = len(self.completed_agents)
+            failed_count = len(self.failed_agents)
+            total_count = len(workflow)
+            
+            logger.info(f"Progress: {completed_count}/{total_count} completed, {failed_count} failed")
+            
+            # Small delay between batches
+            if batch_idx < len(batches) - 1:
+                await asyncio.sleep(0.1)
+        
+        logger.info("✅ Async workflow with tools execution completed")
+        
+        return {
+            "results": results,
+            "completed_count": len(self.completed_agents),
+            "failed_count": len(self.failed_agents),
+            "total_count": len(workflow),
+            "tools_discovered": self.num_tools
+        }
+
+
+==================================================
+FILE: config.py
+==================================================
+
+#!/usr/bin/env python3
+
+import os
+
+# Configuration settings for the agent system
+CONFIG = {
+    "output_dir": "./agent_outputs",
+    "memory_dir": "./agent_memory",
+    "default_model": "gemma3n:e2b",
+    "api_key": "",  # Ollama doesn't need API key
+    "endpoint": "http://localhost:11434/v1/chat/completions",  # OpenAI-compatible endpoint
+    "memory_db": "agent_memory.db",
+    "sqlite_db": "test_sqlite.db",
+    "timeout": 1200  # Increase timeout
+}
+
+# Ensure output directories exist
+os.makedirs(CONFIG["output_dir"], exist_ok=True)
+os.makedirs(CONFIG["memory_dir"], exist_ok=True)
+
+
+==================================================
+FILE: openrouter_config.py
+==================================================
+
+#!/usr/bin/env python3
+
+import os
+
+# Configuration settings for the agent system
+CONFIG = {
+    "output_dir": "./agent_outputs",
+    "memory_dir": "./agent_memory",
+    "default_model": "deepseek/deepseek-chat:free",
+#     "default_model": "openrouter/quasar-alpha",
+    "api_key": "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",
+    "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+    "memory_db": "agent_memory.db",
+    "sqlite_db": "test_sqlite.db" 
+}
+
+# Ensure output directories exist
+os.makedirs(CONFIG["output_dir"], exist_ok=True)
+os.makedirs(CONFIG["memory_dir"], exist_ok=True)
+
+
+==================================================
+FILE: optimized_agent_runner.py
+==================================================
+
+#!/usr/bin/env python3
+
+import os
+import sys
+import json
+import asyncio
+import time
+from typing import Dict, Any, List, Optional
+from pathlib import Path
+import logging
+
+# Import optimized components
+from async_executor import AsyncWorkflowExecutor, execute_large_workflow
+from workflow_optimizer import WorkflowOptimizer, analyze_workflow_file, optimize_workflow_file
+from optimized_call_api import APIConnectionPool, call_api_batch
+
+# Import existing components
+from tool_manager import tool_manager
+from utils import extract_json_from_text, get_config
+
+logger = logging.getLogger("optimized_agent_runner")
+
+class OptimizedWorkflowRunner:
+    """High-performance workflow runner for large-scale operations"""
+    
+    def __init__(self, config: Dict[str, Any], max_concurrent: int = 50):
+        self.config = config
+        self.max_concurrent = max_concurrent
+        self.optimizer = WorkflowOptimizer()
+        
+        # Performance tracking
+        self.start_time = None
+        self.end_time = None
+        self.total_agents = 0
+        self.completed_agents = 0
+        self.failed_agents = 0
+        
+    async def run_workflow_optimized(self, workflow_file: str, data_file: str = None) -> Dict[str, Any]:
+        """Run workflow with all optimizations enabled"""
+        
+        self.start_time = time.time()
+        logger.info(f"🚀 Starting optimized workflow execution: {workflow_file}")
+        
+        try:
+            # Step 1: Analyze and optimize workflow
+            logger.info("📊 Analyzing workflow for optimization...")
+            optimization = optimize_workflow_file(workflow_file, self.max_concurrent)
+            metrics = optimization["metrics"]
+            
+            logger.info(f"Workflow Analysis:")
+            logger.info(f"  - Total Agents: {metrics.total_agents}")
+            logger.info(f"  - Estimated Time: {metrics.estimated_time_seconds:.1f}s")
+            logger.info(f"  - Estimated Cost: ${metrics.estimated_cost_usd:.2f}")
+            logger.info(f"  - Max Parallelization: {metrics.max_parallel}")
+            
+            self.total_agents = metrics.total_agents
+            
+            # Step 2: Auto-discover tools
+            num_tools = tool_manager.discover_tools()
+            logger.info(f"🔧 Discovered {num_tools} tools")
+            
+            # Step 3: Execute with async executor
+            logger.info("⚡ Executing workflow asynchronously...")
+            
+            # Adjust concurrency based on recommendations
+            recommended_concurrent = optimization["optimizations"].get(
+                "recommended_concurrent", self.max_concurrent
+            )
+            
+            results = await execute_large_workflow(
+                workflow_file=workflow_file,
+                config=self.config,
+                data_file=data_file,
+                max_concurrent=recommended_concurrent
+            )
+            
+            # Step 4: Process results
+            self.completed_agents = results.get("completed_count", 0)
+            self.failed_agents = results.get("failed_count", 0)
+            self.end_time = time.time()
+            
+            # Step 5: Save results with compression
+            await self._save_results_optimized(results)
+            
+            # Step 6: Generate performance report
+            performance_report = self._generate_performance_report(optimization)
+            
+            logger.info("✅ Optimized workflow execution completed")
+            
+            return {
+                "execution_results": results,
+                "optimization_analysis": optimization,
+                "performance_report": performance_report,
+                "success": True
+            }
+            
+        except Exception as e:
+            self.end_time = time.time()
+            error_msg = f"❌ Workflow execution failed: {str(e)}"
+            logger.error(error_msg)
+            
+            return {
+                "error": error_msg,
+                "success": False,
+                "performance_report": self._generate_performance_report() if self.start_time else None
+            }
+    
+    async def _save_results_optimized(self, results: Dict[str, Any]):
+        """Save results with optimization for large datasets"""
+        
+        output_dir = Path(self.config["output_dir"])
+        output_dir.mkdir(exist_ok=True)
+        
+        # Save main results
+        results_file = output_dir / "optimized_workflow_results.json"
+        
+        try:
+            # For very large results, save with compression
+            if self.total_agents > 1000:
+                import gzip
+                
+                compressed_file = output_dir / "optimized_workflow_results.json.gz"
+                with gzip.open(compressed_file, 'wt', encoding='utf-8') as f:
+                    json.dump(results, f, indent=2, default=str)
+                logger.info(f"Large results saved compressed to {compressed_file}")
+            else:
+                with open(results_file, 'w', encoding='utf-8') as f:
+                    json.dump(results, f, indent=2, default=str)
+                logger.info(f"Results saved to {results_file}")
+                
+        except Exception as e:
+            logger.error(f"Error saving results: {e}")
+    
+    def _generate_performance_report(self, optimization: Dict = None) -> Dict[str, Any]:
+        """Generate comprehensive performance report"""
+        
+        execution_time = (self.end_time - self.start_time) if self.start_time and self.end_time else 0
+        
+        report = {
+            "execution_summary": {
+                "total_agents": self.total_agents,
+                "completed_agents": self.completed_agents,
+                "failed_agents": self.failed_agents,
+                "success_rate": (self.completed_agents / self.total_agents * 100) if self.total_agents > 0 else 0,
+                "execution_time_seconds": execution_time,
+                "execution_time_minutes": execution_time / 60,
+                "agents_per_second": self.completed_agents / execution_time if execution_time > 0 else 0
+            }
+        }
+        
+        if optimization:
+            metrics = optimization["metrics"]
+            report["optimization_analysis"] = {
+                "estimated_vs_actual_time": {
+                    "estimated_seconds": metrics.estimated_time_seconds,
+                    "actual_seconds": execution_time,
+                    "accuracy_percent": (metrics.estimated_time_seconds / execution_time * 100) if execution_time > 0 else 0
+                },
+                "parallelization_efficiency": {
+                    "max_possible_parallel": metrics.max_parallel,
+                    "actual_speedup": metrics.critical_path_length / execution_time if execution_time > 0 else 0
+                },
+                "cost_analysis": {
+                    "estimated_cost_usd": metrics.estimated_cost_usd,
+                    "cost_per_agent": metrics.estimated_cost_usd / metrics.total_agents if metrics.total_agents > 0 else 0
+                }
+            }
+        
+        return report
+
+# Main execution functions
+async def run_large_workflow_async(workflow_file: str, config: Dict = None, 
+                                  data_file: str = None, max_concurrent: int = 50) -> Dict[str, Any]:
+    """Main async function for large workflow execution"""
+    
+    if config is None:
+        config = get_config()
+    
+    runner = OptimizedWorkflowRunner(config, max_concurrent)
+    return await runner.run_workflow_optimized(workflow_file, data_file)
+
+def run_large_workflow_sync(workflow_file: str, config: Dict = None, 
+                           data_file: str = None, max_concurrent: int = 50) -> Dict[str, Any]:
+    """Synchronous wrapper for large workflow execution"""
+    
+    if config is None:
+        config = get_config()
+    
+    return asyncio.run(run_large_workflow_async(workflow_file, config, data_file, max_concurrent))
+
+def analyze_workflow_performance(workflow_file: str) -> str:
+    """Analyze workflow and generate performance report"""
+    
+    optimizer = WorkflowOptimizer()
+    report = optimizer.generate_optimization_report(workflow_file)
+    
+    # Save report
+    report_file = f"{workflow_file}_performance_analysis.md"
+    with open(report_file, 'w', encoding='utf-8') as f:
+        f.write(report)
+    
+    print(f"Performance analysis saved to: {report_file}")
+    return report
+
+# Backward compatibility for existing code
+def run_universal_workflow(workflow_file: str, data_file: str = None, 
+                          optimize: bool = True) -> Dict[str, Any]:
+    """Backward compatible function with optional optimization"""
+    
+    config = get_config()
+    
+    if optimize:
+        # Use optimized execution for better performance
+        return run_large_workflow_sync(workflow_file, config, data_file)
+    else:
+        # Fall back to original implementation
+        from agent_runner import run_universal_workflow as original_runner
+        return original_runner(workflow_file, data_file)
+
+# CLI interface
+def main():
+    """Enhanced main function with optimization options"""
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Optimized Workflow Runner")
+    parser.add_argument("--workflow", required=True, help="Workflow JSON file")
+    parser.add_argument("--data", help="Data file to process")
+    parser.add_argument("--concurrent", type=int, default=50, help="Max concurrent agents")
+    parser.add_argument("--analyze", action="store_true", help="Analyze workflow performance")
+    parser.add_argument("--optimize", action="store_true", default=True, help="Enable optimizations")
+    parser.add_argument("--report", action="store_true", help="Generate performance report only")
+    
+    args = parser.parse_args()
+    
+    if args.report:
+        # Generate performance analysis report
+        report = analyze_workflow_performance(args.workflow)
+        print("\n" + "="*50)
+        print("PERFORMANCE ANALYSIS REPORT")
+        print("="*50)
+        print(report)
+        return
+    
+    if args.analyze:
+        # Quick analysis without execution
+        metrics = analyze_workflow_file(args.workflow)
+        print(f"\n📊 Workflow Analysis:")
+        print(f"Total Agents: {metrics.total_agents}")
+        print(f"Critical Path: {metrics.critical_path_length} agents")
+        print(f"Max Parallelization: {metrics.max_parallel} concurrent")
+        print(f"Estimated Time: {metrics.estimated_time_seconds:.1f} seconds")
+        print(f"Estimated Cost: ${metrics.estimated_cost_usd:.2f}")
+        print(f"Memory Usage: {metrics.memory_usage_mb:.1f} MB")
+        return
+    
+    # Execute workflow
+    print(f"🚀 Starting workflow execution...")
+    print(f"Workflow: {args.workflow}")
+    print(f"Max Concurrent: {args.concurrent}")
+    print(f"Optimizations: {'Enabled' if args.optimize else 'Disabled'}")
+    
+    start_time = time.time()
+    
+    if args.optimize:
+        results = run_large_workflow_sync(
+            workflow_file=args.workflow,
+            data_file=args.data,
+            max_concurrent=args.concurrent
+        )
+    else:
+        results = run_universal_workflow(args.workflow, args.data, optimize=False)
+    
+    end_time = time.time()
+    execution_time = end_time - start_time
+    
+    # Print results summary
+    print(f"\n{'='*50}")
+    print("EXECUTION SUMMARY")
+    print(f"{'='*50}")
+    
+    if results.get("success"):
+        exec_results = results.get("execution_results", {})
+        print(f"✅ Workflow completed successfully")
+        print(f"Total Agents: {exec_results.get('total_count', 'Unknown')}")
+        print(f"Completed: {exec_results.get('completed_count', 'Unknown')}")
+        print(f"Failed: {exec_results.get('failed_count', 'Unknown')}")
+        print(f"Execution Time: {execution_time:.1f} seconds ({execution_time/60:.1f} minutes)")
+        
+        if "performance_report" in results:
+            perf = results["performance_report"]["execution_summary"]
+            print(f"Success Rate: {perf['success_rate']:.1f}%")
+            print(f"Agents/Second: {perf['agents_per_second']:.2f}")
+    else:
+        print(f"❌ Workflow failed: {results.get('error', 'Unknown error')}")
+
+if __name__ == "__main__":
+    # Setup logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    
+    main()
+
+
+==================================================
+FILE: optimized_call_api.py
+==================================================
+
+#!/usr/bin/env python3
+
+import asyncio
+import aiohttp
+import json
+import time
+import hashlib
+from typing import Dict, List, Optional
+from collections import deque
+import logging
+import os
+
+logger = logging.getLogger("optimized_call_api")
+
+class APIConnectionPool:
+    """Manages HTTP connections and implements caching/rate limiting"""
+    
+    def __init__(self, config: Dict, max_connections: int = 100, 
+                 rate_limit: float = 20.0, cache_dir: str = "./api_cache"):
+        self.config = config
+        self.max_connections = max_connections
+        self.rate_limit = rate_limit
+        self.cache_dir = cache_dir
+        
+        # Rate limiting
+        self.request_times = deque()
+        self.semaphore = asyncio.Semaphore(max_connections)
+        
+        # Connection pooling
+        self.session = None
+        self.connector = None
+        
+        # Response caching
+        self.enable_cache = True
+        os.makedirs(cache_dir, exist_ok=True)
+        
+        # Statistics
+        self.stats = {
+            "total_requests": 0,
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "failed_requests": 0,
+            "rate_limited": 0
+        }
+    
+    async def __aenter__(self):
+        """Initialize connection pool"""
+        self.connector = aiohttp.TCPConnector(
+            limit=self.max_connections,
+            limit_per_host=30,
+            keepalive_timeout=60,
+            enable_cleanup_closed=True,
+            use_dns_cache=True
+        )
+        
+        timeout = aiohttp.ClientTimeout(total=300, connect=15, sock_read=120)
+        self.session = aiohttp.ClientSession(
+            connector=self.connector,
+            timeout=timeout,
+            headers={
+                'Content-Type': 'application/json',
+                'Connection': 'keep-alive'
+            }
+        )
+        return self
+    
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Cleanup connections"""
+        if self.session:
+            await self.session.close()
+        if self.connector:
+            await self.connector.close()
+    
+    def _get_cache_key(self, conversation: List[Dict]) -> str:
+        """Generate cache key for conversation"""
+        content = json.dumps(conversation, sort_keys=True)
+        return hashlib.md5(content.encode()).hexdigest()
+    
+    def _get_cache_path(self, cache_key: str) -> str:
+        """Get cache file path"""
+        return os.path.join(self.cache_dir, f"{cache_key}.json")
+    
+    def _load_from_cache(self, cache_key: str) -> Optional[str]:
+        """Load response from cache"""
+        if not self.enable_cache:
+            return None
+            
+        cache_path = self._get_cache_path(cache_key)
+        try:
+            if os.path.exists(cache_path):
+                with open(cache_path, 'r', encoding='utf-8') as f:
+                    cached_data = json.load(f)
+                    
+                # Check if cache is still valid (24 hours)
+                cache_time = cached_data.get('timestamp', 0)
+                if time.time() - cache_time < 86400:  # 24 hours
+                    self.stats["cache_hits"] += 1
+                    return cached_data.get('response', '')
+                    
+        except Exception as e:
+            logger.debug(f"Cache read error: {e}")
+        
+        self.stats["cache_misses"] += 1
+        return None
+    
+    def _save_to_cache(self, cache_key: str, response: str):
+        """Save response to cache"""
+        if not self.enable_cache:
+            return
+            
+        cache_path = self._get_cache_path(cache_key)
+        try:
+            cache_data = {
+                'response': response,
+                'timestamp': time.time()
+            }
+            with open(cache_path, 'w', encoding='utf-8') as f:
+                json.dump(cache_data, f)
+        except Exception as e:
+            logger.debug(f"Cache write error: {e}")
+    
+    async def _rate_limit(self):
+        """Implement intelligent rate limiting"""
+        async with self.semaphore:
+            now = time.time()
+            
+            # Clean old request times
+            while self.request_times and now - self.request_times[0] > 1.0:
+                self.request_times.popleft()
+            
+            # Check rate limit
+            if len(self.request_times) >= self.rate_limit:
+                sleep_time = 1.0 - (now - self.request_times[0])
+                if sleep_time > 0:
+                    logger.debug(f"Rate limiting: sleeping {sleep_time:.2f}s")
+                    await asyncio.sleep(sleep_time)
+                    self.stats["rate_limited"] += 1
+            
+            self.request_times.append(now)
+    
+    async def call_api_async(self, conversation: List[Dict], retries: int = 3) -> str:
+        """Make async API call with caching and rate limiting"""
+        self.stats["total_requests"] += 1
+        
+        # Check cache first
+        cache_key = self._get_cache_key(conversation)
+        cached_response = self._load_from_cache(cache_key)
+        if cached_response:
+            logger.debug("Cache hit")
+            return cached_response
+        
+        # Apply rate limiting
+        await self._rate_limit()
+        
+        # Prepare request
+        payload = {
+            "model": self.config["default_model"],
+            "messages": conversation,
+            "temperature": 0.7,
+            "max_tokens": 4000
+        }
+        
+        headers = {}
+        if self.config.get("api_key"):
+            headers["Authorization"] = f"Bearer {self.config['api_key']}"
+        
+        # Retry logic with exponential backoff
+        for attempt in range(retries):
+            try:
+                async with self.session.post(
+                    self.config["endpoint"],
+                    json=payload,
+                    headers=headers
+                ) as response:
+                    
+                    if response.status == 200:
+                        data = await response.json()
+                        content = (data.get('content', '') or 
+                                 data.get('choices', [{}])[0].get('message', {}).get('content', ''))
+                        
+                        # Cache successful response
+                        self._save_to_cache(cache_key, content)
+                        return content
+                        
+                    elif response.status == 429:  # Rate limited
+                        retry_after = response.headers.get('Retry-After', '60')
+                        wait_time = min(int(retry_after), 2 ** attempt)
+                        logger.warning(f"API rate limited, waiting {wait_time}s")
+                        await asyncio.sleep(wait_time)
+                        
+                    elif response.status in [500, 502, 503, 504]:  # Server errors
+                        wait_time = min(2 ** attempt, 60)
+                        logger.warning(f"Server error {response.status}, retrying in {wait_time}s")
+                        await asyncio.sleep(wait_time)
+                        
+                    else:
+                        error_text = await response.text()
+                        logger.error(f"API error {response.status}: {error_text}")
+                        break
+                        
+            except asyncio.TimeoutError:
+                wait_time = min(2 ** attempt, 60)
+                logger.warning(f"Request timeout, retrying in {wait_time}s")
+                await asyncio.sleep(wait_time)
+                
+            except Exception as e:
+                logger.error(f"Request error: {e}")
+                if attempt < retries - 1:
+                    await asyncio.sleep(2 ** attempt)
+        
+        self.stats["failed_requests"] += 1
+        return f"Error: API request failed after {retries} attempts"
+    
+    def get_stats(self) -> Dict:
+        """Get connection pool statistics"""
+        cache_hit_rate = 0
+        if self.stats["total_requests"] > 0:
+            cache_hit_rate = self.stats["cache_hits"] / self.stats["total_requests"] * 100
+            
+        return {
+            **self.stats,
+            "cache_hit_rate_percent": round(cache_hit_rate, 2)
+        }
+
+# Batch processing for multiple API calls
+class BatchAPIProcessor:
+    """Processes multiple API calls in optimized batches"""
+    
+    def __init__(self, connection_pool: APIConnectionPool, batch_size: int = 20):
+        self.connection_pool = connection_pool
+        self.batch_size = batch_size
+    
+    async def process_conversations_batch(self, conversations: List[List[Dict]]) -> List[str]:
+        """Process multiple conversations in batches"""
+        results = []
+        
+        # Process in batches to avoid overwhelming the API
+        for i in range(0, len(conversations), self.batch_size):
+            batch = conversations[i:i + self.batch_size]
+            
+            # Create tasks for concurrent execution
+            tasks = [
+                self.connection_pool.call_api_async(conv) 
+                for conv in batch
+            ]
+            
+            # Execute batch concurrently
+            batch_results = await asyncio.gather(*tasks, return_exceptions=True)
+            
+            # Handle results and exceptions
+            for result in batch_results:
+                if isinstance(result, Exception):
+                    results.append(f"Error: {str(result)}")
+                else:
+                    results.append(result)
+            
+            # Small delay between batches
+            if i + self.batch_size < len(conversations):
+                await asyncio.sleep(0.1)
+        
+        return results
+
+# Backward compatibility function
+def call_api(conversation: List[Dict], config: Dict) -> str:
+    """Synchronous wrapper for backward compatibility"""
+    async def _async_call():
+        async with APIConnectionPool(config) as pool:
+            return await pool.call_api_async(conversation)
+    
+    # Run in event loop
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            # If loop is already running, create a task
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(asyncio.run, _async_call())
+                return future.result(timeout=300)
+        else:
+            return loop.run_until_complete(_async_call())
+    except:
+        # Fallback to new event loop
+        return asyncio.run(_async_call())
+
+# Utility functions
+async def call_api_batch(conversations: List[List[Dict]], config: Dict, 
+                        max_concurrent: int = 20) -> List[str]:
+    """Process multiple conversations asynchronously"""
+    async with APIConnectionPool(config, max_connections=max_concurrent) as pool:
+        processor = BatchAPIProcessor(pool, batch_size=max_concurrent)
+        return await processor.process_conversations_batch(conversations)
+
+def estimate_api_cost(num_requests: int, cost_per_request: float = 0.01) -> float:
+    """Estimate API costs for large workflows"""
+    return num_requests * cost_per_request
+
+
+==================================================
+FILE: quick_setup.py
+==================================================
+
+#!/usr/bin/env python3
+"""
+Quick Setup Script for Async Framework
+Run this first to set up everything
+"""
+
+import os
+import sys
+import subprocess
+import json
+
+def check_dependencies():
+    """Check if required dependencies are installed"""
+    print("🔍 Checking dependencies...")
+    
+    required = ["aiohttp", "networkx"]
+    missing = []
+    
+    for pkg in required:
+        try:
+            __import__(pkg)
+            print(f"✅ {pkg} - OK")
+        except ImportError:
+            missing.append(pkg)
+            print(f"❌ {pkg} - Missing")
+    
+    return missing
+
+def install_dependencies(packages):
+    """Install missing dependencies"""
+    if not packages:
+        return True
+    
+    print(f"\n📦 Installing missing packages: {', '.join(packages)}")
+    
+    for pkg in packages:
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", pkg])
+            print(f"✅ Installed {pkg}")
+        except subprocess.CalledProcessError:
+            print(f"❌ Failed to install {pkg}")
+            return False
+    
+    return True
+
+def create_config():
+    """Create basic configuration file"""
+    config_content = '''#!/usr/bin/env python3
+
+import os
+
+# Basic configuration for async framework
+CONFIG = {
+    "output_dir": "./async_outputs",
+    "default_model": "deepseek/deepseek-chat:free",
+    "api_key": "",  # Add your API key here
+    "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+}
+
+# Ensure output directory exists
+os.makedirs(CONFIG["output_dir"], exist_ok=True)
+'''
+    
+    if not os.path.exists("config.py"):
+        with open("config.py", "w") as f:
+            f.write(config_content)
+        print("✅ Created config.py")
+    else:
+        print("ℹ️  config.py already exists")
+
+def create_simple_test():
+    """Create a simple test workflow"""
+    test_workflow = {
+        "steps": [
+            {
+                "agent": "hello_agent",
+                "content": "Say hello and introduce yourself as an AI assistant",
+                "output_format": {
+                    "type": "json",
+                    "schema": {
+                        "greeting": "string",
+                        "introduction": "string"
+                    }
+                }
+            },
+            {
+                "agent": "follow_up",
+                "content": "Based on the greeting, ask the user how you can help them today",
+                "readFrom": ["hello_agent"]
+            }
+        ]
+    }
+    
+    with open("simple_test.json", "w") as f:
+        json.dump(test_workflow, f, indent=2)
+    
+    print("✅ Created simple_test.json")
+
+def main():
+    """Main setup function"""
+    print("🚀 Async Framework Quick Setup")
+    print("=" * 40)
+    
+    # Check dependencies
+    missing = check_dependencies()
+    
+    # Install missing dependencies
+    if missing:
+        if not install_dependencies(missing):
+            print("❌ Setup failed - could not install dependencies")
+            return False
+    
+    # Create configuration
+    create_config()
+    
+    # Create test workflow
+    create_simple_test()
+    
+    # Create output directory
+    os.makedirs("async_outputs", exist_ok=True)
+    
+    print("\n🎉 Setup complete!")
+    print("\n📖 Next steps:")
+    print("1. Edit config.py and add your API key")
+    print("2. Test the framework:")
+    print("   python async_framework_main.py --workflow simple_test.json")
+    print("3. Create example workflows:")
+    print("   python async_framework_main.py --create-example")
+    
+    return True
+
+if __name__ == "__main__":
+    if main():
+        sys.exit(0)
+    else:
+        sys.exit(1)
+
+
+==================================================
+FILE: setup_optimized.py
+==================================================
+
+#!/usr/bin/env python3
+
+import subprocess
+import sys
+import os
+
+def install_requirements():
+    """Install required packages for optimized framework"""
+    
+    requirements = [
+        "aiohttp>=3.8.0",
+        "aiofiles>=23.0.0", 
+        "networkx>=3.0",
+        "requests>=2.25.0"
+    ]
+    
+    # Add uvloop for better performance on Unix systems
+    if sys.platform != "win32":
+        requirements.append("uvloop>=0.17.0")
+    
+    print("🔧 Installing optimized framework requirements...")
+    
+    for req in requirements:
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", req])
+            print(f"✅ Installed: {req}")
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Failed to install {req}: {e}")
+            return False
+    
+    return True
+
+def create_directories():
+    """Create necessary directories"""
+    directories = [
+        "agent_outputs",
+        "api_cache", 
+        "logs",
+        "workflows",
+        "optimized_results"
+    ]
+    
+    for directory in directories:
+        os.makedirs(directory, exist_ok=True)
+        print(f"✅ Created directory: {directory}")
+
+def create_optimized_config():
+    """Create optimized configuration file"""
+    
+    config_content = '''#!/usr/bin/env python3
+
+import os
+
+# Optimized configuration for large-scale workflows
+CONFIG = {
+    "output_dir": "./agent_outputs",
+    "memory_dir": "./agent_memory",
+    "default_model": "deepseek/deepseek-chat:free",  # Change this to your model
+    "api_key": "your-api-key-here",  # Add your OpenRouter API key
+    "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+    "memory_db": "agent_memory.db",
+    "sqlite_db": "test_sqlite.db",
+    
+    # Optimization settings
+    "max_concurrent_agents": 50,
+    "enable_caching": True,
+    "cache_dir": "./api_cache",
+    "rate_limit_per_second": 20.0,
+    "max_connections": 100,
+    "enable_compression": True
+}
+
+# Ensure output directories exist
+os.makedirs(CONFIG["output_dir"], exist_ok=True)
+os.makedirs(CONFIG["memory_dir"], exist_ok=True)
+os.makedirs(CONFIG["cache_dir"], exist_ok=True)
+'''
+    
+    with open("optimized_config.py", "w", encoding="utf-8") as f:
+        f.write(config_content)
+    
+    print("✅ Created optimized_config.py")
+
+def create_test_workflow():
+    """Create a test workflow for validation"""
+    
+    test_workflow = {
+        "steps": [
+            {
+                "agent": "test_agent_1",
+                "content": "Analyze the concept of artificial intelligence and provide a brief summary.",
+                "output_format": {
+                    "type": "json",
+                    "schema": {
+                        "summary": "string",
+                        "key_points": "array",
+                        "complexity": "string"
+                    }
+                }
+            },
+            {
+                "agent": "test_agent_2", 
+                "content": "Based on the AI analysis, suggest practical applications.",
+                "readFrom": ["test_agent_1"],
+                "output_format": {
+                    "type": "json",
+                    "schema": {
+                        "applications": "array",
+                        "feasibility": "string",
+                        "timeline": "string"
+                    }
+                }
+            },
+            {
+                "agent": "test_agent_3",
+                "content": "Create a summary report of the AI analysis and applications.",
+                "readFrom": ["*"],
+                "output_format": {
+                    "type": "markdown",
+                    "sections": [
+                        "Overview",
+                        "Key Insights", 
+                        "Applications",
+                        "Conclusion"
+                    ]
+                }
+            }
+        ]
+    }
+    
+    with open("test_workflow.json", "w", encoding="utf-8") as f:
+        json.dump(test_workflow, f, indent=2)
+    
+    print("✅ Created test_workflow.json")
+
+def create_large_test_workflow():
+    """Create a larger test workflow for performance testing"""
+    
+    # Generate 100 agents for stress testing
+    steps = []
+    
+    # First batch: 10 independent analysis agents
+    for i in range(10):
+        steps.append({
+            "agent": f"analyzer_{i+1}",
+            "content": f"Analyze topic #{i+1}: Create analysis on different aspects of technology trends.",
+            "output_format": {
+                "type": "json",
+                "schema": {
+                    "analysis": "string",
+                    "score": "number",
+                    "recommendations": "array"
+                }
+            }
+        })
+    
+    # Second batch: 20 agents that depend on first batch
+    for i in range(20):
+        dependency_idx = i % 10
+        steps.append({
+            "agent": f"synthesizer_{i+1}",
+            "content": f"Synthesize insights from the analysis and provide recommendations.",
+            "readFrom": [f"analyzer_{dependency_idx+1}"],
+            "output_format": {
+                "type": "json",
+                "schema": {
+                    "synthesis": "string",
+                    "insights": "array",
+                    "priority": "string"
+                }
+            }
+        })
+    
+    # Third batch: 5 summary agents
+    for i in range(5):
+        start_idx = i * 4
+        end_idx = start_idx + 4
+        dependencies = [f"synthesizer_{j+1}" for j in range(start_idx, min(end_idx, 20))]
+        
+        steps.append({
+            "agent": f"summarizer_{i+1}",
+            "content": "Create comprehensive summary of synthesized insights.",
+            "readFrom": dependencies,
+            "output_format": {
+                "type": "json",
+                "schema": {
+                    "summary": "string",
+                    "key_findings": "array",
+                    "conclusions": "string"
+                }
+            }
+        })
+    
+    # Final agent: Overall report
+    steps.append({
+        "agent": "final_report",
+        "content": "Generate comprehensive final report based on all analyses.",
+        "readFrom": ["*"],
+        "output_format": {
+            "type": "markdown", 
+            "sections": [
+                "Executive Summary",
+                "Key Findings",
+                "Detailed Analysis",
+                "Recommendations",
+                "Conclusion"
+            ]
+        }
+    })
+    
+    large_workflow = {"steps": steps}
+    
+    with open("large_test_workflow.json", "w", encoding="utf-8") as f:
+        json.dump(large_workflow, f, indent=2)
+    
+    print(f"✅ Created large_test_workflow.json with {len(steps)} agents")
+
+def main():
+    """Main setup function"""
+    print("🚀 Setting up Optimized Workflow Framework...")
+    
+    # Install requirements
+    if not install_requirements():
+        print("❌ Failed to install requirements")
+        sys.exit(1)
+    
+    # Create directories
+    create_directories()
+    
+    # Create configuration
+    create_optimized_config()
+    
+    # Create test workflows
+    import json
+    create_test_workflow()
+    create_large_test_workflow()
+    
+    print("\n🎉 Optimized framework setup complete!")
+    print("\n📖 Next Steps:")
+    print("1. Edit optimized_config.py and add your API key")
+    print("2. Test small workflow: python optimized_agent_runner.py --workflow test_workflow.json")
+    print("3. Analyze large workflow: python optimized_agent_runner.py --workflow large_test_workflow.json --analyze")
+    print("4. Test optimized execution: python optimized_agent_runner.py --workflow large_test_workflow.json --concurrent 20")
+    print("\n💡 Performance Tips:")
+    print("- Start with --concurrent 10-20 for testing")
+    print("- Use --analyze to estimate costs before running large workflows")
+    print("- Enable caching in config for repeated testing")
+    print("- Monitor API rate limits and adjust accordingly")
+
+if __name__ == "__main__":
+    main()
+
+
+==================================================
+FILE: tool_manager.py
+==================================================
+
+#!/usr/bin/env python3
+
+import logging
+from typing import Dict, Any  # ADD THIS IMPORT
+
+logger = logging.getLogger("tool_manager")
+
+class ToolManager:
+    """Simplified tool manager for async framework"""
+    
+    def __init__(self):
+        self.tools = {}
+        self.imported_modules = set()
+    
+    def discover_tools(self) -> int:
+        """Simplified tool discovery"""
+        logger.info("Tool discovery disabled in simplified mode")
+        return 0
+    
+    def is_tool_available(self, tool_id: str) -> bool:
+        """Check if tool is available"""
+        return tool_id in self.tools
+    
+    def execute_tool(self, tool_id: str, **kwargs) -> Dict[str, Any]:
+        """Execute a tool"""
+        if tool_id not in self.tools:
+            return {"error": f"Tool {tool_id} not available"}
+        
+        try:
+            return self.tools[tool_id](**kwargs)
+        except Exception as e:
+            return {"error": str(e)}
+    
+    def register_tool(self, tool_id: str, handler):
+        """Register a tool"""
+        self.tools[tool_id] = handler
+
+# Create global instance
+tool_manager = ToolManager()
+
+
+==================================================
+FILE: utils.py
+==================================================
+
+# utils.py - Simplified version for async framework
+#!/usr/bin/env python3
+
+import os
+import json
+import re
+import datetime
+from typing import Dict, Any, List, Optional
+
+def extract_json_from_text(text: str) -> Dict[str, Any]:
+    """Extract JSON from text, handling various formats"""
+    # Try parsing the entire content as JSON first
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+    
+    # Try to find JSON within code blocks
+    json_pattern = r'```(?:json)?\s*([\s\S]*?)\s*```'
+    match = re.search(json_pattern, text)
+    if match:
+        try:
+            return json.loads(match.group(1))
+        except json.JSONDecodeError:
+            pass
+    
+    # Try to find anything that looks like a JSON object
+    object_pattern = r'({[\s\S]*?})'
+    match = re.search(object_pattern, text)
+    if match:
+        try:
+            return json.loads(match.group(1))
+        except json.JSONDecodeError:
+            pass
+    
+    # If all extraction attempts fail, return an error object
+    return {"error": "Could not extract valid JSON from response", "text": text[:500]}
+
+def extract_tool_calls(response_content: str) -> List[Dict[str, Any]]:
+    """Extract all tool calls from a response"""
+    tool_usage_pattern = r"I need to use the tool: ([a-zA-Z0-9_:]+)\s*\nParameters:\s*\{([^}]+)\}"
+    tool_calls = []
+    
+    # Find all matches
+    matches = re.finditer(tool_usage_pattern, response_content, re.DOTALL)
+    for match in matches:
+        tool_name = match.group(1).strip()
+        params_text = "{" + match.group(2) + "}"
+        try:
+            params = json.loads(params_text)
+            tool_calls.append({
+                "tool_name": tool_name,
+                "params": params,
+                "full_text": match.group(0)
+            })
+        except json.JSONDecodeError:
+            # Skip invalid JSON
+            continue
+    
+    return tool_calls
+
+def get_config():
+    """Get configuration or create default config"""
+    try:
+        from config import CONFIG
+        return CONFIG
+    except ImportError:
+        # Try openrouter_config
+        try:
+            from openrouter_config import CONFIG
+            return CONFIG
+        except ImportError:
+            # Create default config if not available
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            CONFIG = {
+                "api_key": os.environ.get("API_KEY", ""),
+                "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+                "default_model": "deepseek/deepseek-chat:free",
+                "output_dir": os.path.join(current_dir, "outputs")
+            }
+            # Ensure output directory exists
+            os.makedirs(CONFIG["output_dir"], exist_ok=True)
+            return CONFIG
+
+
+==================================================
+FILE: workflow_optimizer.py
+==================================================
+
+#!/usr/bin/env python3
+
+import json
+import networkx as nx
+from typing import Dict, Any, List, Set, Tuple
+from dataclasses import dataclass
+import logging
+
+logger = logging.getLogger("workflow_optimizer")
+
+@dataclass
+class OptimizationMetrics:
+    """Metrics for workflow optimization"""
+    total_agents: int
+    max_parallel: int
+    estimated_batches: int
+    estimated_time_seconds: float
+    estimated_cost_usd: float
+    memory_usage_mb: float
+    critical_path_length: int
+
+class WorkflowOptimizer:
+    """Optimizes workflows for large-scale execution"""
+    
+    def __init__(self, avg_agent_time: float = 2.0, cost_per_request: float = 0.01):
+        self.avg_agent_time = avg_agent_time  # seconds per agent
+        self.cost_per_request = cost_per_request  # USD per API call
+        self.avg_result_size = 5  # KB per result
+    
+    def analyze_workflow(self, workflow: List[Dict]) -> OptimizationMetrics:
+        """Analyze workflow and provide optimization metrics"""
+        
+        # Build dependency graph
+        graph = self._build_networkx_graph(workflow)
+        
+        # Calculate metrics
+        total_agents = len(workflow)
+        critical_path = self._find_critical_path(graph)
+        critical_path_length = len(critical_path)
+        
+        # Estimate parallelization
+        levels = self._calculate_execution_levels(graph)
+        max_parallel = max(len(level) for level in levels) if levels else 1
+        estimated_batches = len(levels)
+        
+        # Time estimation (critical path determines minimum time)
+        estimated_time = critical_path_length * self.avg_agent_time
+        
+        # Cost estimation
+        estimated_cost = total_agents * self.cost_per_request
+        
+        # Memory estimation
+        memory_usage = total_agents * self.avg_result_size / 1024  # MB
+        
+        return OptimizationMetrics(
+            total_agents=total_agents,
+            max_parallel=max_parallel,
+            estimated_batches=estimated_batches,
+            estimated_time_seconds=estimated_time,
+            estimated_cost_usd=estimated_cost,
+            memory_usage_mb=memory_usage,
+            critical_path_length=critical_path_length
+        )
+    
+    def optimize_workflow(self, workflow: List[Dict], max_concurrent: int = 50) -> Dict[str, Any]:
+        """Optimize workflow for execution"""
+        
+        # Analyze current workflow
+        metrics = self.analyze_workflow(workflow)
+        
+        # Build recommendations
+        recommendations = []
+        optimizations = {}
+        
+        # Memory optimization
+        if metrics.memory_usage_mb > 1000:  # > 1GB
+            recommendations.append("Consider implementing result streaming for large workflows")
+            optimizations["use_disk_cache"] = True
+        
+        # Parallelization optimization
+        if metrics.max_parallel > max_concurrent:
+            recommendations.append(f"Workflow can utilize {metrics.max_parallel} parallel agents, "
+                                 f"but limited to {max_concurrent} by configuration")
+            optimizations["recommended_concurrent"] = min(metrics.max_parallel, max_concurrent * 2)
+        
+        # Cost optimization
+        if metrics.estimated_cost_usd > 10:
+            recommendations.append("Consider result caching to reduce API costs")
+            optimizations["enable_caching"] = True
+        
+        # Execution order optimization
+        optimized_batches = self._create_optimal_batches(workflow, max_concurrent)
+        
+        return {
+            "metrics": metrics,
+            "recommendations": recommendations,
+            "optimizations": optimizations,
+            "execution_plan": {
+                "batches": len(optimized_batches),
+                "max_batch_size": max(len(batch) for batch in optimized_batches),
+                "execution_order": optimized_batches
+            }
+        }
+    
+    def _build_networkx_graph(self, workflow: List[Dict]) -> nx.DiGraph:
+        """Build NetworkX directed graph from workflow"""
+        graph = nx.DiGraph()
+        
+        # Add nodes
+        for step in workflow:
+            agent_name = step.get("agent", "")
+            if agent_name:
+                graph.add_node(agent_name, **step)
+        
+        # Add edges (dependencies)
+        for step in workflow:
+            agent_name = step.get("agent", "")
+            if not agent_name:
+                continue
+                
+            read_from = step.get("readFrom", [])
+            for ref in read_from:
+                if isinstance(ref, str) and ref != "*":
+                    if ref in graph.nodes:
+                        graph.add_edge(ref, agent_name)
+                elif ref == "*":
+                    # Depends on all previous agents
+                    for prev_step in workflow:
+                        if prev_step.get("agent") == agent_name:
+                            break
+                        prev_agent = prev_step.get("agent")
+                        if prev_agent and prev_agent in graph.nodes:
+                            graph.add_edge(prev_agent, agent_name)
+        
+        return graph
+    
+    def _find_critical_path(self, graph: nx.DiGraph) -> List[str]:
+        """Find the critical path (longest path) in the dependency graph"""
+        try:
+            # For DAG, find longest path
+            if nx.is_directed_acyclic_graph(graph):
+                topo_order = list(nx.topological_sort(graph))
+                
+                # Calculate longest path to each node
+                distances = {node: 0 for node in graph.nodes}
+                predecessors = {}
+                
+                for node in topo_order:
+                    for successor in graph.successors(node):
+                        if distances[node] + 1 > distances[successor]:
+                            distances[successor] = distances[node] + 1
+                            predecessors[successor] = node
+                
+                # Find node with maximum distance
+                end_node = max(distances, key=distances.get)
+                
+                # Reconstruct path
+                path = []
+                current = end_node
+                while current is not None:
+                    path.append(current)
+                    current = predecessors.get(current)
+                
+                return list(reversed(path))
+            else:
+                logger.warning("Graph contains cycles - using topological sort")
+                return list(nx.topological_sort(graph))[:10]  # Limit to prevent issues
+                
+        except Exception as e:
+            logger.error(f"Error finding critical path: {e}")
+            return []
+    
+    def _calculate_execution_levels(self, graph: nx.DiGraph) -> List[List[str]]:
+        """Calculate execution levels for parallel processing"""
+        try:
+            if not nx.is_directed_acyclic_graph(graph):
+                logger.warning("Graph contains cycles - cannot calculate levels properly")
+                return [[node] for node in graph.nodes]
+            
+            levels = []
+            remaining_nodes = set(graph.nodes)
+            
+            while remaining_nodes:
+                # Find nodes with no dependencies in remaining nodes
+                current_level = []
+                for node in remaining_nodes.copy():
+                    predecessors = set(graph.predecessors(node))
+                    if not predecessors.intersection(remaining_nodes):
+                        current_level.append(node)
+                        remaining_nodes.remove(node)
+                
+                if current_level:
+                    levels.append(current_level)
+                else:
+                    # Handle remaining nodes (possible cycle)
+                    levels.append(list(remaining_nodes))
+                    break
+            
+            return levels
+            
+        except Exception as e:
+            logger.error(f"Error calculating execution levels: {e}")
+            return [[node] for node in graph.nodes]
+    
+    def _create_optimal_batches(self, workflow: List[Dict], max_concurrent: int) -> List[List[str]]:
+        """Create optimal execution batches"""
+        graph = self._build_networkx_graph(workflow)
+        levels = self._calculate_execution_levels(graph)
+        
+        # Split large levels into smaller batches
+        batches = []
+        for level in levels:
+            if len(level) <= max_concurrent:
+                batches.append(level)
+            else:
+                # Split level into smaller batches
+                for i in range(0, len(level), max_concurrent):
+                    batch = level[i:i + max_concurrent]
+                    batches.append(batch)
+        
+        return batches
+    
+    def generate_optimization_report(self, workflow_file: str, max_concurrent: int = 50) -> str:
+        """Generate a comprehensive optimization report"""
+        
+        # Load workflow
+        with open(workflow_file, 'r', encoding='utf-8') as f:
+            workflow_data = json.load(f)
+        
+        if isinstance(workflow_data, dict) and "steps" in workflow_data:
+            workflow = workflow_data["steps"]
+        else:
+            workflow = workflow_data
+        
+        # Analyze and optimize
+        optimization = self.optimize_workflow(workflow, max_concurrent)
+        metrics = optimization["metrics"]
+        
+        # Generate report
+        report = f"""
+# Workflow Optimization Report
+
+## Workflow Overview
+- **Total Agents**: {metrics.total_agents}
+- **Critical Path Length**: {metrics.critical_path_length} agents
+- **Maximum Parallelization**: {metrics.max_parallel} concurrent agents
+
+## Performance Estimates
+- **Estimated Execution Time**: {metrics.estimated_time_seconds:.1f} seconds ({metrics.estimated_time_seconds/60:.1f} minutes)
+- **Estimated Cost**: ${metrics.estimated_cost_usd:.2f}
+- **Memory Usage**: {metrics.memory_usage_mb:.1f} MB
+- **Execution Batches**: {metrics.estimated_batches}
+
+## Optimization Recommendations
+"""
+        
+        for rec in optimization["recommendations"]:
+            report += f"- {rec}\n"
+        
+        report += f"""
+## Execution Plan
+- **Number of Batches**: {optimization['execution_plan']['batches']}
+- **Largest Batch Size**: {optimization['execution_plan']['max_batch_size']} agents
+- **Recommended Concurrency**: {optimization['optimizations'].get('recommended_concurrent', max_concurrent)}
+
+## Optimization Settings
+"""
+        
+        for key, value in optimization["optimizations"].items():
+            report += f"- **{key}**: {value}\n"
+        
+        return report
+
+# Utility functions
+def analyze_workflow_file(workflow_file: str) -> OptimizationMetrics:
+    """Quick analysis of a workflow file"""
+    optimizer = WorkflowOptimizer()
+    
+    with open(workflow_file, 'r', encoding='utf-8') as f:
+        workflow_data = json.load(f)
+    
+    if isinstance(workflow_data, dict) and "steps" in workflow_data:
+        workflow = workflow_data["steps"]
+    else:
+        workflow = workflow_data
+    
+    return optimizer.analyze_workflow(workflow)
+
+def optimize_workflow_file(workflow_file: str, max_concurrent: int = 50) -> Dict[str, Any]:
+    """Optimize a workflow file"""
+    optimizer = WorkflowOptimizer()
+    
+    with open(workflow_file, 'r', encoding='utf-8') as f:
+        workflow_data = json.load(f)
+    
+    if isinstance(workflow_data, dict) and "steps" in workflow_data:
+        workflow = workflow_data["steps"]
+    else:
+        workflow = workflow_data
+    
+    return optimizer.optimize_workflow(workflow, max_concurrent)
+
+
+==================================================
+SUMMARY: Processed 14 Python files
+Output saved to: all_python_files.txt
