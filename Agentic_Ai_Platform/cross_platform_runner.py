@@ -483,13 +483,35 @@ Wait for the tool result before continuing.
             else:
                 result = {"content": response_content}
             
-            logger.info(f"✅ Agent {task.agent_name} completed")
+            logger.info(f"[OK] Agent {task.agent_name} completed")
+            
+            # Save individual agent output
+            try:
+                output_dir = Path(self.config.get("output_dir", "./agent_outputs"))
+                output_dir.mkdir(exist_ok=True)
+                
+                # Save agent result to file
+                agent_output_file = output_dir / f"{task.agent_name}_output.json"
+                with open(agent_output_file, 'w', encoding='utf-8') as f:
+                    json.dump({
+                        "agent_name": task.agent_name,
+                        "timestamp": datetime.now().isoformat(),
+                        "result": result,
+                        "prompt": task.prompt[:200] + "..." if len(task.prompt) > 200 else task.prompt
+                    }, f, indent=2, default=str)
+                
+                logger.info(f"[FILE] Agent output saved to: {agent_output_file}")
+                
+            except Exception as e:
+                logger.warning(f"[WARNING] Could not save agent output: {e}")
+            
             return result
             
         except Exception as e:
             error_result = {"error": f"Agent execution failed: {str(e)}"}
-            logger.error(f"❌ Agent {task.agent_name} failed: {e}")
+            logger.error(f"[ERROR] Agent {task.agent_name} failed: {e}")
             return error_result
+    
     
     def create_task_from_step(self, step: Dict[str, Any], step_index: int) -> AgentTask:
         """Create AgentTask from workflow step"""
