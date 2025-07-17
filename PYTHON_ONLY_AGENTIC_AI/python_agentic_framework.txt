@@ -1,0 +1,3417 @@
+Python Files Content Aggregation
+Generated on 2025-07-17 at 09:28:02
+==================================================
+
+==================================================
+FILE: auto_import_tools.py
+==================================================
+
+#!/usr/bin/env python3
+"""
+Auto Import All Tools from COMPONENT Directory
+One import to rule them all!
+"""
+
+import sys
+import os
+import importlib.util
+from pathlib import Path
+import logging
+
+logger = logging.getLogger("auto_import")
+
+class ToolImporter:
+    """Automatically import all tools from COMPONENT directory"""
+    
+    def __init__(self):
+        self.tools = {}
+        self.component_dir = Path(__file__).parent / "COMPONENT"
+        
+    def import_all_tools(self):
+        """Import all tools and make them available as simple functions"""
+        
+        if not self.component_dir.exists():
+            print(f"❌ COMPONENT directory not found: {self.component_dir}")
+            return {}
+        
+        # Add COMPONENT to path
+        if str(self.component_dir) not in sys.path:
+            sys.path.insert(0, str(self.component_dir))
+        
+        # Find all Python files in COMPONENT
+        tool_files = list(self.component_dir.glob("*.py"))
+        print(f"🔍 Found {len(tool_files)} tool files in COMPONENT/")
+        
+        imported_tools = {}
+        
+        for py_file in tool_files:
+            if py_file.name.startswith('__'):
+                continue
+                
+            module_name = py_file.stem
+            
+            try:
+                # Import the module
+                spec = importlib.util.spec_from_file_location(module_name, py_file)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                
+                # Get TOOL_REGISTRY if available
+                if hasattr(module, 'TOOL_REGISTRY'):
+                    registry = module.TOOL_REGISTRY
+                    for tool_name, tool_func in registry.items():
+                        # Clean up tool name
+                        clean_name = tool_name.replace(':', '_')
+                        imported_tools[clean_name] = tool_func
+                        imported_tools[tool_name] = tool_func  # Keep original too
+                
+                # Also import any function with docstring (auto-discovery)
+                for attr_name in dir(module):
+                    if not attr_name.startswith('_'):
+                        attr = getattr(module, attr_name)
+                        if callable(attr) and hasattr(attr, '__doc__') and attr.__doc__:
+                            imported_tools[f"{module_name}_{attr_name}"] = attr
+                
+                print(f"✅ Imported {module_name}")
+                
+            except Exception as e:
+                print(f"❌ Failed to import {module_name}: {e}")
+        
+        self.tools = imported_tools
+        print(f"🎉 Total tools available: {len(imported_tools)}")
+        
+        return imported_tools
+
+# Global instance
+_tool_importer = ToolImporter()
+_tools = _tool_importer.import_all_tools()
+
+# Make all tools available as globals
+globals().update(_tools)
+
+# Also create a simple function to call any tool
+def call_tool(tool_name, **kwargs):
+    """Call any tool by name"""
+    if tool_name in _tools:
+        return _tools[tool_name](**kwargs)
+    else:
+        available = [name for name in _tools.keys() if tool_name.lower() in name.lower()]
+        return {"error": f"Tool '{tool_name}' not found. Similar: {available[:5]}"}
+
+def list_tools():
+    """List all available tools"""
+    return sorted(list(_tools.keys()))
+
+def get_tools_by_prefix(prefix):
+    """Get tools starting with prefix"""
+    return [name for name in _tools.keys() if name.startswith(prefix)]
+
+# Print available tools on import
+print(f"🔧 Available tool prefixes:")
+prefixes = set()
+for tool_name in _tools.keys():
+    if '_' in tool_name:
+        prefix = tool_name.split('_')[0]
+        prefixes.add(prefix)
+    elif ':' in tool_name:
+        prefix = tool_name.split(':')[0] 
+        prefixes.add(prefix)
+
+for prefix in sorted(prefixes):
+    count = len(get_tools_by_prefix(prefix))
+    print(f"   {prefix}: {count} tools")
+
+print(f"\n💡 Usage examples:")
+print(f"   from auto_import_tools import *")
+print(f"   result = browser_create(headless=True)")
+print(f"   result = research_combined_search(query='AI safety')")
+print(f"   result = call_tool('browser:navigate', url='https://example.com')")
+
+
+==================================================
+FILE: auto_tool_downloader.py
+==================================================
+
+#!/usr/bin/env python3
+"""
+Auto Tool Downloader & Registry
+Downloads and auto-registers tools from GitHub, Docker, PyPI based on LLM requirements
+"""
+
+import os
+import sys
+import json
+import requests
+import subprocess
+import tempfile
+import shutil
+from pathlib import Path
+from typing import Dict, Any, List
+import logging
+
+from tool_manager import tool_manager
+from config import CONFIG
+
+logger = logging.getLogger("auto_tool_downloader")
+
+class AutoToolDownloader:
+    """Automatically download and register tools based on requirements"""
+    
+    def __init__(self):
+        self.component_dir = Path(__file__).parent / "COMPONENT"
+        self.component_dir.mkdir(exist_ok=True)
+        self.tool_sources = {
+            "github": "https://api.github.com",
+            "pypi": "https://pypi.org/pypi",
+            "docker": "https://hub.docker.com/v2"
+        }
+        self.downloaded_tools = {}
+    
+    async def auto_download_for_requirement(self, requirement: str) -> Dict[str, Any]:
+        """LLM analyzes requirement and auto-downloads needed tools"""
+        
+        # Use LLM to analyze what tools are needed
+        from llm_powered_solutions import LLMAgent
+        
+        analyzer = LLMAgent("ToolAnalyzer", 
+            "You are a tool requirement analyzer. Given a user requirement, "
+            "identify what specific tools/libraries would be needed and suggest "
+            "GitHub repositories, PyPI packages, or Docker images to download.")
+        
+        analysis_prompt = f"""
+Requirement: {requirement}
+
+Analyze what tools would be needed and suggest specific sources:
+
+1. GitHub repositories (for custom tools/adapters)
+2. PyPI packages (for Python libraries) 
+3. Docker containers (for complex services)
+
+Format response as JSON:
+{{
+  "github_repos": ["user/repo", "user2/repo2"],
+  "pypi_packages": ["package1", "package2"], 
+  "docker_images": ["image1", "image2"],
+  "reasoning": "why these tools are needed"
+}}
+"""
+        
+        analysis = await analyzer.call_llm(analysis_prompt)
+        
+        # Parse LLM response
+        try:
+            import re
+            json_match = re.search(r'\{.*\}', analysis, re.DOTALL)
+            if json_match:
+                suggestions = json.loads(json_match.group())
+            else:
+                suggestions = {"github_repos": [], "pypi_packages": [], "docker_images": []}
+        except:
+            suggestions = {"github_repos": [], "pypi_packages": [], "docker_images": []}
+        
+        # Download suggested tools
+        download_results = {}
+        
+        # Download GitHub repos
+        for repo in suggestions.get("github_repos", []):
+            result = await self.download_github_tool(repo)
+            download_results[f"github_{repo}"] = result
+        
+        # Install PyPI packages
+        for package in suggestions.get("pypi_packages", []):
+            result = await self.install_pypi_tool(package)
+            download_results[f"pypi_{package}"] = result
+        
+        # Pull Docker images
+        for image in suggestions.get("docker_images", []):
+            result = await self.setup_docker_tool(image)
+            download_results[f"docker_{image}"] = result
+        
+        # Re-discover tools after downloads
+        new_tool_count = tool_manager.discover_tools()
+        
+        return {
+            "requirement": requirement,
+            "llm_analysis": analysis,
+            "suggestions": suggestions,
+            "download_results": download_results,
+            "new_tool_count": new_tool_count,
+            "available_tools": tool_manager.get_all_tools()
+        }
+    
+    async def download_github_tool(self, repo: str) -> Dict[str, Any]:
+        """Download and integrate a GitHub repository as tools"""
+        
+        try:
+            # Download repo
+            url = f"https://github.com/{repo}/archive/main.zip"
+            response = requests.get(url)
+            
+            if response.status_code != 200:
+                # Try master branch
+                url = f"https://github.com/{repo}/archive/master.zip"
+                response = requests.get(url)
+            
+            if response.status_code != 200:
+                return {"error": f"Could not download {repo}"}
+            
+            # Extract to temporary directory
+            with tempfile.TemporaryDirectory() as temp_dir:
+                zip_path = Path(temp_dir) / "repo.zip"
+                with open(zip_path, 'wb') as f:
+                    f.write(response.content)
+                
+                # Extract
+                shutil.unpack_archive(zip_path, temp_dir)
+                
+                # Find Python files
+                extracted_dir = next(Path(temp_dir).iterdir())
+                python_files = list(extracted_dir.rglob("*.py"))
+                
+                # Copy relevant Python files to COMPONENT
+                copied_files = []
+                for py_file in python_files:
+                    if self._is_tool_file(py_file):
+                        dest_name = f"{repo.replace('/', '_')}_{py_file.name}"
+                        dest_path = self.component_dir / dest_name
+                        shutil.copy2(py_file, dest_path)
+                        copied_files.append(dest_name)
+                
+                return {
+                    "status": "success",
+                    "repo": repo,
+                    "files_copied": copied_files,
+                    "total_python_files": len(python_files)
+                }
+                
+        except Exception as e:
+            return {"error": f"Failed to download {repo}: {str(e)}"}
+    
+    async def install_pypi_tool(self, package: str) -> Dict[str, Any]:
+        """Install PyPI package and create adapter"""
+        
+        try:
+            # Install package
+            result = subprocess.run([
+                sys.executable, "-m", "pip", "install", package
+            ], capture_output=True, text=True)
+            
+            if result.returncode != 0:
+                return {"error": f"Failed to install {package}: {result.stderr}"}
+            
+            # Create adapter file
+            adapter_content = f'''#!/usr/bin/env python3
+"""
+Auto-generated adapter for {package}
+"""
+
+TOOL_NAMESPACE = "{package}"
+
+try:
+    import {package}
+    PACKAGE_AVAILABLE = True
+except ImportError:
+    PACKAGE_AVAILABLE = False
+
+TOOL_REGISTRY = {{}}
+
+if PACKAGE_AVAILABLE:
+    def {package}_info(**kwargs):
+        """Get information about {package}"""
+        try:
+            import {package}
+            return {{
+                "package": "{package}",
+                "version": getattr({package}, "__version__", "unknown"),
+                "available": True
+            }}
+        except Exception as e:
+            return {{"error": str(e)}}
+    
+    TOOL_REGISTRY["{package}_info"] = {package}_info
+
+# Auto-discover functions from the package
+if PACKAGE_AVAILABLE:
+    import inspect
+    try:
+        import {package}
+        for name, obj in inspect.getmembers({package}):
+            if (not name.startswith('_') and 
+                callable(obj) and 
+                hasattr(obj, '__doc__') and 
+                obj.__doc__):
+                TOOL_REGISTRY[f"{package}_{{name}}"] = obj
+    except:
+        pass
+'''
+            
+            adapter_path = self.component_dir / f"{package}_adapter.py"
+            with open(adapter_path, 'w') as f:
+                f.write(adapter_content)
+            
+            return {
+                "status": "success",
+                "package": package,
+                "adapter_created": str(adapter_path),
+                "installation_output": result.stdout
+            }
+            
+        except Exception as e:
+            return {"error": f"Failed to install {package}: {str(e)}"}
+    
+    async def setup_docker_tool(self, image: str) -> Dict[str, Any]:
+        """Setup Docker image as a tool service"""
+        
+        try:
+            # Pull Docker image
+            result = subprocess.run([
+                "docker", "pull", image
+            ], capture_output=True, text=True)
+            
+            if result.returncode != 0:
+                return {"error": f"Failed to pull {image}: {result.stderr}"}
+            
+            # Create Docker adapter
+            adapter_content = f'''#!/usr/bin/env python3
+"""
+Auto-generated Docker adapter for {image}
+"""
+
+TOOL_NAMESPACE = "docker_{image.replace('/', '_').replace(':', '_')}"
+
+import subprocess
+import json
+
+def docker_run_{image.replace('/', '_').replace(':', '_')}(command="", **kwargs):
+    """Run command in {image} container"""
+    try:
+        cmd = ["docker", "run", "--rm", "{image}"]
+        if command:
+            cmd.extend(command.split())
+        
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        
+        return {{
+            "status": "success" if result.returncode == 0 else "error",
+            "stdout": result.stdout,
+            "stderr": result.stderr,
+            "returncode": result.returncode
+        }}
+    except Exception as e:
+        return {{"error": str(e)}}
+
+def docker_status_{image.replace('/', '_').replace(':', '_')}(**kwargs):
+    """Check if {image} is available"""
+    try:
+        result = subprocess.run([
+            "docker", "images", "{image}", "--format", "json"
+        ], capture_output=True, text=True)
+        
+        return {{
+            "available": result.returncode == 0,
+            "image": "{image}"
+        }}
+    except Exception as e:
+        return {{"error": str(e)}}
+
+TOOL_REGISTRY = {{
+    "run": docker_run_{image.replace('/', '_').replace(':', '_')},
+    "status": docker_status_{image.replace('/', '_').replace(':', '_')}
+}}
+'''
+            
+            adapter_name = f"docker_{image.replace('/', '_').replace(':', '_')}_adapter.py"
+            adapter_path = self.component_dir / adapter_name
+            with open(adapter_path, 'w') as f:
+                f.write(adapter_content)
+            
+            return {
+                "status": "success",
+                "image": image,
+                "adapter_created": str(adapter_path),
+                "pull_output": result.stdout
+            }
+            
+        except Exception as e:
+            return {"error": f"Failed to setup Docker tool {image}: {str(e)}"}
+    
+    def _is_tool_file(self, py_file: Path) -> bool:
+        """Check if Python file looks like a tool"""
+        try:
+            with open(py_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Check for tool indicators
+            indicators = [
+                "TOOL_REGISTRY",
+                "TOOL_NAMESPACE", 
+                "def.*(**kwargs)",
+                "adapter",
+                "tool"
+            ]
+            
+            return any(indicator in content for indicator in indicators)
+        except:
+            return False
+    
+    async def search_and_download_tools(self, search_query: str) -> Dict[str, Any]:
+        """Search GitHub/PyPI and download relevant tools"""
+        
+        # Search GitHub
+        github_results = await self._search_github(search_query)
+        
+        # Search PyPI  
+        pypi_results = await self._search_pypi(search_query)
+        
+        # Let LLM decide what to download
+        from llm_powered_solutions import LLMAgent
+        
+        selector = LLMAgent("ToolSelector",
+            "You select the best tools to download based on search results. "
+            "Choose 2-3 most relevant and high-quality options.")
+        
+        selection_prompt = f"""
+Search query: {search_query}
+
+GitHub results: {json.dumps(github_results[:5], indent=2)}
+PyPI results: {json.dumps(pypi_results[:5], indent=2)}
+
+Select the 2-3 best tools to download. Format as JSON:
+{{
+  "selected_github": ["user/repo1", "user/repo2"],
+  "selected_pypi": ["package1", "package2"],
+  "reasoning": "why these are the best choices"
+}}
+"""
+        
+        selection = await selector.call_llm(selection_prompt)
+        
+        # Parse and download selected tools
+        try:
+            import re
+            json_match = re.search(r'\{.*\}', selection, re.DOTALL)
+            if json_match:
+                selected = json.loads(json_match.group())
+            else:
+                selected = {"selected_github": [], "selected_pypi": []}
+        except:
+            selected = {"selected_github": [], "selected_pypi": []}
+        
+        # Download selected tools
+        download_results = {}
+        
+        for repo in selected.get("selected_github", []):
+            result = await self.download_github_tool(repo)
+            download_results[f"github_{repo}"] = result
+        
+        for package in selected.get("selected_pypi", []):
+            result = await self.install_pypi_tool(package)
+            download_results[f"pypi_{package}"] = result
+        
+        return {
+            "search_query": search_query,
+            "github_results": github_results,
+            "pypi_results": pypi_results,
+            "llm_selection": selection,
+            "download_results": download_results
+        }
+    
+    async def _search_github(self, query: str) -> List[Dict]:
+        """Search GitHub repositories"""
+        try:
+            url = f"https://api.github.com/search/repositories"
+            params = {
+                "q": f"{query} language:python",
+                "sort": "stars",
+                "order": "desc",
+                "per_page": 10
+            }
+            
+            response = requests.get(url, params=params)
+            if response.status_code == 200:
+                data = response.json()
+                return [{
+                    "name": item["full_name"],
+                    "description": item.get("description", ""),
+                    "stars": item["stargazers_count"],
+                    "url": item["html_url"]
+                } for item in data.get("items", [])]
+        except Exception as e:
+            logger.error(f"GitHub search failed: {e}")
+        
+        return []
+    
+    async def _search_pypi(self, query: str) -> List[Dict]:
+        """Search PyPI packages"""
+        try:
+            url = f"https://pypi.org/search/"
+            params = {"q": query}
+            
+            # This is simplified - PyPI search is more complex
+            # In reality, you'd use a proper PyPI search API
+            response = requests.get(url, params=params)
+            
+            # For demo, return some common packages
+            common_packages = [
+                {"name": f"{query}-tool", "description": f"Tool for {query}"},
+                {"name": f"py{query}", "description": f"Python {query} library"},
+                {"name": f"{query}kit", "description": f"{query} toolkit"}
+            ]
+            
+            return common_packages
+        except Exception as e:
+            logger.error(f"PyPI search failed: {e}")
+        
+        return []
+
+# Global instance
+auto_downloader = AutoToolDownloader()
+
+# Tool registry functions
+def auto_download_for_requirement(requirement: str, **kwargs) -> Dict[str, Any]:
+    """Auto-download tools based on requirement"""
+    import asyncio
+    return asyncio.run(auto_downloader.auto_download_for_requirement(requirement))
+
+def search_and_download_tools(search_query: str, **kwargs) -> Dict[str, Any]:
+    """Search and download tools"""
+    import asyncio
+    return asyncio.run(auto_downloader.search_and_download_tools(search_query))
+
+def download_github_tool(repo: str, **kwargs) -> Dict[str, Any]:
+    """Download specific GitHub repo as tool"""
+    import asyncio
+    return asyncio.run(auto_downloader.download_github_tool(repo))
+
+def install_pypi_tool(package: str, **kwargs) -> Dict[str, Any]:
+    """Install PyPI package as tool"""
+    import asyncio
+    return asyncio.run(auto_downloader.install_pypi_tool(package))
+
+# Register auto-download tools
+TOOL_REGISTRY = {
+    "auto_download": auto_download_for_requirement,
+    "search_download": search_and_download_tools,
+    "github_download": download_github_tool,
+    "pypi_install": install_pypi_tool
+}
+
+TOOL_NAMESPACE = "autotools"
+
+
+==================================================
+FILE: config.py
+==================================================
+
+#!/usr/bin/env python3
+
+import os
+
+# Configuration settings for the agent system
+CONFIG = {
+    "output_dir": "./agent_outputs",
+    "memory_dir": "./agent_memory",
+    "default_model": "qwen2.5:7b",
+    "api_key": "",  # Ollama doesn't need API key
+    "endpoint": "http://localhost:11434/v1/chat/completions",  # OpenAI-compatible endpoint
+    "memory_db": "agent_memory.db",
+    "sqlite_db": "test_sqlite.db",
+    "timeout": 1200  # Increase timeout
+}
+
+# Ensure output directories exist
+os.makedirs(CONFIG["output_dir"], exist_ok=True)
+os.makedirs(CONFIG["memory_dir"], exist_ok=True)
+
+
+==================================================
+FILE: crypto_workflow.py
+==================================================
+
+#!/usr/bin/env python3
+"""
+Cryptocurrency Analysis using Cognitive Planning + LLM
+Fixed version with proper async handling
+"""
+
+import asyncio
+from auto_import_tools import *
+from llm_powered_solution import LLMAgent
+
+async def analyze_crypto_with_cognition():
+    """Main async function for crypto analysis"""
+    
+    print("🧠 Starting cognitive cryptocurrency analysis...")
+    
+    # Create an LLM agent that uses cognitive planning
+    researcher = LLMAgent("CognitiveResearcher", 
+        "You are an expert cryptocurrency researcher using advanced cognitive planning techniques.")
+    
+    print("🎯 Creating cognitive planning session...")
+    
+    # LLM decides which cognitive pattern to use
+    cognitive_session = cognitive_create_session(
+        "tree_of_thoughts", 
+        problem_description="Analyze cryptocurrency market trends and investment opportunities"
+    )
+    
+    if "error" in cognitive_session:
+        print(f"❌ Error creating cognitive session: {cognitive_session['error']}")
+        return
+    
+    print(f"✅ Cognitive session created: {cognitive_session['session_id']}")
+    print(f"📋 Pattern: {cognitive_session['pattern']}")
+    print(f"📖 Description: {cognitive_session['description']}")
+    
+    # Work through the cognitive workflow
+    step_count = 0
+    max_steps = 10  # Safety limit
+    
+    while step_count < max_steps:
+        print(f"\n🔄 Getting next cognitive step ({step_count + 1})...")
+        
+        next_step = cognitive_get_next_step(cognitive_session["session_id"])
+        
+        if next_step["status"] == "completed":
+            print("✅ Cognitive workflow completed!")
+            break
+        elif next_step["status"] == "dynamic_step":
+            print(f"🎭 Dynamic step - need to select action")
+            print(f"Available actions: {next_step['available_actions']}")
+            
+            # For demo, select first available action
+            if next_step['available_actions']:
+                selected_action = next_step['available_actions'][0]
+                print(f"🎯 Selecting action: {selected_action}")
+                
+                action_result = cognitive_select_action(
+                    cognitive_session["session_id"], 
+                    selected_action
+                )
+                print(f"Action result: {action_result}")
+            continue
+            
+        elif next_step["status"] == "ready":
+            print(f"🤖 Processing step: {next_step['agent_name']}")
+            
+            # Get the step content
+            step_details = next_step.get("step_details", {})
+            step_content = step_details.get("content", "Analyze cryptocurrency market trends")
+            
+            print(f"📝 Step prompt: {step_content[:100]}...")
+            
+            # LLM processes the cognitive step
+            try:
+                result = await researcher.call_llm(step_content)
+                print(f"✅ LLM response received ({len(result)} characters)")
+                
+                # Submit the result
+                submission = cognitive_submit_result(
+                    cognitive_session["session_id"], 
+                    next_step["agent_name"], 
+                    {"analysis": result, "step_content": step_content}
+                )
+                
+                print(f"📤 Result submitted: {submission['message']}")
+                
+            except Exception as e:
+                print(f"❌ Error in LLM processing: {e}")
+                # Submit error result
+                cognitive_submit_result(
+                    cognitive_session["session_id"], 
+                    next_step["agent_name"], 
+                    {"error": str(e), "step_content": step_content}
+                )
+        else:
+            print(f"⚠️ Unknown step status: {next_step['status']}")
+            break
+        
+        step_count += 1
+    
+    # Get the complete cognitive analysis
+    print("\n📊 Retrieving final cognitive analysis...")
+    final_results = cognitive_get_results(cognitive_session["session_id"])
+    
+    if "error" in final_results:
+        print(f"❌ Error getting results: {final_results['error']}")
+        return
+    
+    print("✅ Cognitive analysis complete!")
+    print(f"📈 Results from {len(final_results['results'])} cognitive agents")
+    
+    # Display summary of results
+    print("\n🧠 Cognitive Analysis Summary:")
+    for agent_name, result in final_results['results'].items():
+        print(f"\n  🤖 {agent_name}:")
+        if isinstance(result, dict):
+            if "analysis" in result:
+                analysis = result["analysis"]
+                preview = analysis[:200] + "..." if len(analysis) > 200 else analysis
+                print(f"     {preview}")
+            elif "error" in result:
+                print(f"     ❌ Error: {result['error']}")
+            else:
+                print(f"     📋 Keys: {list(result.keys())}")
+        else:
+            print(f"     📝 {str(result)[:100]}...")
+    
+    # Transform to research plan
+    print("\n🔬 Transforming to research plan...")
+    try:
+        research_plan = cognitive_transform_for_research(
+            cognitive_session["session_id"], 
+            "cryptocurrency market analysis"
+        )
+        
+        if "error" not in research_plan:
+            print("✅ Research plan generated!")
+            if "research_plan" in research_plan:
+                plan = research_plan["research_plan"]
+                print(f"🎯 Goal: {plan.get('goal', 'Not specified')}")
+                print(f"❓ Key Questions: {len(plan.get('key_questions', []))}")
+                print(f"📚 Subtopics: {len(plan.get('subtopics', []))}")
+        else:
+            print(f"⚠️ Research plan generation failed: {research_plan['error']}")
+    
+    except Exception as e:
+        print(f"⚠️ Research plan transformation failed: {e}")
+    
+    # Execute basic research using the insights
+    print("\n🔍 Executing research based on cognitive insights...")
+    try:
+        research_results = research_combined_search(
+            "cryptocurrency market trends analysis", 
+            num_results=5
+        )
+        
+        if "error" not in research_results:
+            search_results = research_results.get("search_results", [])
+            print(f"✅ Research completed: {len(search_results)} sources found")
+            
+            # Show research summary
+            for i, result in enumerate(search_results[:3]):
+                print(f"  📰 Source {i+1}: {result.get('title', 'No title')}")
+        else:
+            print(f"⚠️ Research failed: {research_results['error']}")
+    
+    except Exception as e:
+        print(f"⚠️ Research execution failed: {e}")
+    
+    return {
+        "cognitive_analysis": final_results,
+        "research_results": research_results if 'research_results' in locals() else None,
+        "research_plan": research_plan if 'research_plan' in locals() else None
+    }
+
+def main():
+    """Main entry point - handles existing event loops"""
+    print("🚀 Cryptocurrency Cognitive Analysis Framework")
+    print("=" * 60)
+    
+    try:
+        # Check if event loop is already running
+        try:
+            loop = asyncio.get_running_loop()
+            print("⚠️ Event loop already running, creating task...")
+            # If we're in a running loop, create a task
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(asyncio.run, analyze_crypto_with_cognition())
+                result = future.result(timeout=300)  # 5 minute timeout
+        except RuntimeError:
+            # No event loop running, safe to use asyncio.run()
+            print("✅ Creating new event loop...")
+            result = asyncio.run(analyze_crypto_with_cognition())
+        
+        if result:
+            print("\n🎉 Analysis completed successfully!")
+            
+            # Save results to file
+            import json
+            output_file = "crypto_cognitive_analysis.json"
+            with open(output_file, 'w', encoding='utf-8') as f:
+                json.dump(result, f, indent=2, default=str)
+            
+            print(f"📁 Results saved to: {output_file}")
+        else:
+            print("\n❌ Analysis failed!")
+    
+    except Exception as e:
+        print(f"\n💥 Fatal error: {e}")
+        import traceback
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    main()
+
+
+==================================================
+FILE: final_browser_fix.py
+==================================================
+
+#!/usr/bin/env python3
+"""
+Final browser fix - remove conflicting files and ensure only the working version is used
+"""
+
+import os
+import shutil
+from pathlib import Path
+
+def remove_conflicting_files():
+    """Remove all conflicting browser adapter files"""
+    print("🧹 Removing conflicting browser adapter files...")
+    
+    component_dir = Path(__file__).parent / "COMPONENT"
+    
+    # Files to remove (keep only browser_adapter.py)
+    files_to_remove = [
+        "browser_adapter_old_backup.py",
+        "browser_adapter_playwright_backup.py", 
+        "playwright_browser_adapter.py"
+    ]
+    
+    for filename in files_to_remove:
+        filepath = component_dir / filename
+        if filepath.exists():
+            filepath.unlink()
+            print(f"✅ Removed: {filename}")
+        else:
+            print(f"⚪ Not found: {filename}")
+    
+    # Also remove any __pycache__ for these files
+    pycache_dir = component_dir / "__pycache__"
+    if pycache_dir.exists():
+        for pyc_file in pycache_dir.glob("browser_adapter*.pyc"):
+            pyc_file.unlink()
+            print(f"✅ Removed cache: {pyc_file.name}")
+        
+        for pyc_file in pycache_dir.glob("playwright_browser_adapter*.pyc"):
+            pyc_file.unlink()
+            print(f"✅ Removed cache: {pyc_file.name}")
+
+def verify_only_good_adapter():
+    """Verify only the good adapter exists"""
+    print("🔍 Verifying browser adapter...")
+    
+    component_dir = Path(__file__).parent / "COMPONENT"
+    browser_adapter_path = component_dir / "browser_adapter.py"
+    
+    if not browser_adapter_path.exists():
+        print("❌ browser_adapter.py not found!")
+        return False
+    
+    # Check content
+    with open(browser_adapter_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    if 'SimpleBrowserManager' in content and 'simple_http' in content:
+        print("✅ browser_adapter.py is the correct fixed version")
+        return True
+    else:
+        print("❌ browser_adapter.py is not the fixed version!")
+        return False
+
+def test_clean_browser():
+    """Test browser after cleanup"""
+    print("🧪 Testing clean browser...")
+    
+    try:
+        # Clear any cached modules
+        import sys
+        modules_to_clear = [k for k in sys.modules.keys() if 'browser' in k.lower() or 'tool_manager' in k]
+        for module in modules_to_clear:
+            del sys.modules[module]
+            print(f"✅ Cleared module: {module}")
+        
+        # Clear __pycache__
+        current_dir = Path(__file__).parent
+        for pycache_dir in current_dir.rglob("__pycache__"):
+            if pycache_dir.is_dir():
+                shutil.rmtree(pycache_dir)
+                print(f"✅ Cleared cache: {pycache_dir}")
+        
+        # Add paths
+        component_dir = current_dir / "COMPONENT"
+        sys.path.insert(0, str(component_dir))
+        sys.path.insert(0, str(current_dir))
+        
+        print("1. Testing direct import...")
+        import browser_adapter
+        
+        print("2. Testing browser creation...")
+        result = browser_adapter.browser_create(browser_id="clean_test")
+        if result.get("status") == "success":
+            print("✅ Browser creation: SUCCESS")
+            
+            print("3. Testing navigation...")
+            nav_result = browser_adapter.browser_navigate(url="https://httpbin.org/html", browser_id="clean_test")
+            if nav_result.get("status") == "success":
+                print("✅ Navigation: SUCCESS")
+                
+                print("4. Testing cleanup...")
+                browser_adapter.browser_close(browser_id="clean_test")
+                print("✅ Cleanup: SUCCESS")
+                
+                return True
+        
+        print(f"❌ Browser test failed: {result}")
+        return False
+        
+    except Exception as e:
+        print(f"❌ Clean browser test failed: {e}")
+        return False
+
+def test_with_fresh_tool_manager():
+    """Test with completely fresh tool manager"""
+    print("🧪 Testing with fresh tool manager...")
+    
+    try:
+        # Clear all tool-related modules
+        import sys
+        modules_to_clear = [k for k in sys.modules.keys() if any(x in k.lower() for x in ['tool', 'browser', 'manager'])]
+        for module in modules_to_clear:
+            del sys.modules[module]
+        
+        print("1. Fresh import of tool_manager...")
+        from tool_manager import tool_manager
+        
+        print("2. Complete tool manager reset...")
+        tool_manager.tools.clear()
+        tool_manager.imported_modules.clear()
+        if hasattr(tool_manager, 'namespace_prefixes'):
+            tool_manager.namespace_prefixes.clear()
+        
+        print("3. Rediscovering tools...")
+        tool_count = tool_manager.discover_tools()
+        print(f"   Discovered {tool_count} tools")
+        
+        print("4. Checking browser tools...")
+        browser_tools = tool_manager.get_tools_by_prefix("browser")
+        print(f"   Browser tools: {browser_tools}")
+        
+        print("5. Testing browser creation...")
+        result = tool_manager.execute_tool("browser:create", browser_id="fresh_test")
+        if result.get("status") == "success":
+            print("✅ Tool manager browser creation: SUCCESS")
+            
+            print("6. Testing navigation...")
+            nav_result = tool_manager.execute_tool("browser:navigate", 
+                                                 url="https://httpbin.org/html", 
+                                                 browser_id="fresh_test")
+            if nav_result.get("status") == "success":
+                print("✅ Tool manager navigation: SUCCESS")
+                
+                print("7. Testing cleanup...")
+                tool_manager.execute_tool("browser:close", browser_id="fresh_test")
+                print("✅ Tool manager cleanup: SUCCESS")
+                
+                return True
+            else:
+                print(f"❌ Navigation failed: {nav_result}")
+        else:
+            print(f"❌ Browser creation failed: {result}")
+            # Print more details
+            print(f"   Error details: {result.get('error', 'Unknown error')}")
+        
+        return False
+        
+    except Exception as e:
+        print(f"❌ Fresh tool manager test failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+def main():
+    """Main fix function"""
+    print("🚀 FINAL BROWSER FIX")
+    print("=" * 50)
+    
+    # Step 1: Remove conflicting files
+    remove_conflicting_files()
+    
+    # Step 2: Verify only good adapter exists
+    if not verify_only_good_adapter():
+        print("❌ Browser adapter verification failed!")
+        return
+    
+    # Step 3: Test clean browser
+    print("\n" + "=" * 50)
+    print("TESTING CLEAN BROWSER")
+    print("=" * 50)
+    
+    if test_clean_browser():
+        print("✅ Clean browser test PASSED!")
+        
+        # Step 4: Test with fresh tool manager
+        print("\n" + "=" * 50)
+        print("TESTING WITH FRESH TOOL MANAGER")
+        print("=" * 50)
+        
+        if test_with_fresh_tool_manager():
+            print("\n🎉 FINAL FIX SUCCESS!")
+            print("=" * 50)
+            print("Your browser tools are now working!")
+            print("\n💡 Now run your validation:")
+            print("python quick_test_browser_research_adapter.py")
+            print("\n🚀 Your framework is fully functional!")
+        else:
+            print("\n⚠️ Tool manager test failed")
+            print("=" * 50)
+            print("NUCLEAR OPTION: Restart Python completely")
+            print("1. Close this terminal/command prompt")
+            print("2. Open a new one")
+            print("3. Navigate back to this directory")
+            print("4. Run: python quick_test_browser_research_adapter.py")
+    else:
+        print("❌ Clean browser test failed")
+        print("Something is still wrong with the browser adapter")
+
+if __name__ == "__main__":
+    main()
+
+
+==================================================
+FILE: llm_powered_solution.py
+==================================================
+
+#!/usr/bin/env python3
+"""
+LLM-Powered Tool Solutions - FIXED VERSION
+The REAL value: LLM agents using tools intelligently!
+"""
+
+import json
+import asyncio
+import aiohttp
+from pathlib import Path
+
+# Import config and tools
+from config import CONFIG
+from auto_import_tools import *
+
+class LLMAgent:
+    """LLM Agent that can use tools intelligently"""
+    
+    def __init__(self, name: str, system_prompt: str = ""):
+        self.name = name
+        self.system_prompt = system_prompt or f"You are {name}, an intelligent AI assistant that can use tools to solve problems."
+        self.conversation_history = []
+        self.tools_used = []
+        
+    async def call_llm(self, message: str) -> str:
+        """Call the LLM from config.py"""
+        
+        # Build conversation
+        messages = [{"role": "system", "content": self.system_prompt}]
+        messages.extend(self.conversation_history)
+        messages.append({"role": "user", "content": message})
+        
+        payload = {
+            "model": CONFIG["default_model"],
+            "messages": messages,
+            "temperature": 0.7,
+            "max_tokens": 2000
+        }
+        
+        headers = {"Content-Type": "application/json"}
+        if CONFIG.get("api_key"):
+            headers["Authorization"] = f"Bearer {CONFIG['api_key']}"
+        
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.post(CONFIG["endpoint"], json=payload, headers=headers) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        content = (data.get('content', '') or 
+                                 data.get('choices', [{}])[0].get('message', {}).get('content', ''))
+                        
+                        # Store in conversation history
+                        self.conversation_history.append({"role": "user", "content": message})
+                        self.conversation_history.append({"role": "assistant", "content": content})
+                        
+                        return content
+                    else:
+                        return f"Error: LLM API returned {response.status}"
+            except Exception as e:
+                return f"Error calling LLM: {str(e)}"
+    
+    async def use_tool_intelligently(self, tool_description: str, **kwargs):
+        """Let LLM decide how to use a tool"""
+        
+        prompt = f"""I need to use a tool. Here's what I want to accomplish:
+{tool_description}
+
+Available parameters: {kwargs}
+
+Please tell me:
+1. Which specific tool function to call
+2. What parameters to use
+3. How to interpret the results
+
+Format your response as:
+TOOL: tool_name
+PARAMS: {{"param1": "value1", "param2": "value2"}}
+REASONING: why this tool and these parameters
+"""
+        
+        llm_response = await self.call_llm(prompt)
+        
+        # Parse LLM response to extract tool call
+        lines = llm_response.split('\n')
+        tool_name = None
+        params = {}
+        reasoning = ""
+        
+        for line in lines:
+            if line.startswith('TOOL:'):
+                tool_name = line.replace('TOOL:', '').strip()
+            elif line.startswith('PARAMS:'):
+                try:
+                    params_str = line.replace('PARAMS:', '').strip()
+                    params = json.loads(params_str)
+                except:
+                    pass
+            elif line.startswith('REASONING:'):
+                reasoning = line.replace('REASONING:', '').strip()
+        
+        # Execute the tool
+        if tool_name:
+            print(f"🤖 {self.name} decided to use: {tool_name}")
+            print(f"💭 Reasoning: {reasoning}")
+            
+            result = call_tool(tool_name, **params)
+            self.tools_used.append({
+                "tool": tool_name,
+                "params": params,
+                "reasoning": reasoning,
+                "result": result
+            })
+            
+            return result
+        else:
+            return {"error": "LLM didn't specify a tool to use"}
+
+# LLM-POWERED SOLUTION 1: Intelligent Research
+async def llm_intelligent_research(topic: str):
+    """LLM agent that researches intelligently"""
+    
+    researcher = LLMAgent("ResearchAgent", 
+        f"You are an expert researcher. Use available tools to research '{topic}' comprehensively. "
+        "You can use research tools, browser tools, and analysis tools. "
+        "Think step by step about what information you need and which tools will get it."
+    )
+    
+    print(f"🔍 LLM Agent researching: {topic}")
+    
+    # Step 1: LLM decides research strategy
+    strategy_prompt = f"""I need to research '{topic}' comprehensively. 
+    
+Available tools include:
+- research_combined_search: for web search
+- browser_create/navigate/get_content: for direct website access  
+- research_analyze_content: for content analysis
+- vector_db_add/search: for knowledge storage
+- planning_create_plan: for structured planning
+
+What's the best research strategy? Give me a step-by-step plan."""
+
+    strategy = await researcher.call_llm(strategy_prompt)
+    print(f"📋 Research Strategy:\n{strategy}")
+    
+    # Step 2: LLM decides first research query
+    query_prompt = f"Based on my strategy to research '{topic}', what should be my first search query? Just give me the search terms."
+    first_query = await researcher.call_llm(query_prompt)
+    first_query = first_query.strip().replace('"', '')
+    
+    # Step 3: Execute research (FIXED - direct call instead of async)
+    try:
+        research_result = call_tool("research:combined_search", query=first_query, num_results=10)
+    except:
+        research_result = {"search_results": [], "error": "Research tool not available"}
+    
+    # Step 4: LLM analyzes results and decides next action
+    analysis_prompt = f"""I searched for '{first_query}' and got these results:
+{json.dumps(research_result.get('search_results', [])[:3], indent=2)}
+
+What should I do next? Should I:
+1. Analyze this content more deeply
+2. Search for more specific information  
+3. Visit specific websites for more details
+4. Store this information and search for something else
+
+Give me specific next steps."""
+
+    next_steps = await researcher.call_llm(analysis_prompt)
+    print(f"🎯 LLM Next Steps:\n{next_steps}")
+    
+    # Step 5: Let LLM use tools intelligently
+    analysis = None
+    if "analyze" in next_steps.lower():
+        content = " ".join([r.get('content', '') for r in research_result.get('search_results', [])])
+        if content:
+            analysis = await researcher.use_tool_intelligently(
+                f"Analyze this content about {topic}: {content[:1000]}...",
+                content=content,
+                max_length=2000
+            )
+    
+    return {
+        "topic": topic,
+        "strategy": strategy,
+        "first_query": first_query,
+        "research_result": research_result,
+        "next_steps": next_steps,
+        "analysis": analysis,
+        "tools_used": researcher.tools_used,
+        "conversation": researcher.conversation_history
+    }
+
+# LLM-POWERED SOLUTION 2: Adaptive Problem Solver
+async def llm_adaptive_problem_solver(problem: str):
+    """LLM that adapts its approach based on available tools"""
+    
+    solver = LLMAgent("ProblemSolver",
+        "You are an adaptive problem solver. You can use any available tools to solve problems. "
+        "Think creatively about which tools might help and how to combine them effectively."
+    )
+    
+    print(f"🧠 LLM solving problem: {problem}")
+    
+    # Step 1: LLM analyzes the problem
+    analysis_prompt = f"""Problem to solve: {problem}
+
+I have access to these categories of tools:
+- Browser automation (create, navigate, get content, find elements, click)
+- Research tools (search, fetch content, analyze, generate summaries)
+- Database tools (SQL queries, vector storage, semantic search)
+- ML tools (train models, make predictions, evaluate)
+- Planning tools (create plans, chain of thought reasoning)
+- Security tools (analyze threats, detect patterns)
+- Citation tools (format references, validate sources)
+
+What's the best approach to solve this problem? Break it down into steps and identify which tools would be most useful."""
+
+    approach = await solver.call_llm(analysis_prompt)
+    print(f"🎯 Problem Analysis:\n{approach}")
+    
+    # Step 2: LLM decides first action
+    action_prompt = f"Based on my analysis, what should be the first concrete action I take? Give me the specific tool to use and why."
+    first_action = await solver.call_llm(action_prompt)
+    
+    # Step 3: Execute actions based on LLM decisions
+    actions_taken = []
+    
+    if "research" in first_action.lower():
+        # LLM wants to research
+        search_query = await solver.call_llm(f"What should I search for to help solve: {problem}? Give me just the search terms.")
+        search_query = search_query.strip().replace('"', '')
+        
+        try:
+            result = call_tool("research:combined_search", query=search_query, num_results=5)
+            actions_taken.append({"action": "research", "query": search_query, "result": result})
+        except Exception as e:
+            actions_taken.append({"action": "research", "query": search_query, "error": str(e)})
+        
+        # Ask LLM what to do with results
+        if actions_taken and "result" in actions_taken[-1]:
+            next_prompt = f"I found this information: {json.dumps(actions_taken[-1]['result'].get('search_results', [])[:2], indent=2)}\n\nWhat should I do next to solve the problem?"
+            next_action = await solver.call_llm(next_prompt)
+            actions_taken.append({"action": "planning", "decision": next_action})
+    
+    elif "browser" in first_action.lower():
+        # LLM wants to use browser
+        url_prompt = f"What website should I visit to help solve: {problem}? Give me just the URL."
+        url = await solver.call_llm(url_prompt)
+        url = url.strip().replace('http://', '').replace('https://', '')
+        if not url.startswith('http'):
+            url = 'https://' + url
+        
+        try:
+            call_tool("browser:create", browser_id="solver")
+            nav_result = call_tool("browser:navigate", url=url, browser_id="solver")
+            content_result = call_tool("browser:get_content", browser_id="solver")
+            call_tool("browser:close", browser_id="solver")
+            
+            actions_taken.append({"action": "browser", "url": url, "nav_result": nav_result, "content_result": content_result})
+        except Exception as e:
+            actions_taken.append({"action": "browser", "url": url, "error": str(e)})
+    
+    # Step 4: LLM synthesizes solution
+    synthesis_prompt = f"""I've taken these actions to solve '{problem}':
+{json.dumps(actions_taken, indent=2)}
+
+Based on all this information, what's the final solution or recommendation? Provide a clear, actionable answer."""
+
+    final_solution = await solver.call_llm(synthesis_prompt)
+    
+    return {
+        "problem": problem,
+        "approach": approach,
+        "first_action": first_action,
+        "actions_taken": actions_taken,
+        "final_solution": final_solution,
+        "tools_used": solver.tools_used
+    }
+
+# Simple synchronous wrapper functions
+def run_intelligent_research(topic: str):
+    """Sync wrapper for intelligent research"""
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            # If we're in a running loop, create a task
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(asyncio.run, llm_intelligent_research(topic))
+                return future.result()
+        else:
+            return loop.run_until_complete(llm_intelligent_research(topic))
+    except RuntimeError:
+        # If no loop exists, create a new one
+        return asyncio.run(llm_intelligent_research(topic))
+
+def run_problem_solver(problem: str):
+    """Sync wrapper for problem solver"""
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(asyncio.run, llm_adaptive_problem_solver(problem))
+                return future.result()
+        else:
+            return loop.run_until_complete(llm_adaptive_problem_solver(problem))
+    except RuntimeError:
+        return asyncio.run(llm_adaptive_problem_solver(problem))
+
+# Main execution - FIXED
+def main():
+    """Run LLM-powered solutions - FIXED to avoid asyncio issues"""
+    
+    print("🚀 LLM-Powered Tool Solutions")
+    print(f"Using model: {CONFIG['default_model']}")
+    print(f"Endpoint: {CONFIG['endpoint']}")
+    print(f"🎉 Total tools available: {len(list_tools())}")
+    
+    choice = input("""
+Choose solution:
+1. Intelligent Research (LLM researches a topic)
+2. Adaptive Problem Solver (LLM solves any problem)  
+3. Quick Demo (no input needed)
+
+Enter choice (1-3): """).strip()
+    
+    if choice == "1":
+        topic = input("Research topic: ").strip() or "machine learning in finance"
+        print(f"🔍 Starting research on: {topic}")
+        result = run_intelligent_research(topic)
+        filename = "llm_research.json"
+        
+    elif choice == "2":
+        problem = input("Problem to solve: ").strip() or "How to learn options trading effectively"
+        print(f"🧠 Starting problem solving for: {problem}")
+        result = run_problem_solver(problem)
+        filename = "llm_problem_solver.json"
+        
+    elif choice == "3":
+        # Quick demo without async issues
+        print("🎯 Running quick demo...")
+        result = {
+            "demo": "LLM-powered tool platform",
+            "available_tools": len(list_tools()),
+            "tool_categories": len(get_tools_by_prefix("research")),
+            "model": CONFIG["default_model"],
+            "status": "Platform ready for intelligent tool orchestration"
+        }
+        filename = "llm_demo.json"
+    
+    else:
+        print("❌ Invalid choice")
+        return
+    
+    # Save results
+    try:
+        with open(filename, 'w') as f:
+            json.dump(result, f, indent=2, default=str)
+        
+        print(f"✅ LLM solution completed!")
+        print(f"📁 Results saved to: {filename}")
+        
+        # Show key results
+        if isinstance(result, dict):
+            if "final_solution" in result:
+                print(f"💡 Solution: {result['final_solution'][:200]}...")
+            elif "strategy" in result:
+                print(f"📋 Strategy: {result['strategy'][:200]}...")
+        
+    except Exception as e:
+        print(f"❌ Error saving results: {e}")
+        print(f"📋 Result preview: {str(result)[:500]}...")
+
+# Tool registry for this module
+TOOL_REGISTRY = {
+    "intelligent_research": run_intelligent_research,
+    "problem_solver": run_problem_solver,
+    "llm_demo": lambda **kwargs: {"status": "LLM tools ready", "tools": len(list_tools())}
+}
+
+TOOL_NAMESPACE = "llm"
+
+if __name__ == "__main__":
+    main()
+
+
+==================================================
+FILE: ollama_config.py
+==================================================
+
+#!/usr/bin/env python3
+
+import os
+
+# Configuration settings for the agent system
+CONFIG = {
+    "output_dir": "./agent_outputs",
+    "memory_dir": "./agent_memory",
+    "default_model": "qwen2.5:7b",
+    "api_key": "",  # Ollama doesn't need API key
+    "endpoint": "http://localhost:11434/v1/chat/completions",  # OpenAI-compatible endpoint
+    "memory_db": "agent_memory.db",
+    "sqlite_db": "test_sqlite.db",
+    "timeout": 1200  # Increase timeout
+}
+
+# Ensure output directories exist
+os.makedirs(CONFIG["output_dir"], exist_ok=True)
+os.makedirs(CONFIG["memory_dir"], exist_ok=True)
+
+
+==================================================
+FILE: openrouter_config.py
+==================================================
+
+#!/usr/bin/env python3
+
+import os
+
+# Configuration settings for the agent system
+CONFIG = {
+    "output_dir": "./agent_outputs",
+    "memory_dir": "./agent_memory",
+    "default_model": "deepseek/deepseek-chat:free",
+#     "default_model": "openrouter/quasar-alpha",
+    "api_key": "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",
+    "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+    "memory_db": "agent_memory.db",
+    "sqlite_db": "test_sqlite.db" 
+}
+
+# Ensure output directories exist
+os.makedirs(CONFIG["output_dir"], exist_ok=True)
+os.makedirs(CONFIG["memory_dir"], exist_ok=True)
+
+
+==================================================
+FILE: quick_fix_test.py
+==================================================
+
+#!/usr/bin/env python3
+"""
+Quick test of the simple browser adapter (no Playwright needed)
+"""
+
+def test_simple_browser():
+    """Test the simple browser implementation"""
+    print("🚀 Testing Simple Browser (No Playwright)")
+    print("=" * 50)
+    
+    try:
+        # Replace the old browser_adapter with simple one
+        import os
+        import sys
+        from pathlib import Path
+        
+        # Get the framework directory
+        framework_dir = Path(__file__).parent
+        component_dir = framework_dir / "COMPONENT"
+        
+        # Backup old browser_adapter if it exists
+        old_adapter = component_dir / "browser_adapter.py"
+        backup_adapter = component_dir / "browser_adapter_playwright_backup.py"
+        
+        if old_adapter.exists() and not backup_adapter.exists():
+            import shutil
+            shutil.copy2(old_adapter, backup_adapter)
+            print("✅ Backed up Playwright adapter")
+        
+        # Write the simple browser adapter
+        simple_adapter_code = '''#!/usr/bin/env python3
+
+import os
+import sys
+import json
+import time
+import logging
+import requests
+import re
+from typing import Dict, Any, List, Optional
+from datetime import datetime
+from urllib.parse import urljoin, urlparse
+
+# IMPORTANT: Add tool namespace for tool_manager discovery
+TOOL_NAMESPACE = "browser"
+
+# Set up logging
+logger = logging.getLogger("browser_adapter")
+
+# Try to import BeautifulSoup
+try:
+    from bs4 import BeautifulSoup
+    BEAUTIFULSOUP_AVAILABLE = True
+    logger.info("✅ BeautifulSoup successfully imported")
+except ImportError:
+    BEAUTIFULSOUP_AVAILABLE = False
+    logger.warning("❌ BeautifulSoup not available. Install with 'pip install beautifulsoup4'")
+
+class SimpleBrowserSession:
+    """Simple browser session using requests + BeautifulSoup"""
+    
+    def __init__(self, session_id: str = "default"):
+        self.session_id = session_id
+        self.session = requests.Session()
+        self.current_url = None
+        self.current_soup = None
+        self.history = []
+        
+        # Set realistic headers
+        self.session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1'
+        })
+
+class SimpleBrowserManager:
+    """Browser manager using simple HTTP requests"""
+    
+    def __init__(self):
+        self.sessions = {}
+        self.default_timeout = 30
+        
+    def create_browser(self, browser_id: str = None, browser_type: str = "simple", 
+                      headless: bool = True) -> Dict[str, Any]:
+        """Create a new browser session"""
+        if browser_id is None:
+            browser_id = "default"
+        
+        try:
+            session = SimpleBrowserSession(browser_id)
+            self.sessions[browser_id] = session
+            
+            logger.info(f"✅ Browser created: {browser_id}")
+            
+            return {
+                "status": "success", 
+                "browser_id": browser_id, 
+                "type": "simple_http",
+                "message": f"Simple browser session created: {browser_id}"
+            }
+            
+        except Exception as e:
+            logger.error(f"❌ Error creating browser: {str(e)}")
+            return {"error": f"Failed to create browser: {str(e)}"}
+    
+    def navigate(self, url: str, browser_id: str = None, wait_until: str = "load") -> Dict[str, Any]:
+        """Navigate to a URL"""
+        if browser_id is None:
+            browser_id = "default"
+            
+        # Create browser if it doesn't exist
+        if browser_id not in self.sessions:
+            result = self.create_browser(browser_id)
+            if "error" in result:
+                return result
+        
+        session_obj = self.sessions.get(browser_id)
+        if not session_obj:
+            return {"error": f"No session found for browser {browser_id}"}
+        
+        # Fix URL if needed
+        if not url.startswith(('http://', 'https://')):
+            url = 'https://' + url
+        
+        try:
+            start_time = time.time()
+            response = session_obj.session.get(url, timeout=self.default_timeout)
+            response.raise_for_status()
+            end_time = time.time()
+            
+            # Store current state
+            session_obj.current_url = response.url
+            session_obj.history.append(response.url)
+            
+            # Parse with BeautifulSoup if available
+            if BEAUTIFULSOUP_AVAILABLE:
+                session_obj.current_soup = BeautifulSoup(response.content, 'html.parser')
+                page_title = session_obj.current_soup.title.string.strip() if session_obj.current_soup.title else "No Title"
+            else:
+                session_obj.current_soup = None
+                # Try to extract title from raw HTML
+                title_match = re.search(r'<title[^>]*>([^<]+)</title>', response.text, re.IGNORECASE)
+                page_title = title_match.group(1).strip() if title_match else "No Title"
+            
+            logger.info(f"✅ Navigated to: {response.url}")
+            
+            return {
+                "status": "success",
+                "url": response.url,
+                "title": page_title,
+                "status_code": response.status_code,
+                "navigation_time_seconds": round(end_time - start_time, 2)
+            }
+            
+        except requests.exceptions.RequestException as e:
+            logger.error(f"❌ Navigation error: {str(e)}")
+            return {"error": f"Failed to navigate to {url}: {str(e)}"}
+        except Exception as e:
+            logger.error(f"❌ Unexpected error: {str(e)}")
+            return {"error": f"Unexpected error: {str(e)}"}
+    
+    def get_page_content(self, browser_id: str = None, content_type: str = "text") -> Dict[str, Any]:
+        """Get page content"""
+        if browser_id is None:
+            browser_id = "default"
+            
+        session_obj = self.sessions.get(browser_id)
+        if not session_obj:
+            return {"error": f"No session found for browser {browser_id}"}
+        
+        if not session_obj.current_url:
+            return {"error": "No page loaded. Navigate to a URL first."}
+        
+        try:
+            # Get fresh content
+            response = session_obj.session.get(session_obj.current_url, timeout=self.default_timeout)
+            response.raise_for_status()
+            
+            if content_type.lower() == "html":
+                content = response.text
+            else:
+                # Extract clean text
+                if BEAUTIFULSOUP_AVAILABLE:
+                    soup = BeautifulSoup(response.content, 'html.parser')
+                    
+                    # Remove unwanted elements
+                    for element in soup(["script", "style", "nav", "header", "footer", "aside"]):
+                        element.decompose()
+                    
+                    # Try to get main content
+                    main_content = (soup.find('main') or 
+                                  soup.find('article') or 
+                                  soup.find('div', {'id': 'content'}) or 
+                                  soup.find('div', {'class': 'content'}) or 
+                                  soup.body)
+                    
+                    if main_content:
+                        content = main_content.get_text(separator=' ', strip=True)
+                    else:
+                        content = soup.get_text(separator=' ', strip=True)
+                    
+                    # Clean up text
+                    content = re.sub(r'\\s+', ' ', content).strip()
+                else:
+                    # Fallback: try to extract text from HTML
+                    content = re.sub(r'<[^>]+>', ' ', response.text)
+                    content = re.sub(r'\\s+', ' ', content).strip()
+            
+            metadata = {
+                "url": session_obj.current_url,
+                "content_length": len(content),
+                "content_type": content_type,
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            return {
+                "status": "success",
+                "content": content,
+                "metadata": metadata
+            }
+            
+        except Exception as e:
+            logger.error(f"❌ Content extraction error: {str(e)}")
+            return {"error": f"Failed to get page content: {str(e)}"}
+    
+    def close_browser(self, browser_id: str = None) -> Dict[str, Any]:
+        """Close browser session"""
+        if browser_id is None:
+            browser_id = "default"
+        
+        try:
+            if browser_id in self.sessions:
+                session_obj = self.sessions[browser_id]
+                session_obj.session.close()
+                del self.sessions[browser_id]
+                
+                logger.info(f"✅ Browser closed: {browser_id}")
+                return {"status": "success", "message": f"Browser {browser_id} closed"}
+            else:
+                return {"error": f"Browser {browser_id} not found"}
+                
+        except Exception as e:
+            logger.error(f"❌ Close error: {str(e)}")
+            return {"error": f"Failed to close browser: {str(e)}"}
+
+# Global browser manager
+BROWSER_MANAGER = SimpleBrowserManager()
+
+# Tool Registry Functions
+def browser_create(browser_id: str = None, browser_type: str = "simple", headless: bool = True, **kwargs) -> Dict[str, Any]:
+    """Create a new simple browser session"""
+    return BROWSER_MANAGER.create_browser(browser_id, browser_type, headless)
+
+def browser_navigate(url: str, browser_id: str = None, wait_until: str = "load", **kwargs) -> Dict[str, Any]:
+    """Navigate to a URL"""
+    return BROWSER_MANAGER.navigate(url, browser_id, wait_until)
+
+def browser_get_content(browser_id: str = None, content_type: str = "text", **kwargs) -> Dict[str, Any]:
+    """Get page content"""
+    return BROWSER_MANAGER.get_page_content(browser_id, content_type)
+
+def browser_close(browser_id: str = None, **kwargs) -> Dict[str, Any]:
+    """Close browser"""
+    return BROWSER_MANAGER.close_browser(browser_id)
+
+def browser_stats(**kwargs) -> Dict[str, Any]:
+    """Get browser statistics"""
+    return {
+        "active_sessions": len(BROWSER_MANAGER.sessions),
+        "browser_type": "simple_http",
+        "beautifulsoup_available": BEAUTIFULSOUP_AVAILABLE,
+        "timestamp": datetime.now().isoformat()
+    }
+
+# Register tools
+TOOL_REGISTRY = {
+    "create": browser_create,
+    "navigate": browser_navigate, 
+    "get_content": browser_get_content,
+    "close": browser_close,
+    "stats": browser_stats
+}
+
+logger.info(f"✅ Simple browser tools registered: {list(TOOL_REGISTRY.keys())}")
+'''
+        
+        # Write the simple adapter
+        with open(old_adapter, 'w', encoding='utf-8') as f:
+            f.write(simple_adapter_code)
+        
+        print("✅ Replaced browser adapter with simple version")
+        
+        # Now test it
+        print("\n🧪 Testing simple browser functionality...")
+        
+        # Add paths
+        sys.path.insert(0, str(component_dir))
+        sys.path.insert(0, str(framework_dir))
+        
+        # Import and test
+        from tool_manager import tool_manager
+        
+        # Rediscover tools to pick up the new adapter
+        tool_manager.tools.clear()
+        tool_manager.imported_modules.clear()
+        tool_count = tool_manager.discover_tools()
+        
+        print(f"✅ Rediscovered {tool_count} tools")
+        
+        # Test browser creation
+        print("\\n1. Testing browser creation...")
+        result = tool_manager.execute_tool("browser:create", browser_id="test")
+        if result.get("status") == "success":
+            print("✅ Browser creation: SUCCESS")
+        else:
+            print(f"❌ Browser creation failed: {result.get('error')}")
+            return False
+        
+        # Test navigation
+        print("\\n2. Testing navigation...")
+        result = tool_manager.execute_tool("browser:navigate", 
+                                         url="https://httpbin.org/html", 
+                                         browser_id="test")
+        if result.get("status") == "success":
+            print(f"✅ Navigation: SUCCESS - {result.get('title')}")
+        else:
+            print(f"❌ Navigation failed: {result.get('error')}")
+            return False
+        
+        # Test content extraction
+        print("\\n3. Testing content extraction...")
+        result = tool_manager.execute_tool("browser:get_content", browser_id="test")
+        if result.get("status") == "success":
+            content_length = len(result.get("content", ""))
+            print(f"✅ Content extraction: SUCCESS - {content_length} chars")
+        else:
+            print(f"❌ Content extraction failed: {result.get('error')}")
+            return False
+        
+        # Test cleanup
+        print("\\n4. Testing cleanup...")
+        result = tool_manager.execute_tool("browser:close", browser_id="test")
+        if result.get("status") == "success":
+            print("✅ Browser cleanup: SUCCESS")
+        else:
+            print(f"❌ Cleanup failed: {result.get('error')}")
+        
+        print("\\n🎉 All simple browser tests PASSED!")
+        print("\\n💡 Your framework now has working browser capabilities!")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Test failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+def test_combined_functionality():
+    """Test research + simple browser together"""
+    print("\\n🔄 Testing Combined Research + Browser...")
+    
+    try:
+        from tool_manager import tool_manager
+        
+        # 1. Research with simple search
+        print("1. Performing research...")
+        research_result = tool_manager.execute_tool(
+            "research:search", 
+            query="python requests tutorial", 
+            num_results=2
+        )
+        
+        if research_result.get("status") != "success":
+            print(f"❌ Research failed: {research_result.get('error')}")
+            return False
+        
+        print(f"✅ Found {research_result.get('num_results')} results")
+        
+        # 2. Get a URL from research and browse it
+        if research_result.get("results"):
+            first_url = research_result["results"][0].get("link")
+            if first_url:
+                print(f"2. Browsing first result: {first_url[:50]}...")
+                
+                # Create browser and navigate
+                tool_manager.execute_tool("browser:create", browser_id="research")
+                nav_result = tool_manager.execute_tool("browser:navigate", 
+                                                     url=first_url, 
+                                                     browser_id="research")
+                
+                if nav_result.get("status") == "success":
+                    print(f"✅ Browsed to: {nav_result.get('title')}")
+                    
+                    # Get content
+                    content_result = tool_manager.execute_tool("browser:get_content", 
+                                                             browser_id="research")
+                    
+                    if content_result.get("status") == "success":
+                        content_length = len(content_result.get("content", ""))
+                        print(f"✅ Extracted {content_length} chars of content")
+                        
+                        # Cleanup
+                        tool_manager.execute_tool("browser:close", browser_id="research")
+                        
+                        print("\\n🚀 COMBINED FUNCTIONALITY WORKING!")
+                        print("Your framework can now:")
+                        print("  ✅ Search the web")
+                        print("  ✅ Fetch web content") 
+                        print("  ✅ Browse websites")
+                        print("  ✅ Extract page content")
+                        print("  ✅ Work together seamlessly")
+                        
+                        return True
+                    else:
+                        print(f"❌ Content extraction failed: {content_result.get('error')}")
+                else:
+                    print(f"❌ Navigation failed: {nav_result.get('error')}")
+        
+        return False
+        
+    except Exception as e:
+        print(f"❌ Combined test failed: {e}")
+        return False
+
+if __name__ == "__main__":
+    print("🚀 QUICK FIX: Replacing Playwright with Simple Browser")
+    print("=" * 60)
+    
+    success = test_simple_browser()
+    
+    if success:
+        print("\\n" + "=" * 60)
+        combined_success = test_combined_functionality()
+        
+        if combined_success:
+            print("\\n🏆 FRAMEWORK FULLY FUNCTIONAL!")
+            print("\\nQuick usage:")
+            print("```python")
+            print("from tool_manager import tool_manager")
+            print("# Search")
+            print("result = tool_manager.execute_tool('research:search', query='AI news')")
+            print("# Browse") 
+            print("tool_manager.execute_tool('browser:create')")
+            print("tool_manager.execute_tool('browser:navigate', url='https://example.com')")
+            print("content = tool_manager.execute_tool('browser:get_content')")
+            print("```")
+        else:
+            print("\\n⚠️ Simple browser works, but combined functionality needs work")
+    else:
+        print("\\n❌ Simple browser replacement failed")
+        print("\\nFallback: Your research tools still work!")
+        print("Just use research:search and research:fetch_content")
+
+
+==================================================
+FILE: quick_test_browser_research_adapter.py
+==================================================
+
+#!/usr/bin/env python3
+"""
+Quick validation script to test browsing and research capabilities
+"""
+
+import sys
+import os
+from pathlib import Path
+
+# Add the framework directory to path
+framework_dir = Path(__file__).parent
+sys.path.insert(0, str(framework_dir))
+
+def test_tool_discovery():
+    """Test if tools are properly discovered"""
+    print("🔍 Testing tool discovery...")
+    
+    try:
+        from tool_manager import tool_manager
+        
+        # Discover all tools
+        tool_count = tool_manager.discover_tools()
+        
+        print(f"✅ Discovered {tool_count} tools")
+        
+        # Get stats
+        stats = tool_manager.get_stats()
+        print(f"📊 Tool stats: {stats}")
+        
+        # Check for browser tools
+        browser_tools = tool_manager.get_tools_by_prefix("browser")
+        print(f"🌐 Browser tools: {len(browser_tools)}")
+        
+        # Check for research tools  
+        research_tools = tool_manager.get_tools_by_prefix("research")
+        print(f"🔍 Research tools: {len(research_tools)}")
+        
+        return len(browser_tools) > 0 and len(research_tools) > 0
+        
+    except Exception as e:
+        print(f"❌ Tool discovery failed: {e}")
+        return False
+
+def test_research_functionality():
+    """Test research tools"""
+    print("\n🔍 Testing research functionality...")
+    
+    try:
+        from tool_manager import tool_manager
+        
+        # Test basic search
+        result = tool_manager.execute_tool("research:search", 
+                                         query="artificial intelligence", 
+                                         num_results=3)
+        
+        if result.get("status") == "success":
+            print(f"✅ Search working: Found {result.get('num_results', 0)} results")
+            
+            # Test content fetching if we have results
+            if result.get("results"):
+                first_url = result["results"][0].get("link")
+                if first_url:
+                    content_result = tool_manager.execute_tool("research:fetch_content", 
+                                                             url=first_url)
+                    if content_result.get("status") == "success":
+                        print(f"✅ Content fetch working: {len(content_result.get('content', ''))} chars")
+                        return True
+                    else:
+                        print(f"⚠️ Content fetch issue: {content_result.get('error')}")
+                        return True  # Search still works
+            return True
+        else:
+            print(f"❌ Search failed: {result.get('error')}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Research test failed: {e}")
+        return False
+
+def test_browser_functionality():
+    """Test browser tools"""
+    print("\n🌐 Testing browser functionality...")
+    
+    try:
+        from tool_manager import tool_manager
+        
+        # Test browser creation
+        result = tool_manager.execute_tool("browser:create", 
+                                         browser_id="test", 
+                                         headless=True)
+        
+        if result.get("status") == "success":
+            print("✅ Browser creation working")
+            
+            # Test navigation
+            nav_result = tool_manager.execute_tool("browser:navigate", 
+                                                 url="https://httpbin.org/html", 
+                                                 browser_id="test")
+            
+            if nav_result.get("status") == "success":
+                print("✅ Browser navigation working")
+                
+                # Test content extraction
+                content_result = tool_manager.execute_tool("browser:get_content", 
+                                                         browser_id="test")
+                
+                if content_result.get("status") == "success":
+                    print(f"✅ Content extraction working: {len(content_result.get('content', ''))} chars")
+                    
+                    # Cleanup
+                    tool_manager.execute_tool("browser:close", browser_id="test")
+                    print("✅ Browser cleanup completed")
+                    return True
+                else:
+                    print(f"⚠️ Content extraction issue: {content_result.get('error')}")
+            else:
+                print(f"⚠️ Navigation issue: {nav_result.get('error')}")
+        else:
+            print(f"❌ Browser creation failed: {result.get('error')}")
+            if "Playwright" in str(result.get('error', '')):
+                print("💡 Install Playwright: pip install playwright && playwright install")
+            
+        return False
+            
+    except Exception as e:
+        print(f"❌ Browser test failed: {e}")
+        return False
+
+def test_integration():
+    """Test integrated workflow"""
+    print("\n🎯 Testing integrated workflow...")
+    
+    try:
+        from tool_manager import tool_manager
+        
+        # Combined research test
+        result = tool_manager.execute_tool("research:combined_search", 
+                                         query="python web scraping", 
+                                         num_results=2)
+        
+        if result.get("status") == "success":
+            print(f"✅ Combined research working")
+            print(f"📊 Found {len(result.get('search_results', []))} search results")
+            print(f"📄 Fetched {len(result.get('content_results', []))} content pages")
+            return True
+        else:
+            print(f"❌ Combined research failed: {result.get('error')}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Integration test failed: {e}")
+        return False
+
+def check_dependencies():
+    """Check if required dependencies are available"""
+    print("🔧 Checking dependencies...")
+    
+    dependencies = {
+        'requests': 'pip install requests',
+        'beautifulsoup4': 'pip install beautifulsoup4', 
+        'playwright': 'pip install playwright && playwright install'
+    }
+    
+    missing = []
+    
+    for dep, install_cmd in dependencies.items():
+        try:
+            if dep == 'beautifulsoup4':
+                import bs4
+            elif dep == 'playwright':
+                from playwright.sync_api import sync_playwright
+            else:
+                __import__(dep)
+            print(f"✅ {dep}")
+        except ImportError:
+            print(f"❌ {dep} - Run: {install_cmd}")
+            missing.append((dep, install_cmd))
+    
+    return missing
+
+def main():
+    """Run all validation tests"""
+    print("🚀 Validating Python Agentic Framework")
+    print("=" * 50)
+    
+    # Check dependencies first
+    missing_deps = check_dependencies()
+    
+    if missing_deps:
+        print("\n⚠️ Missing dependencies detected!")
+        print("Install them with:")
+        for dep, cmd in missing_deps:
+            print(f"  {cmd}")
+        print()
+    
+    # Run tests
+    tests = [
+        ("Tool Discovery", test_tool_discovery),
+        ("Research Functionality", test_research_functionality), 
+        ("Browser Functionality", test_browser_functionality),
+        ("Integration", test_integration)
+    ]
+    
+    results = {}
+    
+    for test_name, test_func in tests:
+        try:
+            results[test_name] = test_func()
+        except Exception as e:
+            print(f"❌ {test_name} test crashed: {e}")
+            results[test_name] = False
+    
+    # Summary
+    print("\n" + "=" * 50)
+    print("📋 VALIDATION SUMMARY")
+    print("=" * 50)
+    
+    passed = sum(results.values())
+    total = len(results)
+    
+    for test_name, passed in results.items():
+        status = "✅ PASS" if passed else "❌ FAIL"
+        print(f"{test_name:.<30} {status}")
+    
+    print(f"\nOverall: {passed}/{total} tests passed")
+    
+    if passed >= 2:  # Research + Discovery minimum
+        print("🎉 Framework is functional for research tasks!")
+        if passed == total:
+            print("🏆 All capabilities working perfectly!")
+    else:
+        print("⚠️ Framework needs fixes before use")
+    
+    # Quick usage example
+    if results.get("Research Functionality"):
+        print("\n💡 Quick usage example:")
+        print("```python")
+        print("from tool_manager import tool_manager")
+        print("result = tool_manager.execute_tool('research:search', query='AI news', num_results=5)")
+        print("print(result)")
+        print("```")
+
+if __name__ == "__main__":
+    main()
+
+
+==================================================
+FILE: solution_example.py
+==================================================
+
+#!/usr/bin/env python3
+"""
+Direct Tool Usage - Simple Python Solution
+No workflows, just import tools and solve problems directly!
+"""
+
+import sys
+import os
+from pathlib import Path
+
+# Add COMPONENT directory to path
+component_dir = Path(__file__).parent / "COMPONENT"
+if component_dir.exists():
+    sys.path.insert(0, str(component_dir))
+
+# Import all tools directly
+try:
+    # Browser tools
+    from browser_adapter import (
+        browser_create, browser_navigate, browser_get_content,
+        browser_find_elements, browser_click, browser_close
+    )
+    
+    # Research tools  
+    from research_adapter import (
+        research_combined_search, research_analyze_content,
+        research_generate_summary, research_fetch_content
+    )
+    
+    # Citation tools
+    from cite_adapter import cite_sources, cite_source
+    
+    # Vector DB tools
+    from vector_db_adapter import (
+        vector_db_search, vector_db_add, vector_db_batch_add
+    )
+    
+    # ML tools
+    from ml_adapter import (
+        ml_train_model, ml_predict, ml_evaluate_model
+    )
+    
+    # Planning tools
+    from planning_adapter import (
+        planning_create_plan, planning_chain_of_thought
+    )
+    
+    # Memory tools
+    from memory_adapter import (
+        memory_create_system, memory_store_operation
+    )
+    
+    print("✅ All tools imported successfully!")
+    
+except ImportError as e:
+    print(f"⚠️ Some tools not available: {e}")
+
+# SOLUTION 1: Options Trading Research
+def research_options_trading_platforms():
+    """Direct solution - research options trading platforms"""
+    
+    print("🔍 Researching options trading platforms...")
+    
+    # Step 1: Research with multiple queries
+    queries = [
+        "best options trading platforms 2024",
+        "algorithmic options trading software",
+        "options trading education platforms"
+    ]
+    
+    all_results = []
+    for query in queries:
+        print(f"Searching: {query}")
+        result = research_combined_search(query=query, num_results=5)
+        if "error" not in result:
+            all_results.extend(result.get("search_results", []))
+    
+    # Step 2: Analyze the content
+    combined_content = " ".join([r.get("content", "") for r in all_results])
+    analysis = research_analyze_content(content=combined_content, max_length=3000)
+    
+    # Step 3: Generate summary
+    summary = research_generate_summary(
+        results={"content": combined_content},
+        query="options trading platforms comparison"
+    )
+    
+    # Step 4: Create citations
+    sources = [{"url": r.get("url"), "title": r.get("title")} for r in all_results if r.get("url")]
+    citations = cite_sources(sources=sources, style="apa")
+    
+    return {
+        "platforms_found": len(all_results),
+        "analysis": analysis,
+        "summary": summary,
+        "citations": citations,
+        "raw_results": all_results
+    }
+
+# SOLUTION 2: Automated Web Data Collection
+def collect_financial_data_with_browser():
+    """Direct solution - collect financial data using browser automation"""
+    
+    print("🌐 Collecting financial data with browser...")
+    
+    # Step 1: Create browser
+    browser_result = browser_create(browser_id="finance", headless=True)
+    if "error" in browser_result:
+        return {"error": "Failed to create browser"}
+    
+    financial_data = []
+    
+    # Step 2: Visit multiple financial sites
+    sites = [
+        "https://finance.yahoo.com/quote/SPY/options",
+        "https://www.cboe.com/tradeable_products/sp_500/spx_options/",
+        "https://www.nasdaq.com/market-activity/options"
+    ]
+    
+    for site in sites:
+        print(f"Visiting: {site}")
+        
+        # Navigate
+        nav = browser_navigate(url=site, browser_id="finance")
+        if "error" in nav:
+            continue
+            
+        # Get content
+        content = browser_get_content(browser_id="finance", content_type="text")
+        if "error" not in content:
+            # Analyze the content
+            analysis = research_analyze_content(content=content["content"][:2000])
+            
+            financial_data.append({
+                "site": site,
+                "title": nav.get("title", ""),
+                "content_length": len(content["content"]),
+                "analysis": analysis
+            })
+    
+    # Step 3: Cleanup
+    browser_close(browser_id="finance")
+    
+    return {
+        "sites_visited": len(financial_data),
+        "data_collected": financial_data,
+        "total_content": sum(d["content_length"] for d in financial_data)
+    }
+
+# SOLUTION 3: ML-Powered Content Analysis
+def analyze_content_with_ml():
+    """Direct solution - use ML to analyze collected content"""
+    
+    print("🤖 Analyzing content with machine learning...")
+    
+    # Step 1: Collect research data
+    research = research_combined_search(
+        query="machine learning trading strategies", 
+        num_results=10
+    )
+    
+    if "error" in research:
+        return {"error": "Research failed"}
+    
+    # Step 2: Prepare data for ML
+    texts = []
+    labels = []
+    
+    for result in research["search_results"]:
+        content = result.get("content", "")
+        if content:
+            texts.append(content[:500])  # Truncate for demo
+            # Simple labeling based on keywords
+            if any(word in content.lower() for word in ["education", "learning", "course"]):
+                labels.append("educational")
+            elif any(word in content.lower() for word in ["algorithm", "quant", "technical"]):
+                labels.append("technical")
+            else:
+                labels.append("general")
+    
+    # Step 3: Store in vector database for semantic search
+    if texts:
+        vector_result = vector_db_batch_add(
+            collection="ml_analysis",
+            texts=texts,
+            metadatas=[{"label": label} for label in labels]
+        )
+        
+        # Step 4: Semantic search
+        if "error" not in vector_result:
+            search_result = vector_db_search(
+                collection="ml_analysis",
+                query="educational trading strategies",
+                top_k=5
+            )
+            
+            return {
+                "texts_processed": len(texts),
+                "vector_storage": vector_result,
+                "semantic_search": search_result,
+                "label_distribution": {label: labels.count(label) for label in set(labels)}
+            }
+    
+    return {"error": "No content to process"}
+
+# SOLUTION 4: Complete Intelligence Pipeline
+def complete_intelligence_pipeline(topic="options trading education"):
+    """Complete solution combining all tools"""
+    
+    print(f"🎯 Running complete intelligence pipeline for: {topic}")
+    
+    results = {}
+    
+    # Phase 1: Research
+    print("Phase 1: Research")
+    research = research_combined_search(query=topic, num_results=15)
+    results["research"] = research
+    
+    # Phase 2: Web collection
+    print("Phase 2: Web data collection")
+    if "error" not in research:
+        # Get top URLs
+        urls = [r["url"] for r in research["search_results"][:3] if r.get("url")]
+        
+        # Create browser and visit sites
+        browser_create(browser_id="pipeline")
+        web_data = []
+        
+        for url in urls:
+            nav = browser_navigate(url=url, browser_id="pipeline")
+            if "error" not in nav:
+                content = browser_get_content(browser_id="pipeline")
+                if "error" not in content:
+                    web_data.append({
+                        "url": url,
+                        "title": nav["title"],
+                        "content": content["content"][:1000]
+                    })
+        
+        browser_close(browser_id="pipeline")
+        results["web_collection"] = web_data
+    
+    # Phase 3: Analysis
+    print("Phase 3: Content analysis")
+    all_content = ""
+    if "web_collection" in results:
+        all_content = " ".join([d["content"] for d in results["web_collection"]])
+    
+    if all_content:
+        analysis = research_analyze_content(content=all_content)
+        summary = research_generate_summary(
+            results={"content": all_content},
+            query=topic
+        )
+        results["analysis"] = analysis
+        results["summary"] = summary
+    
+    # Phase 4: Knowledge storage
+    print("Phase 4: Knowledge storage")
+    if all_content:
+        vector_db_add(
+            collection="intelligence_pipeline",
+            text=all_content,
+            metadata={"topic": topic, "timestamp": str(Path(__file__).stat().st_mtime)}
+        )
+    
+    # Phase 5: Planning
+    print("Phase 5: Strategic planning")
+    plan = planning_create_plan(
+        name=f"{topic}_strategy",
+        goal=f"Develop comprehensive understanding of {topic}",
+        subtasks=[
+            "Market analysis",
+            "Technology assessment", 
+            "Educational framework design",
+            "Implementation roadmap"
+        ]
+    )
+    results["strategic_plan"] = plan
+    
+    return results
+
+# Main execution
+if __name__ == "__main__":
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Direct Tool Usage Solutions")
+    parser.add_argument("--solution", 
+                       choices=["research", "browser", "ml", "complete"],
+                       default="complete",
+                       help="Which solution to run")
+    parser.add_argument("--topic", default="options trading education",
+                       help="Topic for research (for complete solution)")
+    
+    args = parser.parse_args()
+    
+    print("🚀 Running direct tool solution...")
+    
+    if args.solution == "research":
+        result = research_options_trading_platforms()
+    elif args.solution == "browser":
+        result = collect_financial_data_with_browser()
+    elif args.solution == "ml":
+        result = analyze_content_with_ml()
+    else:
+        result = complete_intelligence_pipeline(args.topic)
+    
+    # Save results
+    import json
+    output_file = f"{args.solution}_solution_results.json"
+    with open(output_file, 'w') as f:
+        json.dump(result, f, indent=2, default=str)
+    
+    print(f"✅ Solution completed!")
+    print(f"📁 Results saved to: {output_file}")
+    
+    # Print summary
+    if isinstance(result, dict) and "error" not in result:
+        print(f"📊 Success! Processed data and generated insights.")
+    else:
+        print(f"❌ Some issues occurred: {result}")
+
+
+==================================================
+FILE: synch_crypto_workflow.py
+==================================================
+
+#!/usr/bin/env python3
+"""
+Simple Cryptocurrency Analysis using Direct Tools
+No cognitive workflow dependencies - pure tool usage
+"""
+
+from auto_import_tools import *
+import json
+import time
+
+def analyze_crypto_simple():
+    """Simple crypto analysis using available tools directly"""
+    
+    print("🚀 Starting Simple Cryptocurrency Analysis...")
+    
+    results = {
+        "analysis_type": "cryptocurrency_market_research",
+        "timestamp": time.time(),
+        "steps": []
+    }
+    
+    # Step 1: Research cryptocurrency trends
+    print("\n📊 Step 1: Researching cryptocurrency market trends...")
+    try:
+        crypto_research = research_combined_search(
+            query="cryptocurrency market trends 2024 analysis", 
+            num_results=8
+        )
+        
+        if "error" not in crypto_research:
+            search_results = crypto_research.get("search_results", [])
+            print(f"✅ Found {len(search_results)} research sources")
+            
+            results["steps"].append({
+                "step": "market_research",
+                "status": "success", 
+                "sources_found": len(search_results),
+                "data": crypto_research
+            })
+            
+            # Show some results
+            for i, result in enumerate(search_results[:3]):
+                print(f"   📰 {i+1}. {result.get('title', 'No title')[:80]}...")
+        else:
+            print(f"❌ Research failed: {crypto_research['error']}")
+            results["steps"].append({
+                "step": "market_research",
+                "status": "error",
+                "error": crypto_research["error"]
+            })
+            
+    except Exception as e:
+        print(f"❌ Research error: {e}")
+        results["steps"].append({
+            "step": "market_research", 
+            "status": "error",
+            "error": str(e)
+        })
+    
+    # Step 2: Analyze specific cryptocurrencies
+    print("\n🪙 Step 2: Analyzing major cryptocurrencies...")
+    crypto_symbols = ["Bitcoin", "Ethereum", "Solana", "Cardano"]
+    
+    for crypto in crypto_symbols:
+        try:
+            crypto_analysis = research_combined_search(
+                query=f"{crypto} price analysis investment 2024",
+                num_results=3
+            )
+            
+            if "error" not in crypto_analysis:
+                sources = len(crypto_analysis.get("search_results", []))
+                print(f"   ✅ {crypto}: {sources} sources analyzed")
+                
+                results["steps"].append({
+                    "step": f"analyze_{crypto.lower()}",
+                    "status": "success",
+                    "crypto": crypto,
+                    "sources": sources,
+                    "data": crypto_analysis
+                })
+            else:
+                print(f"   ❌ {crypto}: analysis failed")
+                results["steps"].append({
+                    "step": f"analyze_{crypto.lower()}",
+                    "status": "error", 
+                    "crypto": crypto,
+                    "error": crypto_analysis["error"]
+                })
+                
+        except Exception as e:
+            print(f"   ❌ {crypto}: error - {e}")
+            results["steps"].append({
+                "step": f"analyze_{crypto.lower()}",
+                "status": "error",
+                "crypto": crypto, 
+                "error": str(e)
+            })
+    
+    # Step 3: Analyze trading strategies
+    print("\n📈 Step 3: Researching trading strategies...")
+    try:
+        strategy_research = research_combined_search(
+            query="cryptocurrency trading strategies risk management 2024",
+            num_results=5
+        )
+        
+        if "error" not in strategy_research:
+            sources = len(strategy_research.get("search_results", []))
+            print(f"✅ Trading strategies: {sources} sources found")
+            
+            results["steps"].append({
+                "step": "trading_strategies",
+                "status": "success",
+                "sources": sources, 
+                "data": strategy_research
+            })
+        else:
+            print(f"❌ Strategy research failed: {strategy_research['error']}")
+            results["steps"].append({
+                "step": "trading_strategies",
+                "status": "error",
+                "error": strategy_research["error"]
+            })
+            
+    except Exception as e:
+        print(f"❌ Strategy research error: {e}")
+        results["steps"].append({
+            "step": "trading_strategies",
+            "status": "error", 
+            "error": str(e)
+        })
+    
+    # Step 4: Use ML tools for analysis (if available)
+    print("\n🤖 Step 4: ML-based analysis...")
+    try:
+        # Check if we have data to analyze
+        successful_steps = [s for s in results["steps"] if s["status"] == "success"]
+        
+        if len(successful_steps) >= 2:
+            print("✅ Sufficient data collected for ML analysis")
+            
+            # Try to use ML tools
+            try:
+                # Get available ML algorithms
+                ml_algorithms = ml_get_available_algorithms()
+                print(f"   🔧 Available ML algorithms: {len(ml_algorithms.get('algorithms', []))}")
+                
+                results["steps"].append({
+                    "step": "ml_analysis_prep",
+                    "status": "success",
+                    "available_algorithms": ml_algorithms
+                })
+                
+            except Exception as ml_e:
+                print(f"   ⚠️ ML tools not fully available: {ml_e}")
+                results["steps"].append({
+                    "step": "ml_analysis_prep",
+                    "status": "partial",
+                    "note": "ML tools available but data preparation needed"
+                })
+        else:
+            print("⚠️ Insufficient data for ML analysis")
+            results["steps"].append({
+                "step": "ml_analysis_prep",
+                "status": "skipped",
+                "reason": "insufficient_data"
+            })
+            
+    except Exception as e:
+        print(f"❌ ML analysis error: {e}")
+        results["steps"].append({
+            "step": "ml_analysis_prep",
+            "status": "error",
+            "error": str(e)
+        })
+    
+    # Step 5: Generate summary analysis
+    print("\n📋 Step 5: Generating analysis summary...")
+    try:
+        # Collect all successful research data
+        all_sources = []
+        total_sources = 0
+        
+        for step in results["steps"]:
+            if step["status"] == "success" and "data" in step:
+                search_results = step["data"].get("search_results", [])
+                all_sources.extend(search_results)
+                total_sources += len(search_results)
+        
+        # Generate summary using research tools
+        if all_sources:
+            combined_content = " ".join([
+                result.get("content", result.get("snippet", ""))
+                for result in all_sources[:10]  # Limit to first 10 sources
+            ])
+            
+            if combined_content:
+                summary_analysis = research_analyze_content(
+                    content=combined_content,
+                    max_length=2000
+                )
+                
+                if "error" not in summary_analysis:
+                    print("✅ Summary analysis generated")
+                    results["steps"].append({
+                        "step": "summary_analysis",
+                        "status": "success",
+                        "total_sources_analyzed": total_sources,
+                        "analysis": summary_analysis
+                    })
+                else:
+                    print(f"❌ Summary analysis failed: {summary_analysis['error']}")
+            else:
+                print("⚠️ No content available for summary")
+        else:
+            print("⚠️ No sources available for summary")
+            
+    except Exception as e:
+        print(f"❌ Summary generation error: {e}")
+        results["steps"].append({
+            "step": "summary_analysis",
+            "status": "error",
+            "error": str(e)
+        })
+    
+    # Calculate success metrics
+    successful_steps = [s for s in results["steps"] if s["status"] == "success"]
+    total_steps = len(results["steps"])
+    success_rate = (len(successful_steps) / total_steps * 100) if total_steps > 0 else 0
+    
+    results["summary"] = {
+        "total_steps": total_steps,
+        "successful_steps": len(successful_steps),
+        "success_rate": success_rate,
+        "analysis_completed": success_rate >= 60  # 60% success threshold
+    }
+    
+    return results
+
+def create_simple_recommendations(analysis_results):
+    """Create simple investment recommendations based on analysis"""
+    
+    print("\n💡 Generating Investment Recommendations...")
+    
+    successful_steps = [s for s in analysis_results["steps"] if s["status"] == "success"]
+    
+    recommendations = {
+        "overall_sentiment": "neutral",
+        "risk_level": "medium",
+        "recommended_actions": [],
+        "risk_factors": [],
+        "opportunities": []
+    }
+    
+    # Analyze based on successful research
+    if len(successful_steps) >= 3:
+        recommendations["overall_sentiment"] = "positive"
+        recommendations["recommended_actions"].append("Conduct deeper fundamental analysis")
+        recommendations["opportunities"].append("Market research indicates active trading opportunities")
+        
+        # Check if we analyzed multiple cryptocurrencies
+        crypto_analyses = [s for s in successful_steps if "crypto" in s.get("step", "")]
+        if len(crypto_analyses) >= 2:
+            recommendations["recommended_actions"].append("Diversify across analyzed cryptocurrencies")
+            recommendations["opportunities"].append("Multiple cryptocurrencies show research activity")
+    
+    elif len(successful_steps) >= 1:
+        recommendations["overall_sentiment"] = "cautious"
+        recommendations["risk_level"] = "high"
+        recommendations["recommended_actions"].append("Gather more market data before investing")
+        recommendations["risk_factors"].append("Limited research data available")
+    
+    else:
+        recommendations["overall_sentiment"] = "bearish"
+        recommendations["risk_level"] = "very high"
+        recommendations["recommended_actions"].append("Avoid investment until better data available")
+        recommendations["risk_factors"].append("Insufficient research data for informed decision")
+    
+    # Add general recommendations
+    recommendations["recommended_actions"].extend([
+        "Monitor market volatility closely",
+        "Set clear stop-loss limits",
+        "Only invest what you can afford to lose"
+    ])
+    
+    recommendations["risk_factors"].extend([
+        "Cryptocurrency markets are highly volatile",
+        "Regulatory changes can impact prices significantly",
+        "Market sentiment can change rapidly"
+    ])
+    
+    return recommendations
+
+def main():
+    """Main execution function"""
+    print("🚀 Simple Cryptocurrency Analysis Tool")
+    print("=" * 60)
+    
+    try:
+        # Run the analysis
+        analysis_results = analyze_crypto_simple()
+        
+        # Generate recommendations
+        recommendations = create_simple_recommendations(analysis_results)
+        
+        # Combine results
+        final_results = {
+            "analysis": analysis_results,
+            "recommendations": recommendations,
+            "generated_at": time.time()
+        }
+        
+        # Display summary
+        print(f"\n📊 Analysis Complete!")
+        summary = analysis_results["summary"]
+        print(f"   ✅ Success Rate: {summary['success_rate']:.1f}%")
+        print(f"   📈 Steps Completed: {summary['successful_steps']}/{summary['total_steps']}")
+        print(f"   🎯 Analysis Status: {'✅ Complete' if summary['analysis_completed'] else '⚠️ Partial'}")
+        
+        print(f"\n💡 Investment Recommendations:")
+        print(f"   📊 Sentiment: {recommendations['overall_sentiment'].upper()}")
+        print(f"   ⚠️ Risk Level: {recommendations['risk_level'].upper()}")
+        print(f"   📋 Actions: {len(recommendations['recommended_actions'])} recommendations")
+        
+        # Save results
+        output_file = "simple_crypto_analysis.json"
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(final_results, f, indent=2, default=str)
+        
+        print(f"\n📁 Complete results saved to: {output_file}")
+        
+        # Display top recommendations
+        print(f"\n🎯 Top Recommendations:")
+        for i, action in enumerate(recommendations['recommended_actions'][:3], 1):
+            print(f"   {i}. {action}")
+        
+        return final_results
+        
+    except Exception as e:
+        print(f"\n💥 Fatal error: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
+
+if __name__ == "__main__":
+    main()
+
+
+==================================================
+FILE: tool_manager.py
+==================================================
+
+#!/usr/bin/env python3
+
+import os
+import sys
+import json
+import inspect
+import importlib.util
+import glob
+from typing import Dict, Any, List, Optional, Callable, Set
+from functools import wraps
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger("tool_manager")
+
+class ToolManager:
+    """Enhanced tool manager with automatic function discovery"""
+    
+    def __init__(self):
+        self.tools = {}  # Tool registry
+        self.imported_modules = set()  # Track imported modules
+        self.namespace_prefixes = {}  # Map module to namespace prefix
+        self.excluded_files = {
+            'agent_runner.py', 'tool_manager.py', 'utils.py', 'config.py', 'call_api.py',
+            '__init__.py', 'cli.py', 'async_executor.py', 'async_framework_main.py',
+            'workflow_executor.py', 'workflow_state.py', 'enhanced_agent_runner.py'
+        }
+        self.excluded_functions = {
+            'main', '__init__', 'setup', 'teardown', 'test_', 'debug_'
+        }
+    
+    def discover_tools(self, directories: List[str] = None) -> int:
+        """Automatically discover all Python modules and their functions in given directories"""
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        if directories is None:
+            directories = [current_dir]
+            
+            # IMPORTANT: Add COMPONENT directory if it exists
+            component_dir = os.path.join(current_dir, "COMPONENT")
+            if os.path.exists(component_dir):
+                directories.append(component_dir)
+                logger.info(f"Added COMPONENT directory: {component_dir}")
+            
+            # Also include any other directories within current_dir
+            for item in os.listdir(current_dir):
+                item_path = os.path.join(current_dir, item)
+                if (os.path.isdir(item_path) and 
+                    not item.startswith('.') and 
+                    item not in ['__pycache__', 'COMPONENT', 'async_outputs', 'agent_outputs']):
+                    directories.append(item_path)
+        
+        total_tools = 0
+        logger.info(f"Scanning directories: {directories}")
+        
+        # Find all Python files
+        for directory in directories:
+            if not os.path.exists(directory):
+                logger.warning(f"Directory does not exist: {directory}")
+                continue
+                
+            python_files = glob.glob(os.path.join(directory, "*.py"))
+            logger.info(f"Found {len(python_files)} Python files in {directory}")
+            
+            for py_file in python_files:
+                filename = os.path.basename(py_file)
+                
+                # Skip excluded files
+                if filename in self.excluded_files:
+                    logger.debug(f"Skipping excluded file: {filename}")
+                    continue
+                
+                module_name = filename[:-3]  # Remove .py
+                
+                # Skip if already imported
+                if module_name in self.imported_modules:
+                    logger.debug(f"Module already imported: {module_name}")
+                    continue
+                
+                try:
+                    # Import the module
+                    spec = importlib.util.spec_from_file_location(module_name, py_file)
+                    if spec is None or spec.loader is None:
+                        logger.warning(f"Could not create spec for {py_file}")
+                        continue
+                        
+                    module = importlib.util.module_from_spec(spec)
+                    
+                    # Add the module's directory to sys.path temporarily
+                    module_dir = os.path.dirname(py_file)
+                    if module_dir not in sys.path:
+                        sys.path.insert(0, module_dir)
+                        added_to_path = True
+                    else:
+                        added_to_path = False
+                    
+                    try:
+                        spec.loader.exec_module(module)
+                        self.imported_modules.add(module_name)
+                        
+                        # Determine namespace prefix
+                        if hasattr(module, 'TOOL_NAMESPACE'):
+                            prefix = getattr(module, 'TOOL_NAMESPACE')
+                        else:
+                            # By default, use the module name
+                            prefix = module_name
+                            
+                            # Special case: if it ends with _adapter, remove that part
+                            if prefix.endswith("_adapter"):
+                                prefix = prefix[:-8]  # Remove "_adapter"
+                        
+                        self.namespace_prefixes[module_name] = prefix
+                        
+                        # Priority 1: If the module has TOOL_REGISTRY, register those tools
+                        registry_tools = 0
+                        if hasattr(module, 'TOOL_REGISTRY'):
+                            tool_registry = getattr(module, 'TOOL_REGISTRY')
+                            if isinstance(tool_registry, dict):
+                                for tool_id, tool_handler in tool_registry.items():
+                                    full_tool_id = f"{prefix}:{tool_id}" if ':' not in tool_id else tool_id
+                                    self.register_tool(full_tool_id, tool_handler)
+                                    registry_tools += 1
+                                    total_tools += 1
+                                logger.info(f"Registered {registry_tools} tools from TOOL_REGISTRY in {module_name}")
+                        
+                        # Priority 2: Auto-discover functions that should be registered as tools
+                        auto_tools = self._discover_module_tools(module, prefix)
+                        total_tools += len(auto_tools)
+                        
+                        logger.info(f"Imported module {module_name} with {registry_tools} registry tools + {len(auto_tools)} auto-discovered functions")
+                        
+                    finally:
+                        # Remove from sys.path if we added it
+                        if added_to_path and module_dir in sys.path:
+                            sys.path.remove(module_dir)
+                    
+                except Exception as e:
+                    logger.error(f"Error importing {module_name} from {py_file}: {e}")
+                    # Continue with other modules even if one fails
+                    continue
+        
+        logger.info(f"🔧 Total tools discovered: {total_tools}")
+        return total_tools
+    
+    def _discover_module_tools(self, module, prefix: str) -> List[str]:
+        """Discover and register tools from a module"""
+        discovered_tools = []
+        
+        # Get all functions from the module
+        for name, obj in inspect.getmembers(module):
+            # Skip private functions, special methods, and non-functions
+            if name.startswith('_') or not inspect.isfunction(obj):
+                continue
+            
+            # Skip functions that start with excluded prefixes
+            if any(name.startswith(excluded) for excluded in self.excluded_functions):
+                continue
+                
+            # Skip functions that are already in TOOL_REGISTRY (avoid duplicates)
+            if hasattr(module, 'TOOL_REGISTRY'):
+                tool_registry = getattr(module, 'TOOL_REGISTRY')
+                if isinstance(tool_registry, dict) and any(handler == obj for handler in tool_registry.values()):
+                    continue
+            
+            # Check if function has a docstring (we only want documented functions)
+            if obj.__doc__ and obj.__doc__.strip():
+                # Create a tool ID based on the prefix and function name
+                tool_id = f"{prefix}:{name}"
+                self.register_tool(tool_id, obj)
+                discovered_tools.append(tool_id)
+                logger.debug(f"Auto-registered tool: {tool_id}")
+        
+        return discovered_tools
+    
+    def register_tool(self, tool_id: str, handler: Callable) -> None:
+        """Register a function as a tool with flexible parameter handling"""
+        @wraps(handler)
+        def flexible_handler(**kwargs):
+            try:
+                # Get function signature
+                sig = inspect.signature(handler)
+                
+                # If function takes **kwargs, pass everything
+                if any(param.kind == param.VAR_KEYWORD for param in sig.parameters.values()):
+                    return handler(**kwargs)
+                
+                # Otherwise, filter kwargs to match function signature
+                filtered_kwargs = {}
+                for param_name, param in sig.parameters.items():
+                    if param_name in kwargs:
+                        filtered_kwargs[param_name] = kwargs[param_name]
+                    elif param.default == param.empty and param.kind not in (param.VAR_POSITIONAL, param.VAR_KEYWORD):
+                        # Required parameter missing
+                        logger.warning(f"Required parameter '{param_name}' missing for tool {tool_id}")
+                        return {"error": f"Required parameter '{param_name}' missing"}
+                
+                return handler(**filtered_kwargs)
+                
+            except Exception as e:
+                logger.error(f"Tool execution failed for {tool_id}: {str(e)}")
+                return {"error": f"Tool execution failed: {str(e)}"}
+        
+        self.tools[tool_id] = flexible_handler
+        logger.debug(f"Registered tool: {tool_id}")
+    
+    def execute_tool(self, tool_id: str, **kwargs) -> Any:
+        """Execute a registered tool"""
+        if tool_id not in self.tools:
+            # Try to find it by prefix and auto-load
+            if ':' in tool_id:
+                prefix = tool_id.split(':', 1)[0]
+                
+                # Look for modules that might contain this tool
+                for module_name, module_prefix in self.namespace_prefixes.items():
+                    if module_prefix == prefix and module_name not in self.imported_modules:
+                        # Try to import module
+                        self._try_load_module(module_name, prefix)
+                        break
+        
+        if tool_id not in self.tools:
+            available_tools = self.get_available_tools_by_prefix(tool_id.split(':', 1)[0] if ':' in tool_id else '')
+            error_msg = f"Unknown tool: {tool_id}"
+            if available_tools:
+                error_msg += f". Available tools with similar prefix: {', '.join(available_tools[:5])}"
+            return {"error": error_msg}
+        
+        try:
+            logger.info(f"Executing tool {tool_id} with params: {list(kwargs.keys())}")
+            result = self.tools[tool_id](**kwargs)
+            logger.debug(f"Tool {tool_id} executed successfully")
+            return result
+        except Exception as e:
+            logger.error(f"Error executing tool {tool_id}: {str(e)}")
+            return {"error": str(e)}
+    
+    def _try_load_module(self, module_name: str, prefix: str):
+        """Try to load a module that might contain tools"""
+        try:
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            
+            # Check multiple possible locations
+            possible_paths = [
+                os.path.join(current_dir, f"{module_name}.py"),
+                os.path.join(current_dir, "COMPONENT", f"{module_name}.py"),
+                os.path.join(current_dir, "tools", f"{module_name}.py"),
+                os.path.join(current_dir, "adapters", f"{module_name}.py"),
+            ]
+            
+            for module_path in possible_paths:
+                if os.path.exists(module_path):
+                    spec = importlib.util.spec_from_file_location(module_name, module_path)
+                    if spec and spec.loader:
+                        module = importlib.util.module_from_spec(spec)
+                        spec.loader.exec_module(module)
+                        self._discover_module_tools(module, prefix)
+                        self.imported_modules.add(module_name)
+                        logger.info(f"Dynamically loaded module: {module_name}")
+                        break
+                        
+        except Exception as e:
+            logger.warning(f"Failed to dynamically load module {module_name}: {e}")
+    
+    def get_all_tools(self) -> List[str]:
+        """Get a list of all registered tool IDs"""
+        return sorted(list(self.tools.keys()))
+    
+    def get_tools_by_prefix(self, prefix: str) -> List[str]:
+        """Get tools by namespace prefix"""
+        return [tool_id for tool_id in self.tools.keys() if tool_id.startswith(f"{prefix}:")]
+    
+    def get_available_tools_by_prefix(self, prefix: str) -> List[str]:
+        """Get available tools that match a prefix"""
+        if not prefix:
+            return []
+        return [tool_id for tool_id in self.tools.keys() if tool_id.startswith(prefix)]
+    
+    def is_tool_available(self, tool_id: str) -> bool:
+        """Check if a tool is available"""
+        return tool_id in self.tools
+    
+    def get_tool_info(self, tool_id: str) -> Dict[str, Any]:
+        """Get information about a specific tool"""
+        if tool_id not in self.tools:
+            return {"error": f"Tool not found: {tool_id}"}
+        
+        try:
+            # Get the original function from the wrapper
+            original_func = self.tools[tool_id].__wrapped__ if hasattr(self.tools[tool_id], '__wrapped__') else self.tools[tool_id]
+            
+            # Get function signature and docstring
+            sig = inspect.signature(original_func)
+            
+            return {
+                "tool_id": tool_id,
+                "name": original_func.__name__,
+                "module": original_func.__module__ if hasattr(original_func, '__module__') else 'unknown',
+                "docstring": original_func.__doc__ or "No documentation available",
+                "parameters": {
+                    name: {
+                        "type": str(param.annotation) if param.annotation != param.empty else "Any",
+                        "default": str(param.default) if param.default != param.empty else "Required",
+                        "kind": str(param.kind)
+                    }
+                    for name, param in sig.parameters.items()
+                }
+            }
+        except Exception as e:
+            return {"error": f"Could not get tool info: {str(e)}"}
+    
+    def list_tools_by_module(self) -> Dict[str, List[str]]:
+        """List tools organized by module/namespace"""
+        tools_by_module = {}
+        for tool_id in self.tools.keys():
+            if ':' in tool_id:
+                prefix, _ = tool_id.split(':', 1)
+                if prefix not in tools_by_module:
+                    tools_by_module[prefix] = []
+                tools_by_module[prefix].append(tool_id)
+            else:
+                if 'global' not in tools_by_module:
+                    tools_by_module['global'] = []
+                tools_by_module['global'].append(tool_id)
+        
+        return tools_by_module
+    
+    def get_stats(self) -> Dict[str, Any]:
+        """Get statistics about the tool manager"""
+        tools_by_module = self.list_tools_by_module()
+        
+        return {
+            "total_tools": len(self.tools),
+            "total_modules": len(self.imported_modules),
+            "tools_by_module": {k: len(v) for k, v in tools_by_module.items()},
+            "namespaces": list(self.namespace_prefixes.values())
+        }
+
+# Create a global tool manager instance
+tool_manager = ToolManager()
+
+# Additional utility functions that can be used as tools themselves
+def list_all_tools(**kwargs) -> Dict[str, Any]:
+    """List all available tools"""
+    return {
+        "tools": tool_manager.get_all_tools(),
+        "stats": tool_manager.get_stats(),
+        "by_module": tool_manager.list_tools_by_module()
+    }
+
+def get_tool_info(**kwargs) -> Dict[str, Any]:
+    """Get information about a specific tool"""
+    tool_id = kwargs.get('tool_id', '')
+    if not tool_id:
+        return {"error": "tool_id parameter is required"}
+    
+    return tool_manager.get_tool_info(tool_id)
+
+def reload_tools(**kwargs) -> Dict[str, Any]:
+    """Reload and rediscover all tools"""
+    try:
+        # Clear current tools and modules
+        tool_manager.tools.clear()
+        tool_manager.imported_modules.clear()
+        tool_manager.namespace_prefixes.clear()
+        
+        # Rediscover tools
+        total_tools = tool_manager.discover_tools()
+        
+        return {
+            "success": True,
+            "total_tools": total_tools,
+            "stats": tool_manager.get_stats()
+        }
+    except Exception as e:
+        return {"error": f"Failed to reload tools: {str(e)}"}
+
+# Register these utility tools
+tool_manager.register_tool("tools:list_all", list_all_tools)
+tool_manager.register_tool("tools:get_info", get_tool_info)
+tool_manager.register_tool("tools:reload", reload_tools)
+
+
+==================================================
+FILE: utils.py
+==================================================
+
+#!/usr/bin/env python3
+
+import os
+import json
+import re
+import datetime
+from typing import Dict, Any, List, Optional, Set
+
+def log_api(agent_name, prompt, response):
+    """Simple function to log API calls and responses to a file."""
+    logs_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs")
+    os.makedirs(logs_dir, exist_ok=True)
+    
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_file = os.path.join(logs_dir, f"{agent_name}_api.log")
+    
+    with open(log_file, 'a', encoding='utf-8') as f:
+        f.write(f"\n==== API CALL AT {timestamp} ====\n")
+        f.write(f"PROMPT:\n{prompt}")
+        f.write(f"\n\n==== API RESPONSE ====\n")
+        f.write(f"{response}")
+        f.write("\n\n")
+
+def extract_json_from_text(text: str) -> Dict[str, Any]:
+    """Extract JSON from text, handling various formats"""
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+    
+    # Try to find JSON within code blocks
+    json_pattern = r'```(?:json)?\s*([\s\S]*?)\s*```'
+    match = re.search(json_pattern, text)
+    if match:
+        try:
+            return json.loads(match.group(1))
+        except json.JSONDecodeError:
+            pass
+    
+    # Try to find anything that looks like a JSON object
+    object_pattern = r'({[\s\S]*?})'
+    match = re.search(object_pattern, text)
+    if match:
+        try:
+            return json.loads(match.group(1))
+        except json.JSONDecodeError:
+            pass
+    
+    return {"error": "Could not extract valid JSON from response", "text": text[:500]}
+
+def extract_tool_calls(response_content: str) -> List[Dict[str, Any]]:
+    """Extract all tool calls from a response"""
+    tool_usage_pattern = r"I need to use the tool: ([a-zA-Z0-9_:]+)\s*\nParameters:\s*\{([^}]+)\}"
+    tool_calls = []
+    
+    matches = re.finditer(tool_usage_pattern, response_content, re.DOTALL)
+    for match in matches:
+        tool_name = match.group(1).strip()
+        params_text = "{" + match.group(2) + "}"
+        try:
+            params = json.loads(params_text)
+            tool_calls.append({
+                "tool_name": tool_name,
+                "params": params,
+                "full_text": match.group(0)
+            })
+        except json.JSONDecodeError:
+            continue
+    
+    return tool_calls
+
+def process_single_tool_call(response_content):
+    """Process a response that may contain a single tool call"""
+    tool_usage_pattern = r"I need to use the tool: ([a-zA-Z0-9_:]+)\s*\nParameters:\s*\{([^}]+)\}"
+    match = re.search(tool_usage_pattern, response_content, re.DOTALL)
+    
+    if not match:
+        return None, response_content
+    
+    tool_name = match.group(1).strip()
+    params_text = "{" + match.group(2) + "}"
+    
+    try:
+        params = json.loads(params_text)
+        return {
+            "tool_name": tool_name,
+            "params": params
+        }, response_content
+    except json.JSONDecodeError:
+        return None, response_content
+
+def is_hashable(obj):
+    """Check if an object can be used as a dictionary key"""
+    try:
+        hash(obj)
+        return True
+    except TypeError:
+        return False
+
+def get_config():
+    """Get configuration or create default config"""
+    try:
+        from config import CONFIG
+        return CONFIG
+    except ImportError:
+        try:
+            from openrouter_config import CONFIG
+            return CONFIG
+        except ImportError:
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            CONFIG = {
+                "api_key": os.environ.get("OPENROUTER_API_KEY", ""),
+                "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+                "default_model": "deepseek/deepseek-chat:free",
+                "output_dir": os.path.join(current_dir, "async_outputs")
+            }
+            os.makedirs(CONFIG["output_dir"], exist_ok=True)
+            return CONFIG
+
+
+==================================================
+SUMMARY: Processed 14 Python files
+Output saved to: all_python_files.txt
