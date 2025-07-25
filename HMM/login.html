@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Security Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 400px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            display: block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .logo h1 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 2rem;
+        }
+
+        .logo p {
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+
+        .login-form {
+            margin-top: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group input::placeholder {
+            color: #bdc3c7;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+        }
+
+        .login-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .login-btn .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .login-btn.loading .spinner {
+            display: inline-block;
+        }
+
+        .error-message {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .success-message {
+            background: rgba(39, 174, 96, 0.1);
+            border: 1px solid rgba(39, 174, 96, 0.3);
+            color: #27ae60;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 20px;
+                padding: 30px 25px;
+            }
+            
+            .logo h1 {
+                font-size: 1.7rem;
+            }
+            
+            .logo-icon {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <span class="logo-icon">🛡️</span>
+            <h1>Security Analyzer</h1>
+            <p>Advanced Threat Detection Platform</p>
+        </div>
+
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    placeholder="Enter username"
+                    required 
+                    autocomplete="username"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="Enter password"
+                    required 
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                Invalid credentials. Please try again.
+            </div>
+
+            <div class="success-message" id="successMessage">
+                Login successful! Redirecting...
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+                <span class="spinner"></span>
+                <span class="btn-text">Sign In</span>
+            </button>
+        </form>
+
+        <div class="footer">
+            <small>Powered by Pyro-based Hidden Markov Models</small>
+        </div>
+    </div>
+
+    <script>
+        // Simple authentication
+        const AUTH = {
+            validCredentials: {
+                username: 'Bayesian_User',
+                password: 'Bayesian_Pwd'
+            },
+            
+            init() {
+                // Check if already logged in
+                if (sessionStorage.getItem('auth_token')) {
+                    window.location.href = '/dashboard';
+                    return;
+                }
+                
+                this.bindEvents();
+            },
+            
+            bindEvents() {
+                const form = document.getElementById('loginForm');
+                form.addEventListener('submit', (e) => this.handleLogin(e));
+                
+                // Handle Enter key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.handleLogin(e);
+                    }
+                });
+            },
+            
+            async handleLogin(event) {
+                event.preventDefault();
+                
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+                const loginBtn = document.getElementById('loginBtn');
+                const errorMsg = document.getElementById('errorMessage');
+                const successMsg = document.getElementById('successMessage');
+                
+                // Hide messages
+                errorMsg.style.display = 'none';
+                successMsg.style.display = 'none';
+                
+                // Validate input
+                if (!username || !password) {
+                    this.showError('Please enter both username and password');
+                    return;
+                }
+                
+                // Show loading
+                this.setLoading(true);
+                
+                try {
+                    // Simulate loading delay
+                    await this.delay(1000);
+                    
+                    // Check credentials
+                    if (username === this.validCredentials.username && 
+                        password === this.validCredentials.password) {
+                        
+                        // Success
+                        sessionStorage.setItem('auth_token', 'authenticated');
+                        sessionStorage.setItem('username', username);
+                        sessionStorage.setItem('login_time', new Date().toISOString());
+                        
+                        this.showSuccess('Login successful! Redirecting...');
+                        
+                        // Redirect after delay
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 1500);
+                        
+                    } else {
+                        this.showError('Invalid username or password');
+                        this.setLoading(false);
+                    }
+                    
+                } catch (error) {
+                    this.showError('An error occurred. Please try again.');
+                    this.setLoading(false);
+                }
+            },
+            
+            setLoading(loading) {
+                const loginBtn = document.getElementById('loginBtn');
+                
+                if (loading) {
+                    loginBtn.classList.add('loading');
+                    loginBtn.disabled = true;
+                } else {
+                    loginBtn.classList.remove('loading');
+                    loginBtn.disabled = false;
+                }
+            },
+            
+            showError(message) {
+                const errorMsg = document.getElementById('errorMessage');
+                errorMsg.textContent = message;
+                errorMsg.style.display = 'block';
+            },
+            
+            showSuccess(message) {
+                const successMsg = document.getElementById('successMessage');
+                successMsg.textContent = message;
+                successMsg.style.display = 'block';
+            },
+            
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        };
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            AUTH.init();
+        });
+    </script>
+</body>
+</html>
