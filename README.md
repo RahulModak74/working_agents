@@ -6,7 +6,7 @@ THIS IS SAP WORKFLOW: python3 runner_wrapper.py --workflow even_better_sap.json 
 
 While frameworks like LangChain, LangGraph, and Semantic Kernel require hundreds of lines of Python code to orchestrate complex agent interactions, this system achieves the same capabilities through **declarative JSON configuration**:
 
-- What would take 500+ lines of Python code in LangChain can be done in ~300 lines of JSON here
+- What would take 500+ lines of Python code in LangChain can be done with a single prompt that returns JSON workflow
 - No callbacks, chain composition, or complex error handling required
 - Simple yet powerful orchestration of sophisticated agent workflows
 - Enterprise-ready with batteries included
