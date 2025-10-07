@@ -1,4 +1,4 @@
-# Enhanced Multi-Agent System as deterministic alternative to MCP(For Linux Operating System-use WSL for Windows )
+# Enhanced Multi-Agent System as deterministic alternative to MCP(For Linux Operating System-use WSL for Windows.. Full ZIP file in Agentic_AI_Platform directory of this repo )
 
 A new  approach to AI agent orchestration that is DETERMINISTIC  with minimal code and maximum capability. 
 This system provides powerful multi-agent workflows through simple JSON configuration rather than complex Python code and overcomes MCP's main problem(Non-Deterministic).
