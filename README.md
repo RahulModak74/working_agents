@@ -55,7 +55,7 @@ pip install jsonschema
 python3 main.py --workflow extremely_advanced_cyber_agentic_workflow.json journey.csv
 
 # 4. Run customer journey analysis  
-python3 main.py --workflow cust_jour_workflow.json customer_journey.csv
+python3 main.py --workflow cust_jour_workflow.json customer_journey.csv (cross_platform_runner.py for cross windows and unix)
 That's it. No complex Python code. Just JSON configuration.
 
 🎭 What Makes This Different?
