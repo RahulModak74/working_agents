@@ -1,10 +1,12 @@
-# Enhanced Multi-Agent System (For Linux Operating System-use WSL for Windows )
+# Enhanced Multi-Agent System as deterministic alternative to MCP(For Linux Operating System-use WSL for Windows )
 
-A revolutionary approach to AI agent orchestration with minimal code and maximum capability. This system provides powerful multi-agent workflows through simple JSON configuration rather than complex Python code.
-THIS IS SAP WORKFLOW: python3 runner_wrapper.py --workflow even_better_sap.json sap_data.csv
+A new  approach to AI agent orchestration that is DETERMINISTIC  with minimal code and maximum capability. 
+This system provides powerful multi-agent workflows through simple JSON configuration rather than complex Python code and overcomes MCP's main problem(Non-Deterministic).
+These are  mainly cybersecurity use cases.
+But also include a  SAP WORKFLOW uploaded by a community member: python3 runner_wrapper.py --workflow even_better_sap.json sap_data.csv
 ## Why This System Stands Out
 
-While frameworks like LangChain, LangGraph, and Semantic Kernel require hundreds of lines of Python code to orchestrate complex agent interactions, this system achieves the same capabilities through **declarative JSON configuration**:
+While frameworks like LangChain, LangGraph, and Semantic Kernel require hundreds of lines of Python code to orchestrate complex agent interactions, this system achieves the same capabilities through **declarative JSON configuration** thus brining in DETERMINISTIC execution:
 
 - What would take 500+ lines of Python code in LangChain can be done with a single prompt that returns JSON workflow
 - No callbacks, chain composition, or complex error handling required
